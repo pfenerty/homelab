@@ -17,6 +17,7 @@
     ../../modules/security.nix
     ../../modules/users.nix
     ../../modules/zed-remote.nix
+    ../../modules/claude-code.nix
   ];
 
   # Boot loader — systemd-boot is the standard for modern UEFI systems.
