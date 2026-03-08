@@ -8,12 +8,36 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write        # needed to push the lock file commit
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@v16
       - uses: DeterminateSystems/magic-nix-cache-action@v8
+
       - name: Generate flake.lock
         run: nix flake lock
+
+      # Commit flake.lock back only on direct pushes to main/master.
+      # Two loop guards:
+      #   1. [skip ci] in the commit message — GitHub Actions skips the next run.
+      #   2. `github.actor` check — skips this step if CI itself triggered the run.
+      - name: Commit flake.lock if changed
+        if: |
+          github.event_name == 'push' &&
+          github.actor != 'github-actions[bot]'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$(git status --porcelain flake.lock)" ]; then
+            echo "flake.lock is unchanged — nothing to commit."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flake.lock
+          git commit -m "chore: update flake.lock [skip ci]"
+          git push
 
       - name: Check flake
         run: nix flake check
