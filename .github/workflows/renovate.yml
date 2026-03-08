@@ -1,0 +1,40 @@
+name: Renovate
+
+on:
+  # Run on a schedule — every day at 03:00 UTC
+  schedule:
+    - cron: "0 3 * * *"
+  # Allow manual triggering from the Actions tab
+  workflow_dispatch:
+    inputs:
+      log_level:
+        description: "Renovate log level"
+        required: false
+        default: "info"
+        type: choice
+        options:
+          - info
+          - debug
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # push lock-file / branch updates
+      pull-requests: write   # open / update PRs
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Renovate
+        uses: renovatebot/github-action@v41
+        with:
+          # Override log level when triggered manually with debug selected
+          renovate-version: latest
+        env:
+          # Use a PAT stored as RENOVATE_TOKEN, or fall back to the built-in
+          # GITHUB_TOKEN.  A PAT is required if Renovate needs to trigger
+          # further CI runs on the PRs it opens (GITHUB_TOKEN-opened PRs skip
+          # Actions by design).
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN || secrets.GITHUB_TOKEN }}
+          LOG_LEVEL: ${{ inputs.log_level || 'info' }}
