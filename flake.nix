@@ -14,11 +14,17 @@
   inputs = {
     # nixpkgs is the main Nix package repository. We pin to the stable release.
     # You can switch to "nixos-unstable" for bleeding-edge packages.
+    # Exact versions are locked in flake.lock — run `nix flake update` to update,
+    # or rely on the automated weekly PR from .github/workflows/update-flake.yml.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
 
     # Flox — developer environment manager built on Nix.
     # This provides a NixOS module that installs and configures Flox system-wide.
-    flox.url = "github:flox/flox";
+    flox = {
+      url = "github:flox/flox";
+      # Reuse our nixpkgs so Nix doesn't fetch a second copy of the package set.
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   # Tell Nix to trust the Flox binary cache so it can download pre-built packages
