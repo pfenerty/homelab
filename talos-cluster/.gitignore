@@ -1,0 +1,3 @@
+# Never commit unencrypted secrets or generated configs containing keys
+talos/clusterconfig/
+talos/secrets.yaml

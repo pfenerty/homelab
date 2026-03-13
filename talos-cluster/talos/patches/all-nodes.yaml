@@ -1,0 +1,19 @@
+# talos/patches/all-nodes.yaml
+machine:
+    time:
+        disabled: false
+        servers:
+            - 162.159.200.1 # time.cloudflare.com by IP — no DNS needed
+            - 216.239.35.0 # time.google.com by IP — no DNS needed
+            - time.cloudflare.com
+            - pool.ntp.org
+        bootTimeout: 5m # RPi has no RTC; give extra time for NTP sync before cert generation
+    network:
+        nameservers:
+            - 1.1.1.1
+            - 8.8.8.8
+    sysctls:
+        vm.dirty_writeback_centisecs: "1500"
+    kubelet:
+        extraArgs:
+            rotate-server-certificates: "true"
