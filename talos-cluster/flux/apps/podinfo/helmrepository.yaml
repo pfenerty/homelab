@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-    name: metrics-server
+    name: podinfo
     namespace: flux-system
 spec:
     interval: 1h
