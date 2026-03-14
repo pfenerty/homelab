@@ -1,13 +1,20 @@
 # Makefile
 
+export SOPS_AGE_KEY_FILE := $(CURDIR)/../age.key
+
 CLUSTER_NAME   := rpi-cluster
 ENDPOINT       := https://192.168.1.100:6443
 SECRETS        := talos/secrets.yaml
 OUTPUT         := talos/clusterconfig
+TALOSCONFIG    := $(CURDIR)/$(OUTPUT)/talosconfig
 PATCHES        := talos/patches
 
 NODES          := rpi-01 rpi-02 rpi-03
 NODE_IPS       := 192.168.1.101 192.168.1.102 192.168.1.103
+
+NODE_IP_rpi-01 := 192.168.1.101
+NODE_IP_rpi-02 := 192.168.1.102
+NODE_IP_rpi-03 := 192.168.1.103
 VIP            := 192.168.1.100
 
 TALOS_VERSION  := v1.12.5
@@ -16,19 +23,14 @@ IMAGE_URL      := factory.talos.dev/installer/$(SCHEMATIC):$(TALOS_VERSION)
 
 # ── Config generation ──────────────────────────────────────────
 
-.PHONY: generate validate clean
+.PHONY: generate validate clean repatch-all repatch-rpi-01 repatch-rpi-02 repatch-rpi-03
 
 generate: $(OUTPUT)/rpi-01.yaml $(OUTPUT)/rpi-02.yaml $(OUTPUT)/rpi-03.yaml
 	@echo "✓ All configs generated in $(OUTPUT)/"
 
 $(OUTPUT)/controlplane.yaml: $(SECRETS) $(wildcard $(PATCHES)/*.yaml)
 	@mkdir -p $(OUTPUT)
-	talosctl gen config $(CLUSTER_NAME) $(ENDPOINT) \
-		--with-secrets $(SECRETS) \
-		--output $(OUTPUT)/ \
-		--config-patch @$(PATCHES)/all-nodes.yaml \
-		--config-patch-control-plane @$(PATCHES)/controlplane.yaml \
-		--force
+	sops exec-file $(SECRETS) 'talosctl gen config $(CLUSTER_NAME) $(ENDPOINT) --with-secrets {} --output $(OUTPUT)/ --config-patch @$(PATCHES)/all-nodes.yaml --config-patch-control-plane @$(PATCHES)/controlplane.yaml --force'
 
 $(OUTPUT)/rpi-%.yaml: $(OUTPUT)/controlplane.yaml $(PATCHES)/rpi-%-network.yaml
 	talosctl machineconfig patch $(OUTPUT)/controlplane.yaml \
@@ -56,9 +58,25 @@ apply-%: $(OUTPUT)/%.yaml
 
 # Re-apply to already-configured nodes (using their static IPs)
 apply-all:
-	talosctl apply-config --nodes 192.168.1.101 --file $(OUTPUT)/rpi-01.yaml
-	talosctl apply-config --nodes 192.168.1.102 --file $(OUTPUT)/rpi-02.yaml
-	talosctl apply-config --nodes 192.168.1.103 --file $(OUTPUT)/rpi-03.yaml
+	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes 192.168.1.101 --endpoints $(VIP) --file $(OUTPUT)/rpi-01.yaml
+	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes 192.168.1.102 --endpoints $(VIP) --file $(OUTPUT)/rpi-02.yaml
+	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes 192.168.1.103 --endpoints $(VIP) --file $(OUTPUT)/rpi-03.yaml
+
+# Re-apply patches to an existing generated config and apply to the node (no secrets needed).
+# Patches are strategic merge patches so re-applying is idempotent.
+# Usage: make repatch-rpi-01  or  make repatch-all
+repatch-%:
+	@tmpfile=$$(mktemp /tmp/talos-$*-XXXXXX.yaml) && \
+	talosctl machineconfig patch $(OUTPUT)/$*.yaml \
+		--patch @$(PATCHES)/all-nodes.yaml \
+		--patch @$(PATCHES)/controlplane.yaml \
+		--patch @$(PATCHES)/$*-network.yaml \
+		--output $$tmpfile && \
+	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes $(NODE_IP_$*) --file $$tmpfile; \
+	rm -f $$tmpfile
+
+repatch-all: repatch-rpi-01 repatch-rpi-02 repatch-rpi-03
+	@echo "✓ Patches re-applied to all nodes"
 
 # ── Bootstrap ──────────────────────────────────────────────────
 
