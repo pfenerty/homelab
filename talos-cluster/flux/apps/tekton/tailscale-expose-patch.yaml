@@ -5,3 +5,4 @@ metadata:
   namespace: tekton-pipelines
   annotations:
     tailscale.com/expose: "true"
+    tailscale.com/proxy-class: userspace-proxy
