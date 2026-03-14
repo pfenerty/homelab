@@ -3,3 +3,5 @@ creation_rules:
       age: age1cr8ez6j7px93cjswnrmll93k4kyghavrddll8gl0vqnrwr954dss4hmre3
     - path_regex: talos-cluster/talos/secrets\.yaml$
       age: age1cr8ez6j7px93cjswnrmll93k4kyghavrddll8gl0vqnrwr954dss4hmre3
+    - path_regex: talos-cluster/flux/.*\.secret\.yaml$
+      age: age1cr8ez6j7px93cjswnrmll93k4kyghavrddll8gl0vqnrwr954dss4hmre3
