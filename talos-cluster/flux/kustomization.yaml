@@ -5,7 +5,9 @@ resources:
     - cilium.kustomization.yaml
     - gateway-api.kustomization.yaml
     - metrics-server.kustomization.yaml
+    - local-path-provisioner.kustomization.yaml
     - tekton.kustomization.yaml
+    - tekton-ocidex.kustomization.yaml
     - tailscale.kustomization.yaml
     - hubble.kustomization.yaml
     - cloudflare-gateway.kustomization.yaml
