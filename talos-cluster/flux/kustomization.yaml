@@ -10,3 +10,4 @@ resources:
     - hubble.kustomization.yaml
     - cloudflare-gateway.kustomization.yaml
     - podinfo.kustomization.yaml
+    - renovate.kustomization.yaml
