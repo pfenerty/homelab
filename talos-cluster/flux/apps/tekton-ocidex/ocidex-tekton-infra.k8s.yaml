@@ -2,13 +2,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: ocidex-tekton-triggers
-  namespace: tekton-builds
+  namespace: ocidex-ci
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: ocidex-tekton-triggers-eventlistener
-  namespace: tekton-builds
+  namespace: ocidex-ci
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -21,7 +21,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: ocidex-tekton-triggers-eventlistener
-  namespace: tekton-builds
+  namespace: ocidex-ci
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -29,19 +29,19 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: ocidex-tekton-triggers
-    namespace: tekton-builds
+    namespace: ocidex-ci
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: ocidex-github-push
-  namespace: tekton-builds
+  namespace: ocidex-ci
 spec:
   params:
     - name: gitrevision
       value: $(body.head_commit.id)
     - name: namespace
-      value: tekton-builds
+      value: ocidex-ci
     - name: gitrepositoryurl
       value: https://github.com/$(body.repository.full_name)
     - name: projectname
@@ -51,7 +51,7 @@ apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: ocidex-github-push-trigger-template
-  namespace: tekton-builds
+  namespace: ocidex-ci
 spec:
   params:
     - description: The git revision
@@ -97,13 +97,13 @@ apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: ocidex-github-pull-request
-  namespace: tekton-builds
+  namespace: ocidex-ci
 spec:
   params:
     - name: gitrevision
       value: $(body.pull_request.head.sha)
     - name: namespace
-      value: tekton-builds
+      value: ocidex-ci
     - name: gitrepositoryurl
       value: https://github.com/$(body.repository.full_name)
     - name: projectname
@@ -113,7 +113,7 @@ apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: ocidex-github-pull-request-trigger-template
-  namespace: tekton-builds
+  namespace: ocidex-ci
 spec:
   params:
     - description: The git revision
@@ -159,7 +159,7 @@ apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: ocidex-github-listener
-  namespace: tekton-builds
+  namespace: ocidex-ci
 spec:
   serviceAccountName: ocidex-tekton-triggers
   triggers:

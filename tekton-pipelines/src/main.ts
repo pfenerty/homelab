@@ -15,7 +15,7 @@ import {
 } from "@pfenerty/tekton-pipelines";
 
 // ─── Configuration ────────────────────────────────────────────────────────────
-const NAMESPACE = "tekton-builds";
+const NAMESPACE = "ocidex-ci";
 
 // ─── Define jobs ──────────────────────────────────────────────────────────────
 const clone = JOBS.clone();

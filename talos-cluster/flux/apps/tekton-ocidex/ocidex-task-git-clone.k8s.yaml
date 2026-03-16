@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: ocidex-git-clone
-  namespace: tekton-builds
+  namespace: ocidex-ci
 spec:
   params:
     - description: Repository URL to clone

@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: ocidex-pull-request
-  namespace: tekton-builds
+  namespace: ocidex-ci
 spec:
   params:
     - name: git-url
