@@ -7,3 +7,4 @@ resources:
     - ocidex-pipeline-pull-request.k8s.yaml
     - ocidex-infra.k8s.yaml
     - eventlistener-ingress.yaml
+    - github-webhook.secret.yaml
