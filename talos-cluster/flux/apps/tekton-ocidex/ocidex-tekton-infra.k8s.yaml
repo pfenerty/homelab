@@ -173,7 +173,7 @@ spec:
                           - push
                     - name: secretRef
                       value:
-                          secretKey: secretToken
+                          secretKey: secret
                           secretName: github-webhook-secret
                 ref:
                     kind: ClusterInterceptor
@@ -190,7 +190,7 @@ spec:
                           - pull_request
                     - name: secretRef
                       value:
-                          secretKey: secretToken
+                          secretKey: secret
                           secretName: github-webhook-secret
                 ref:
                     kind: ClusterInterceptor
