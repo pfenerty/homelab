@@ -20,7 +20,7 @@ spec:
     - command:
         - sh
         - -c
-        - npm ci && npm run build
+        - npm run build
       image: node:22-alpine
       name: build
       workingDir: $(workspaces.workspace.path)/$(params.build-path)

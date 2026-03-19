@@ -67,7 +67,7 @@ spec:
         - name: build-path
           value: $(params.build-path)
       runAfter:
-        - git-clone
+        - test-npm
       taskRef:
         kind: Task
         name: tektonic-build-npm
