@@ -36,5 +36,5 @@ spec:
             secretKeyRef:
               key: token
               name: github-token
-      image: alpine:3
+      image: cgr.dev/chainguard/curl:latest-dev
       name: set-status
