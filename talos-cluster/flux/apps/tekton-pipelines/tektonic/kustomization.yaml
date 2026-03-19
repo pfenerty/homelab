@@ -9,5 +9,8 @@ resources:
     - tektonic-pipeline-npm-push.k8s.yaml
     - tektonic-task-build-npm.k8s.yaml
     - tektonic-task-git-clone.k8s.yaml
+    - tektonic-task-set-final-status.k8s.yaml
+    - tektonic-task-set-pending-status.k8s.yaml
     - tektonic-task-test-npm.k8s.yaml
+    - tektonic-task-trivy-scan.k8s.yaml
     - tektonic-tekton-infra.k8s.yaml
