@@ -18,6 +18,19 @@ spec:
       seccompProfile:
         type: RuntimeDefault
   steps:
+    - args:
+        - 'curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -d "{\"state\":\"pending\",\"context\":\"tektonic-ci/scan\",\"description\":\"Running\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"'
+      command:
+        - sh
+        - -c
+      env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: github-token
+      image: cgr.dev/chainguard/curl:latest-dev
+      name: set-pending
     - command:
         - trivy
         - fs
@@ -28,6 +41,7 @@ spec:
         - "."
       image: aquasec/trivy:latest
       name: scan
+      onError: continue
       workingDir: $(workspaces.workspace.path)
     - args:
         - |-
@@ -46,5 +60,20 @@ spec:
       image: cgr.dev/chainguard/curl:latest-dev
       name: upload-sarif
       workingDir: $(workspaces.workspace.path)
+    - args:
+        - |-
+          if [ "$(steps.scan.exitCode)" -eq 0 ]; then STATE=success DESC=Passed; else STATE=failure DESC=Failed; fi
+          curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -d "{\"state\":\"$STATE\",\"context\":\"tektonic-ci/scan\",\"description\":\"$DESC\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"
+      command:
+        - sh
+        - -c
+      env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: github-token
+      image: cgr.dev/chainguard/curl:latest-dev
+      name: report-status
   workspaces:
     - name: workspace

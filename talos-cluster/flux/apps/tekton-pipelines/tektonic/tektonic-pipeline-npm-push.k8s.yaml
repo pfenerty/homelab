@@ -4,16 +4,6 @@ metadata:
   name: tektonic-npm-push
   namespace: tektonic-ci
 spec:
-  finally:
-    - name: set-final-status
-      params:
-        - name: revision
-          value: $(params.revision)
-        - name: repo-full-name
-          value: $(params.repo-full-name)
-      taskRef:
-        kind: Task
-        name: tektonic-set-final-status
   params:
     - name: project-name
       type: string
@@ -22,28 +12,17 @@ spec:
     - default: ./
       name: build-path
       type: string
-    - name: url
-      type: string
     - name: revision
       type: string
+    - name: url
+      type: string
   tasks:
-    - name: set-pending-status
-      params:
-        - name: revision
-          value: $(params.revision)
-        - name: repo-full-name
-          value: $(params.repo-full-name)
-      taskRef:
-        kind: Task
-        name: tektonic-set-pending-status
     - name: git-clone
       params:
         - name: url
           value: $(params.url)
         - name: revision
           value: $(params.revision)
-      runAfter:
-        - set-pending-status
       taskRef:
         kind: Task
         name: tektonic-git-clone
@@ -54,6 +33,10 @@ spec:
       params:
         - name: build-path
           value: $(params.build-path)
+        - name: repo-full-name
+          value: $(params.repo-full-name)
+        - name: revision
+          value: $(params.revision)
       runAfter:
         - git-clone
       taskRef:
