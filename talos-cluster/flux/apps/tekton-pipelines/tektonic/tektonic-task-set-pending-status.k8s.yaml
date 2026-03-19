@@ -18,21 +18,16 @@ spec:
       seccompProfile:
         type: RuntimeDefault
   steps:
-    - command:
-        - gh
-        - api
-        - repos/$(params.repo-full-name)/statuses/$(params.revision)
-        - -f
-        - state=pending
-        - -f
-        - context=tektonic-ci
-        - -f
-        - description=Pipeline running
+    - args:
+        - "curl -fsS -X POST   -H \"Authorization: token $GITHUB_TOKEN\"   -H \"Accept: application/vnd.github+json\"   -d '{\"state\":\"pending\",\"context\":\"tektonic-ci\",\"description\":\"Pipeline running\"}'   \"https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)\""
+      command:
+        - sh
+        - -c
       env:
-        - name: GH_TOKEN
+        - name: GITHUB_TOKEN
           valueFrom:
             secretKeyRef:
               key: token
               name: github-token
-      image: maniator/gh:v2.88.1
+      image: alpine:3
       name: set-pending

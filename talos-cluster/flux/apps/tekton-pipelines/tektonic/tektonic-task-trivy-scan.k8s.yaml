@@ -33,17 +33,17 @@ spec:
         - |-
           set -e
           SARIF=$(gzip -c trivy.sarif | base64 -w0)
-          gh api "repos/$(params.repo-full-name)/code-scanning/sarifs"   -f commit_sha="$(params.revision)" -f ref=refs/heads/main -f sarif="$SARIF"
+          curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -d "{\"commit_sha\":\"$(params.revision)\",\"ref\":\"refs/heads/main\",\"sarif\":\"$SARIF\"}"   "https://api.github.com/repos/$(params.repo-full-name)/code-scanning/sarifs"
       command:
         - sh
         - -c
       env:
-        - name: GH_TOKEN
+        - name: GITHUB_TOKEN
           valueFrom:
             secretKeyRef:
               key: token
               name: github-token
-      image: maniator/gh:v2.88.1
+      image: alpine:3
       name: upload-sarif
       workingDir: $(workspaces.workspace.path)
   workspaces:
