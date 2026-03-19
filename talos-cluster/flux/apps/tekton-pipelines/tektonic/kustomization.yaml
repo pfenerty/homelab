@@ -4,6 +4,7 @@ resources:
     - eventlistener-ingress.yaml
     - namespace.yaml
     - github-webhook.secret.yaml
+    - github-cli.secret.yaml
     - tektonic-pipeline-npm-pull-request.k8s.yaml
     - tektonic-pipeline-npm-push.k8s.yaml
     - tektonic-task-build-npm.k8s.yaml
