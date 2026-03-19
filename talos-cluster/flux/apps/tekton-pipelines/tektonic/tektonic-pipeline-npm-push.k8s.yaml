@@ -4,8 +4,20 @@ metadata:
   name: tektonic-npm-push
   namespace: tektonic-ci
 spec:
+  finally:
+    - name: set-final-status
+      params:
+        - name: revision
+          value: $(params.revision)
+        - name: repo-full-name
+          value: $(params.repo-full-name)
+      taskRef:
+        kind: Task
+        name: tektonic-set-final-status
   params:
     - name: project-name
+      type: string
+    - name: repo-full-name
       type: string
     - default: ./
       name: build-path
@@ -14,13 +26,26 @@ spec:
       type: string
     - name: revision
       type: string
+    - name: repo-full-name
+      type: string
   tasks:
+    - name: set-pending-status
+      params:
+        - name: revision
+          value: $(params.revision)
+        - name: repo-full-name
+          value: $(params.repo-full-name)
+      taskRef:
+        kind: Task
+        name: tektonic-set-pending-status
     - name: git-clone
       params:
         - name: url
           value: $(params.url)
         - name: revision
           value: $(params.revision)
+      runAfter:
+        - set-pending-status
       taskRef:
         kind: Task
         name: tektonic-git-clone
@@ -36,6 +61,20 @@ spec:
       taskRef:
         kind: Task
         name: tektonic-test-npm
+      workspaces:
+        - name: workspace
+          workspace: workspace
+    - name: trivy-scan
+      params:
+        - name: repo-full-name
+          value: $(params.repo-full-name)
+        - name: revision
+          value: $(params.revision)
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: Task
+        name: tektonic-trivy-scan
       workspaces:
         - name: workspace
           workspace: workspace

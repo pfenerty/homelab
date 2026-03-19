@@ -46,6 +46,8 @@ spec:
       value: https://github.com/$(body.repository.full_name)
     - name: projectname
       value: $(body.repository.name)
+    - name: repo-full-name
+      value: $(body.repository.full_name)
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
@@ -62,6 +64,8 @@ spec:
       name: namespace
     - description: name of the project
       name: projectname
+    - description: GitHub owner/repo
+      name: repo-full-name
   resourcetemplates:
     - apiVersion: tekton.dev/v1
       kind: PipelineRun
@@ -76,6 +80,8 @@ spec:
             value: $(tt.params.gitrepositoryurl)
           - name: project-name
             value: $(tt.params.projectname)
+          - name: repo-full-name
+            value: $(tt.params.repo-full-name)
         pipelineRef:
           name: tektonic-npm-push
         serviceAccountName: tektonic-tekton-triggers
@@ -104,6 +110,8 @@ spec:
       value: https://github.com/$(body.repository.full_name)
     - name: projectname
       value: $(body.repository.name)
+    - name: repo-full-name
+      value: $(body.repository.full_name)
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
@@ -120,6 +128,8 @@ spec:
       name: namespace
     - description: name of the project
       name: projectname
+    - description: GitHub owner/repo
+      name: repo-full-name
   resourcetemplates:
     - apiVersion: tekton.dev/v1
       kind: PipelineRun
@@ -134,6 +144,8 @@ spec:
             value: $(tt.params.gitrepositoryurl)
           - name: project-name
             value: $(tt.params.projectname)
+          - name: repo-full-name
+            value: $(tt.params.repo-full-name)
         pipelineRef:
           name: tektonic-npm-pull-request
         serviceAccountName: tektonic-tekton-triggers

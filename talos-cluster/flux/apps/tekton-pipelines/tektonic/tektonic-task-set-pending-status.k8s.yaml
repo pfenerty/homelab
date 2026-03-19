@@ -1,0 +1,32 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: tektonic-set-pending-status
+  namespace: tektonic-ci
+spec:
+  params:
+    - name: revision
+      type: string
+    - name: repo-full-name
+      type: string
+  stepTemplate:
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+  steps:
+    - env:
+        - name: GH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: github-token
+      image: cgr.dev/chainguard/gh:latest
+      name: set-pending
+      script: |-
+        #!/bin/sh
+        set -e
+        gh api "repos/$(params.repo-full-name)/statuses/$(params.revision)"   -f state=pending -f context=tektonic-ci -f description="Pipeline running"

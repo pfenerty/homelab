@@ -1,32 +1,32 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-    name: tektonic-git-clone
-    namespace: tektonic-ci
+  name: tektonic-git-clone
+  namespace: tektonic-ci
 spec:
-    params:
-        - name: url
-          type: string
-        - name: revision
-          type: string
-    stepTemplate:
-        securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-                drop:
-                    - ALL
-            runAsNonRoot: true
-            seccompProfile:
-                type: RuntimeDefault
-    steps:
-        - image: cgr.dev/chainguard/git:latest
-          name: clone
-          script: |-
-              #!/bin/sh
-              set -e
-              git clone -v $(params.url) .
-              git config --global --add safe.directory $(workspaces.workspace.path)
-              git checkout $(params.revision)
-          workingDir: $(workspaces.workspace.path)
-    workspaces:
-        - name: workspace
+  params:
+    - name: url
+      type: string
+    - name: revision
+      type: string
+  stepTemplate:
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+  steps:
+    - image: cgr.dev/chainguard/git:latest
+      name: clone
+      script: |-
+        #!/bin/sh
+        set -e
+        git clone -v $(params.url) .
+        git config --global --add safe.directory $(workspaces.workspace.path)
+        git checkout $(params.revision)
+      workingDir: $(workspaces.workspace.path)
+  workspaces:
+    - name: workspace

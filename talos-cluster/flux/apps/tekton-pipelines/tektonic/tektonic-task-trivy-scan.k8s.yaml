@@ -1,0 +1,48 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: tektonic-trivy-scan
+  namespace: tektonic-ci
+spec:
+  params:
+    - name: repo-full-name
+      type: string
+    - name: revision
+      type: string
+  stepTemplate:
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+  steps:
+    - command:
+        - trivy
+        - fs
+        - --format
+        - sarif
+        - --output
+        - $(workspaces.workspace.path)/trivy.sarif
+        - "."
+      image: aquasec/trivy:latest
+      name: scan
+      workingDir: $(workspaces.workspace.path)
+    - env:
+        - name: GH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: github-token
+      image: cgr.dev/chainguard/wolfi-base:latest
+      name: upload-sarif
+      script: |-
+        #!/bin/sh
+        set -e
+        apk add --no-cache github-cli gzip
+        SARIF=$(gzip -c trivy.sarif | base64 -w0)
+        gh api "repos/$(params.repo-full-name)/code-scanning/sarifs"   -f commit_sha="$(params.revision)" -f ref=refs/heads/main -f sarif="$SARIF"
+      workingDir: $(workspaces.workspace.path)
+  workspaces:
+    - name: workspace
