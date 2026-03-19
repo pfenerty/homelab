@@ -34,17 +34,19 @@ spec:
               name: github-token
       image: cgr.dev/chainguard/curl:latest-dev
       name: set-pending
-    - command:
+    - args:
+        - npm run build; EC=$?; echo $EC > /tekton/home/.exit-code; exit $EC
+      command:
         - sh
         - -c
-        - npm run build
       image: node:22-alpine
       name: build
       onError: continue
       workingDir: $(workspaces.workspace.path)/$(params.build-path)
     - args:
         - |-
-          if [ "$(steps.build.exitCode)" -eq 0 ]; then STATE=success DESC=Passed; else STATE=failure DESC=Failed; fi
+          EXIT_CODE=$(cat /tekton/home/.exit-code)
+          if [ "$EXIT_CODE" -eq 0 ]; then STATE=success DESC=Passed; else STATE=failure DESC=Failed; fi
           curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -d "{\"state\":\"$STATE\",\"context\":\"tektonic-ci/build\",\"description\":\"$DESC\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"
       command:
         - sh
