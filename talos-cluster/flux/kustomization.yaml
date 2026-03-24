@@ -13,3 +13,4 @@ resources:
     - cloudflare-gateway.kustomization.yaml
     - podinfo.kustomization.yaml
     - renovate.kustomization.yaml
+    - ocidex-ci.kustomization.yaml
