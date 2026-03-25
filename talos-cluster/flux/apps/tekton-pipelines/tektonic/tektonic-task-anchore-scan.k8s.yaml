@@ -74,6 +74,7 @@ spec:
                     REF="$(params.ref)"
                     case "$REF" in refs/*) ;; *) REF="refs/heads/$REF" ;; esac
                     SARIF=$(gzip -c scan.sarif | base64 | tr -d '\n')
+                    cat $SARIF
                     curl -vvv -X POST     -H "Authorization: token $GITHUB_TOKEN"     -H "Accept: application/vnd.github+json"     -H "Content-Type: application/json"     -d "{\"commit_sha\":\"$(params.revision)\",\"ref\":\"$REF\",\"sarif\":\"$SARIF\"}"     "https://api.github.com/repos/$(params.repo-full-name)/code-scanning/sarifs"
                   fi
           command:
