@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: tektonic-trivy-scan
+  name: tektonic-anchore-scan
   namespace: tektonic-ci
 spec:
   params:
@@ -26,18 +26,35 @@ spec:
         type: RuntimeDefault
   steps:
     - args:
-        - trivy fs --format sarif --output $(workspaces.workspace.path)/trivy.sarif .; EC=$?; echo $EC > /tekton/home/.exit-code; exit $EC
+        - syft dir:. -o cyclonedx-json=sbom.cyclonedx.json
       command:
         - sh
         - -c
-      image: aquasec/trivy:latest
+      image: ghcr.io/anchore/syft:v1.42.3
+      name: generate-sbom
+      workingDir: $(workspaces.workspace.path)
+    - args:
+        - grype sbom:./sbom.cyclonedx.json -o sarif > scan.sarif; EC=$?; echo $EC > /tekton/home/.exit-code; exit $EC
+      command:
+        - sh
+        - -c
+      image: ghcr.io/anchore/grype:v0.110.0
       name: scan
+      onError: continue
+      workingDir: $(workspaces.workspace.path)
+    - args:
+        - grant check ./sbom.cyclonedx.json
+      command:
+        - sh
+        - -c
+      image: ghcr.io/anchore/grant:v0.6.4
+      name: check-licenses
       onError: continue
       workingDir: $(workspaces.workspace.path)
     - args:
         - |-
           set -e
-          SARIF=$(gzip -c trivy.sarif | base64 -w0)
+          SARIF=$(gzip -c scan.sarif | base64 -w0)
           curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -H "Content-Type: application/json"   -d "{\"commit_sha\":\"$(params.revision)\",\"ref\":\"refs/heads/main\",\"sarif\":\"$SARIF\"}"   "https://api.github.com/repos/$(params.repo-full-name)/code-scanning/sarifs"
       command:
         - sh
