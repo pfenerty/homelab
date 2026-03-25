@@ -13,13 +13,6 @@ spec:
     - name: revision
       type: string
   stepTemplate:
-    resources:
-      limits:
-        cpu: "1"
-        memory: 512Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
     securityContext:
       allowPrivilegeEscalation: false
       capabilities:
@@ -36,6 +29,13 @@ spec:
       image: node:22-alpine
       name: build
       onError: continue
+      resources:
+        limits:
+          cpu: "1"
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
       workingDir: $(workspaces.workspace.path)/$(params.build-path)
     - args:
         - |-
@@ -53,5 +53,12 @@ spec:
               name: github-token
       image: cgr.dev/chainguard/curl:latest-dev
       name: report-status
+      resources:
+        limits:
+          cpu: "1"
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
   workspaces:
     - name: workspace

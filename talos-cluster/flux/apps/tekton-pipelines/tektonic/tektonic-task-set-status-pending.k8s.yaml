@@ -10,13 +10,6 @@ spec:
     - name: revision
       type: string
   stepTemplate:
-    resources:
-      limits:
-        cpu: "1"
-        memory: 512Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
     securityContext:
       allowPrivilegeEscalation: false
       capabilities:
@@ -38,6 +31,13 @@ spec:
               name: github-token
       image: cgr.dev/chainguard/curl:latest-dev
       name: pending-tektonic-ci-test
+      resources:
+        limits:
+          cpu: "1"
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
     - args:
         - 'curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -d "{\"state\":\"pending\",\"context\":\"tektonic-ci/scan\",\"description\":\"Running\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"'
       command:
@@ -51,3 +51,10 @@ spec:
               name: github-token
       image: cgr.dev/chainguard/curl:latest-dev
       name: pending-tektonic-ci-scan
+      resources:
+        limits:
+          cpu: "1"
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
