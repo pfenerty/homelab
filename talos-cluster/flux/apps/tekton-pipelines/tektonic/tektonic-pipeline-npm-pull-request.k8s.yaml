@@ -51,6 +51,8 @@ spec:
         kind: Task
         name: tektonic-test-npm
       workspaces:
+        - name: npm-cache
+          workspace: npm-cache
         - name: workspace
           workspace: workspace
     - name: build-npm

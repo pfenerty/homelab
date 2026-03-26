@@ -51,6 +51,8 @@ spec:
         kind: Task
         name: tektonic-test-npm
       workspaces:
+        - name: npm-cache
+          workspace: npm-cache
         - name: workspace
           workspace: workspace
     - name: anchore-scan
@@ -73,4 +75,5 @@ spec:
           workspace: workspace
   workspaces:
     - name: workspace
+    - name: npm-cache
     - name: grype-cache
