@@ -17,6 +17,11 @@ spec:
       requests:
         cpu: 100m
         memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
   steps:
     - args:
         - 'curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -H "Content-Type: application/json"   -d "{\"state\":\"pending\",\"context\":\"test-npm\",\"description\":\"Running\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"'

@@ -19,6 +19,11 @@ spec:
       requests:
         cpu: 100m
         memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
     workingDir: $(workspaces.workspace.path)
   steps:
     - args:

@@ -116,10 +116,6 @@ spec:
           name: tektonic-npm-push
         podTemplate:
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
             fsGroup: 1000
             runAsGroup: 1000
             runAsNonRoot: true
@@ -204,10 +200,6 @@ spec:
           name: tektonic-npm-pull-request
         podTemplate:
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
             fsGroup: 1000
             runAsGroup: 1000
             runAsNonRoot: true
