@@ -31,6 +31,18 @@ subjects:
     name: tektonic-tekton-triggers
     namespace: tektonic-ci
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tektonic-grype-cache
+  namespace: tektonic-ci
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
@@ -100,6 +112,9 @@ spec:
                 resources:
                   requests:
                     storage: 1Gi
+          - name: grype-cache
+            persistentVolumeClaim:
+              claimName: tektonic-grype-cache
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
@@ -170,6 +185,9 @@ spec:
                 resources:
                   requests:
                     storage: 1Gi
+          - name: grype-cache
+            persistentVolumeClaim:
+              claimName: tektonic-grype-cache
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener

@@ -45,6 +45,9 @@ spec:
         - sarif=./scan.sarif
       command:
         - /grype
+      env:
+        - name: GRYPE_DB_CACHE_DIR
+          value: $(workspaces.grype-cache.path)
       image: ghcr.io/anchore/grype:v0.110.0
       name: scan
       onError: continue
@@ -103,4 +106,5 @@ spec:
       image: cgr.dev/chainguard/curl:latest-dev
       name: report-status
   workspaces:
+    - name: grype-cache
     - name: workspace

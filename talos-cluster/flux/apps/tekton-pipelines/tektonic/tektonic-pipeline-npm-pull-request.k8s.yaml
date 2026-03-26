@@ -82,7 +82,10 @@ spec:
         kind: Task
         name: tektonic-anchore-scan
       workspaces:
+        - name: grype-cache
+          workspace: grype-cache
         - name: workspace
           workspace: workspace
   workspaces:
     - name: workspace
+    - name: grype-cache
