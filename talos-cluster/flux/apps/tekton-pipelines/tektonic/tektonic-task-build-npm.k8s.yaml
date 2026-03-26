@@ -17,17 +17,6 @@ spec:
       requests:
         cpu: 100m
         memory: 128Mi
-    securityContext:
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      fsGroup: 1000
-      runAsGroup: 1000
-      runAsNonRoot: true
-      runAsUser: 1000
-      seccompProfile:
-        type: RuntimeDefault
     workingDir: $(workspaces.workspace.path)
   steps:
     - args:

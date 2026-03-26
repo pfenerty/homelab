@@ -114,6 +114,18 @@ spec:
             value: $(tt.params.gitref)
         pipelineRef:
           name: tektonic-npm-push
+        podTemplate:
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            fsGroup: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
         serviceAccountName: tektonic-tekton-triggers
         workspaces:
           - name: workspace
@@ -190,6 +202,18 @@ spec:
             value: $(tt.params.gitref)
         pipelineRef:
           name: tektonic-npm-pull-request
+        podTemplate:
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            fsGroup: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
         serviceAccountName: tektonic-tekton-triggers
         workspaces:
           - name: workspace
