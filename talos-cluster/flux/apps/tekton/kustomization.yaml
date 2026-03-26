@@ -16,3 +16,4 @@ patches:
           data:
             set-security-context: "true"
             disable-affinity-assistant: "true"
+            coschedule: "disabled"
