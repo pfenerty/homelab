@@ -31,6 +31,9 @@ spec:
       command:
         - sh
         - -c
+      env:
+        - name: npm_config_cache
+          value: $(workspaces.npm-cache.path)
       image: node:22-alpine
       name: build
       onError: continue
@@ -51,4 +54,5 @@ spec:
       image: cgr.dev/chainguard/curl:latest-dev
       name: report-status
   workspaces:
+    - name: npm-cache
     - name: workspace
