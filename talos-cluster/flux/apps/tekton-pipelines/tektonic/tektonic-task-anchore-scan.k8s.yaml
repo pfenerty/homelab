@@ -1,109 +1,109 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: tektonic-anchore-scan
-  namespace: tektonic-ci
+    name: tektonic-anchore-scan
+    namespace: tektonic-ci
 spec:
-  params:
-    - name: repo-full-name
-      type: string
-    - name: revision
-      type: string
-    - name: ref
-      type: string
-  stepTemplate:
-    computeResources:
-      limits:
-        cpu: "1"
-        memory: 512Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
-    securityContext:
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
-  steps:
-    - args:
-        - dir:.
-        - -o
-        - cyclonedx-json=sbom.cyclonedx.json
-        - -o
-        - syft-table
-      command:
-        - /syft
-      image: ghcr.io/anchore/syft:v1.42.3
-      name: generate-sbom
-      workingDir: $(workspaces.workspace.path)
-    - args:
-        - -v
-        - sbom:./sbom.cyclonedx.json
-        - -o
-        - sarif=./scan.sarif
-      command:
-        - /grype
-      image: ghcr.io/anchore/grype:v0.110.0
-      name: scan
-      onError: continue
-      workingDir: $(workspaces.workspace.path)
-    - args:
-        - check
-        - ./sbom.cyclonedx.json
-        - -o
-        - table
-        - --dry-run
-      command:
-        - /grant
-      image: ghcr.io/anchore/grant:v0.6.4
-      name: check-licenses
-      onError: continue
-      workingDir: $(workspaces.workspace.path)
-    - args:
-        - |-
-          GRYPE_EC=$(cat /tekton/steps/step-scan/exitCode 2>/dev/null || echo 0)
-          echo "$GRYPE_EC" > /tekton/home/.exit-code
-          if [ -s scan.sarif ]; then
-            REF="$(params.ref)"
-            case "$REF" in refs/*) ;; *) REF="refs/heads/$REF" ;; esac
-            SARIF=$(gzip -c scan.sarif | base64 | tr -d '\n')
-            curl -fsS -X POST \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              -H "Content-Type: application/json" \
-              -d "{\"commit_sha\":\"$(params.revision)\",\"ref\":\"$REF\",\"sarif\":\"$SARIF\"}" \
-              "https://api.github.com/repos/$(params.repo-full-name)/code-scanning/sarifs"
-          fi
-      command:
-        - sh
-        - -c
-      env:
-        - name: GITHUB_TOKEN
-          valueFrom:
-            secretKeyRef:
-              key: token
-              name: github-token
-      image: cgr.dev/chainguard/curl:latest-dev
-      name: upload-sarif
-      onError: continue
-      workingDir: $(workspaces.workspace.path)
-    - args:
-        - |-
-          EXIT_CODE=$(cat /tekton/home/.exit-code)
-          if [ "$EXIT_CODE" -eq 0 ]; then STATE=success DESC=Passed; else STATE=failure DESC=Failed; fi
-          curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -H "Content-Type: application/json"   -d "{\"state\":\"$STATE\",\"context\":\"tektonic-ci/scan\",\"description\":\"$DESC\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"
-      command:
-        - sh
-        - -c
-      env:
-        - name: GITHUB_TOKEN
-          valueFrom:
-            secretKeyRef:
-              key: token
-              name: github-token
-      image: cgr.dev/chainguard/curl:latest-dev
-      name: report-status
-  workspaces:
-    - name: workspace
+    params:
+        - name: repo-full-name
+          type: string
+        - name: revision
+          type: string
+        - name: ref
+          type: string
+    stepTemplate:
+        computeResources:
+            limits:
+                cpu: "1"
+                memory: 512Mi
+            requests:
+                cpu: 100m
+                memory: 128Mi
+        securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+                drop:
+                    - ALL
+            seccompProfile:
+                type: RuntimeDefault
+    steps:
+        - args:
+              - dir:package-lock.json
+              - -o
+              - cyclonedx-json=sbom.cyclonedx.json
+              - -o
+              - syft-table
+          command:
+              - /syft
+          image: ghcr.io/anchore/syft:v1.42.3
+          name: generate-sbom
+          workingDir: $(workspaces.workspace.path)
+        - args:
+              - -v
+              - sbom:./sbom.cyclonedx.json
+              - -o
+              - sarif=./scan.sarif
+          command:
+              - /grype
+          image: ghcr.io/anchore/grype:v0.110.0
+          name: scan
+          onError: continue
+          workingDir: $(workspaces.workspace.path)
+        - args:
+              - check
+              - ./sbom.cyclonedx.json
+              - -o
+              - table
+              - --dry-run
+          command:
+              - /grant
+          image: ghcr.io/anchore/grant:v0.6.4
+          name: check-licenses
+          onError: continue
+          workingDir: $(workspaces.workspace.path)
+        - args:
+              - |-
+                  GRYPE_EC=$(cat /tekton/steps/step-scan/exitCode 2>/dev/null || echo 0)
+                  echo "$GRYPE_EC" > /tekton/home/.exit-code
+                  if [ -s scan.sarif ]; then
+                    REF="$(params.ref)"
+                    case "$REF" in refs/*) ;; *) REF="refs/heads/$REF" ;; esac
+                    SARIF=$(gzip -c scan.sarif | base64 | tr -d '\n')
+                    curl -fsS -X POST \
+                      -H "Authorization: token $GITHUB_TOKEN" \
+                      -H "Accept: application/vnd.github+json" \
+                      -H "Content-Type: application/json" \
+                      -d "{\"commit_sha\":\"$(params.revision)\",\"ref\":\"$REF\",\"sarif\":\"$SARIF\"}" \
+                      "https://api.github.com/repos/$(params.repo-full-name)/code-scanning/sarifs"
+                  fi
+          command:
+              - sh
+              - -c
+          env:
+              - name: GITHUB_TOKEN
+                valueFrom:
+                    secretKeyRef:
+                        key: token
+                        name: github-token
+          image: cgr.dev/chainguard/curl:latest-dev
+          name: upload-sarif
+          onError: continue
+          workingDir: $(workspaces.workspace.path)
+        - args:
+              - |-
+                  EXIT_CODE=$(cat /tekton/home/.exit-code)
+                  if [ "$EXIT_CODE" -eq 0 ]; then STATE=success DESC=Passed; else STATE=failure DESC=Failed; fi
+                  curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -H "Content-Type: application/json"   -d "{\"state\":\"$STATE\",\"context\":\"tektonic-ci/scan\",\"description\":\"$DESC\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"
+          command:
+              - sh
+              - -c
+          env:
+              - name: GITHUB_TOKEN
+                valueFrom:
+                    secretKeyRef:
+                        key: token
+                        name: github-token
+          image: cgr.dev/chainguard/curl:latest-dev
+          name: report-status
+    workspaces:
+        - name: workspace
