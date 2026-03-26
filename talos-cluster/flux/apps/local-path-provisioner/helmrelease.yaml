@@ -16,8 +16,8 @@ spec:
             interval: 12h
     targetNamespace: local-path-storage
     values:
-        storageClass:
-            defaultClass: true
+        # storageClass:
+        #     defaultClass: true
         nodePathMap:
             - node: DEFAULT_PATH_FOR_NON_LISTED_NODES
               paths:

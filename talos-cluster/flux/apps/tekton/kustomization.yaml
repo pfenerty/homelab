@@ -7,11 +7,12 @@ resources:
     - interceptors.yaml
     - tailscale-ingress.yaml
 patches:
-  - patch: |-
-      apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: feature-flags
-        namespace: tekton-pipelines
-      data:
-        set-security-context: "true"
+    - patch: |-
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: feature-flags
+            namespace: tekton-pipelines
+          data:
+            set-security-context: "true"
+            disable-affinity-assistant: "true"

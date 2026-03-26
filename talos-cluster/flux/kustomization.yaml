@@ -14,3 +14,4 @@ resources:
     - podinfo.kustomization.yaml
     - renovate.kustomization.yaml
     - ocidex-ci.kustomization.yaml
+    - nfs.kustomization.yaml
