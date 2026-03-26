@@ -28,7 +28,12 @@ spec:
       seccompProfile:
         type: RuntimeDefault
   steps:
-    - image: cgr.dev/chainguard/git:latest
+    - env:
+        - name: GIT_CONFIG_GLOBAL
+          value: $(workspaces.workspace.path)/.gitconfig
+        - name: GIT_CONFIG
+          value: $(workspaces.workspace.path)/.gitconfig
+      image: cgr.dev/chainguard/git:latest
       name: clone
       script: |-
         #!/bin/sh
