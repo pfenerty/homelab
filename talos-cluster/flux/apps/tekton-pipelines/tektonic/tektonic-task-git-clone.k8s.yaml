@@ -1,44 +1,45 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-    name: tektonic-git-clone
-    namespace: tektonic-ci
+  name: tektonic-git-clone
+  namespace: tektonic-ci
 spec:
-    params:
-        - name: url
-          type: string
-        - name: revision
-          type: string
-    stepTemplate:
-        computeResources:
-            limits:
-                cpu: "1"
-                memory: 512Mi
-            requests:
-                cpu: 100m
-                memory: 128Mi
-        securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-                drop:
-                    - ALL
-            runAsGroup: 1000
-            runAsNonRoot: true
-            runAsUser: 1000
-            seccompProfile:
-                type: RuntimeDefault
-    steps:
-        - env:
-              - name: GIT_CONFIG_GLOBAL
-                value: $(workspaces.workspace.path)/.gitconfig
-          image: cgr.dev/chainguard/git:latest
-          name: clone
-          script: |-
-              #!/bin/sh
-              set -e
-              git clone $(params.url) .
-              git config --global --add safe.directory $(workspaces.workspace.path)
-              git checkout $(params.revision)
-          workingDir: $(workspaces.workspace.path)
-    workspaces:
-        - name: workspace
+  params:
+    - name: url
+      type: string
+    - name: revision
+      type: string
+  stepTemplate:
+    computeResources:
+      limits:
+        cpu: "1"
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      fsGroup: 1000
+      runAsGroup: 1000
+      runAsNonRoot: true
+      runAsUser: 1000
+      seccompProfile:
+        type: RuntimeDefault
+  steps:
+    - env:
+        - name: GIT_CONFIG_GLOBAL
+          value: $(workspaces.workspace.path)/.gitconfig
+      image: cgr.dev/chainguard/git:latest
+      name: clone
+      script: |-
+        #!/bin/sh
+        set -e
+        git clone $(params.url) .
+        git config --global --add safe.directory $(workspaces.workspace.path)
+        git checkout $(params.revision)
+      workingDir: $(workspaces.workspace.path)
+  workspaces:
+    - name: workspace
