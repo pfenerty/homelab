@@ -36,8 +36,6 @@ spec:
           value: $(params.url)
         - name: revision
           value: $(params.revision)
-      runAfter:
-        - set-status-pending
       taskRef:
         kind: Task
         name: tektonic-git-clone
