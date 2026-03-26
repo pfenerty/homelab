@@ -11,10 +11,10 @@ spec:
       type: string
     - name: revision
       type: string
+    - name: url
+      type: string
     - default: ./
       name: build-path
-      type: string
-    - name: url
       type: string
     - name: ref
       type: string
@@ -25,6 +25,8 @@ spec:
           value: $(params.repo-full-name)
         - name: revision
           value: $(params.revision)
+      runAfter:
+        - git-clone
       taskRef:
         kind: Task
         name: tektonic-set-status-pending
@@ -34,6 +36,8 @@ spec:
           value: $(params.url)
         - name: revision
           value: $(params.revision)
+      runAfter:
+        - set-status-pending
       taskRef:
         kind: Task
         name: tektonic-git-clone
@@ -49,7 +53,6 @@ spec:
         - name: revision
           value: $(params.revision)
       runAfter:
-        - git-clone
         - set-status-pending
       taskRef:
         kind: Task
@@ -76,14 +79,13 @@ spec:
           workspace: workspace
     - name: anchore-scan
       params:
+        - name: ref
+          value: $(params.ref)
         - name: repo-full-name
           value: $(params.repo-full-name)
         - name: revision
           value: $(params.revision)
-        - name: ref
-          value: $(params.ref)
       runAfter:
-        - git-clone
         - set-status-pending
       taskRef:
         kind: Task

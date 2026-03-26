@@ -26,7 +26,7 @@ spec:
         type: RuntimeDefault
   steps:
     - args:
-        - 'curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -H "Content-Type: application/json"   -d "{\"state\":\"pending\",\"context\":\"tektonic-ci/test\",\"description\":\"Running\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"'
+        - 'curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -H "Content-Type: application/json"   -d "{\"state\":\"pending\",\"context\":\"test-npm\",\"description\":\"Running\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"'
       command:
         - sh
         - -c
@@ -37,9 +37,9 @@ spec:
               key: token
               name: github-token
       image: cgr.dev/chainguard/curl:latest-dev
-      name: pending-tektonic-ci-test
+      name: pending-test-npm
     - args:
-        - 'curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -H "Content-Type: application/json"   -d "{\"state\":\"pending\",\"context\":\"tektonic-ci/scan\",\"description\":\"Running\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"'
+        - 'curl -fsS -X POST   -H "Authorization: token $GITHUB_TOKEN"   -H "Accept: application/vnd.github+json"   -H "Content-Type: application/json"   -d "{\"state\":\"pending\",\"context\":\"anchore-scan\",\"description\":\"Running\"}"   "https://api.github.com/repos/$(params.repo-full-name)/statuses/$(params.revision)"'
       command:
         - sh
         - -c
@@ -50,4 +50,4 @@ spec:
               key: token
               name: github-token
       image: cgr.dev/chainguard/curl:latest-dev
-      name: pending-tektonic-ci-scan
+      name: pending-anchore-scan
