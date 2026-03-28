@@ -42,8 +42,7 @@ spec:
 
         if ($archive | path exists) {
           log $"hit ($hash)"
-          $env.ZSTD_NBTHREADS = "1"
-          ^tar --zstd -xf $archive
+          ^zstd -d -T1 -c $archive | ^tar xf -
           log "restored"
         } else {
           log $"miss ($hash)"
@@ -52,7 +51,7 @@ spec:
     - env:
         - name: npm_config_cache
           value: $(workspaces.npm-cache.path)
-      image: node:22-alpine
+      image: ghcr.io/pfenerty/apko-cicd/nodejs:22
       name: test
       onError: continue
       script: |-
@@ -86,9 +85,7 @@ spec:
         }
 
         log $"saving ($hash) ..."
-        $env.ZSTD_CLEVEL = "1"
-        $env.ZSTD_NBTHREADS = "1"
-        ^tar --zstd -cf $archive ...$paths
+        ^tar cf - ...$paths | ^zstd -1 -T1 -o $archive
 
         let size = (ls $archive | get size.0)
         log $"saved ($hash) (($size))"
@@ -107,7 +104,7 @@ spec:
             secretKeyRef:
               key: token
               name: github-token
-      image: cgr.dev/chainguard/curl:latest-dev
+      image: ghcr.io/pfenerty/apko-cicd/base:stable
       name: report-status
   workspaces:
     - name: npm-cache

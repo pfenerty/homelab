@@ -34,7 +34,7 @@ spec:
         - syft-table
       command:
         - /syft
-      image: ghcr.io/anchore/syft:v1.42.3
+      image: ghcr.io/pfenerty/apko-cicd/syft:v1.42.3
       name: generate-sbom
     - args:
         - -v
@@ -46,19 +46,8 @@ spec:
       env:
         - name: GRYPE_DB_CACHE_DIR
           value: $(workspaces.grype-cache.path)
-      image: ghcr.io/anchore/grype:v0.110.0
+      image: ghcr.io/pfenerty/apko-cicd/grype:v0.110.0
       name: scan
-      onError: continue
-    - args:
-        - check
-        - ./sbom.cyclonedx.json
-        - -o
-        - table
-        - --dry-run
-      command:
-        - /grant
-      image: ghcr.io/anchore/grant:v0.6.4
-      name: check-licenses
       onError: continue
     - args:
         - |-
@@ -101,7 +90,7 @@ spec:
             secretKeyRef:
               key: token
               name: github-token
-      image: cgr.dev/chainguard/curl:latest-dev
+      image: ghcr.io/pfenerty/apko-cicd/base:stable
       name: report-status
   workspaces:
     - name: grype-cache
