@@ -1,0 +1,15 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+    name: tektonic-pipeline
+    namespace: tektonic-ci
+spec:
+    force: false
+    interval: 3m0s
+    retryInterval: 60s
+    prune: true
+    path: .tekton/
+    sourceRef:
+        kind: GitRepository
+        name: tektonic
