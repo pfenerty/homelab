@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-    name: renovate
+    name: renovate-ocidex
     namespace: renovate
 spec:
-    schedule: "@daily"
+    schedule: "0 0 * * *"
     concurrencyPolicy: Forbid
     startingDeadlineSeconds: 60
     jobTemplate:
@@ -21,8 +21,134 @@ spec:
                           env:
                               - name: LOG_LEVEL
                                 value: debug
-                              - name: RENOVATE_AUTODISCOVER
-                                value: "true"
+                              - name: RENOVATE_REPOSITORIES
+                                value: '["pfenerty/ocidex"]'
+                          envFrom:
+                              - secretRef:
+                                    name: renovate-env
+                          resources:
+                              requests:
+                                  cpu: 250m
+                                  memory: 512Mi
+                              limits:
+                                  cpu: "2"
+                                  memory: 2Gi
+                          securityContext:
+                              allowPrivilegeEscalation: false
+                              capabilities:
+                                  drop:
+                                      - ALL
+                    restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+    name: renovate-homelab
+    namespace: renovate
+spec:
+    schedule: "0 6 * * *"
+    concurrencyPolicy: Forbid
+    startingDeadlineSeconds: 60
+    jobTemplate:
+        spec:
+            template:
+                spec:
+                    securityContext:
+                        runAsNonRoot: true
+                        seccompProfile:
+                            type: RuntimeDefault
+                    containers:
+                        - name: renovate
+                          image: renovate/renovate:latest
+                          env:
+                              - name: LOG_LEVEL
+                                value: debug
+                              - name: RENOVATE_REPOSITORIES
+                                value: '["pfenerty/homelab"]'
+                          envFrom:
+                              - secretRef:
+                                    name: renovate-env
+                          resources:
+                              requests:
+                                  cpu: 250m
+                                  memory: 512Mi
+                              limits:
+                                  cpu: "2"
+                                  memory: 2Gi
+                          securityContext:
+                              allowPrivilegeEscalation: false
+                              capabilities:
+                                  drop:
+                                      - ALL
+                    restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+    name: renovate-tektonic
+    namespace: renovate
+spec:
+    schedule: "0 12 * * *"
+    concurrencyPolicy: Forbid
+    startingDeadlineSeconds: 60
+    jobTemplate:
+        spec:
+            template:
+                spec:
+                    securityContext:
+                        runAsNonRoot: true
+                        seccompProfile:
+                            type: RuntimeDefault
+                    containers:
+                        - name: renovate
+                          image: renovate/renovate:latest
+                          env:
+                              - name: LOG_LEVEL
+                                value: debug
+                              - name: RENOVATE_REPOSITORIES
+                                value: '["pfenerty/tektonic"]'
+                          envFrom:
+                              - secretRef:
+                                    name: renovate-env
+                          resources:
+                              requests:
+                                  cpu: 250m
+                                  memory: 512Mi
+                              limits:
+                                  cpu: "2"
+                                  memory: 2Gi
+                          securityContext:
+                              allowPrivilegeEscalation: false
+                              capabilities:
+                                  drop:
+                                      - ALL
+                    restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+    name: renovate-apko-cicd
+    namespace: renovate
+spec:
+    schedule: "0 18 * * *"
+    concurrencyPolicy: Forbid
+    startingDeadlineSeconds: 60
+    jobTemplate:
+        spec:
+            template:
+                spec:
+                    securityContext:
+                        runAsNonRoot: true
+                        seccompProfile:
+                            type: RuntimeDefault
+                    containers:
+                        - name: renovate
+                          image: renovate/renovate:latest
+                          env:
+                              - name: LOG_LEVEL
+                                value: debug
+                              - name: RENOVATE_REPOSITORIES
+                                value: '["pfenerty/apko-cicd"]'
                           envFrom:
                               - secretRef:
                                     name: renovate-env
