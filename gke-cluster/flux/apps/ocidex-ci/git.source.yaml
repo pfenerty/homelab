@@ -8,4 +8,4 @@ spec:
     interval: 5m0s
     url: https://github.com/pfenerty/ocidex.git
     ref:
-        branch: tektonic
+        branch: main
