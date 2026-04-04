@@ -5,6 +5,7 @@ resources:
     - pipelines.yaml
     - triggers.yaml
     - interceptors.yaml
+    - pruner.yaml
     - tailscale-ingress.yaml
 patches:
     - patch: |-

@@ -7,3 +7,4 @@ resources:
     - eventlistener-ingress.yaml
     - github-webhook.secret.yaml
     - github-cli.secret.yaml
+    - pruner.configmap.yaml

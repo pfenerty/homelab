@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: tekton-pruner
+    namespace: tektonic-ci
+    labels:
+        app.kubernetes.io/part-of: tekton-pruner
+        pruner.tekton.dev/config-type: namespace
+data:
+    ns-config: |
+        ttlSecondsAfterFinished: 43200
+        successfulHistoryLimit: 5
