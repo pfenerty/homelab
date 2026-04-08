@@ -5,3 +5,4 @@ resources:
     - helmrepository.yaml
     - helmrelease.yaml
     - htpasswd.secret.yaml
+    - tailscale-ingress.yaml
