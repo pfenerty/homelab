@@ -34,21 +34,19 @@ spec:
                     "dedupe": true,
                     "gc": true,
                     "gcDelay": "1h",
-                    "gcInterval": "6h"
-                    "storage": {
-                      "retention": {
-                        "dryRun": false,
-                        "delay": "24h",
-                        "policies": [
-                          {
-                            "deleteReferrers": false,
-                            "deleteUntagged": false,
-                            "KeepTags": [{
-                              "patterns": [".*"]
-                            }]
-                          }
-                        ]
-                      }
+                    "gcInterval": "6h",
+                    "retention": {
+                      "dryRun": false,
+                      "delay": "24h",
+                      "policies": [
+                        {
+                          "deleteReferrers": false,
+                          "deleteUntagged": false,
+                          "KeepTags": [{
+                            "patterns": [".*"]
+                          }]
+                        }
+                      ]
                     }
                   },
                   "http": {
