@@ -42,7 +42,8 @@ spec:
                     "auth": {
                       "htpasswd": {
                         "path": "/secret/htpasswd"
-                      }
+                      },
+                      "apiKey": true
                     },
                     "accessControl": {
                       "adminPolicy": {
