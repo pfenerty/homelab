@@ -52,13 +52,7 @@ spec:
                     }
                   },
                   "extensions": {
-                    "search": {
-                      "enable": true
-                    },
-                    "ui": {
-                      "enable": true
-                    },
-                    "apikey": {
+                    "events": {
                       "enable": true
                     }
                   },
