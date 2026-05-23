@@ -17,9 +17,10 @@ NODE_IP_rpi-02 := 192.168.1.102
 NODE_IP_rpi-03 := 192.168.1.103
 VIP            := 192.168.1.100
 
-TALOS_VERSION  := v1.12.5
-SCHEMATIC      := ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
-IMAGE_URL      := factory.talos.dev/installer/$(SCHEMATIC):$(TALOS_VERSION)
+TALOS_VERSION      := v1.13.2
+KUBERNETES_VERSION := v1.36.0
+SCHEMATIC          := ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
+IMAGE_URL          := factory.talos.dev/installer/$(SCHEMATIC):$(TALOS_VERSION)
 
 # ── Config generation ──────────────────────────────────────────
 
@@ -30,7 +31,7 @@ generate: $(OUTPUT)/rpi-01.yaml $(OUTPUT)/rpi-02.yaml $(OUTPUT)/rpi-03.yaml
 
 $(OUTPUT)/controlplane.yaml: $(SECRETS) $(wildcard $(PATCHES)/*.yaml)
 	@mkdir -p $(OUTPUT)
-	sops exec-file $(SECRETS) 'talosctl gen config $(CLUSTER_NAME) $(ENDPOINT) --with-secrets {} --output $(OUTPUT)/ --config-patch @$(PATCHES)/all-nodes.yaml --config-patch-control-plane @$(PATCHES)/controlplane.yaml --force'
+	sops exec-file $(SECRETS) 'talosctl gen config $(CLUSTER_NAME) $(ENDPOINT) --with-secrets {} --kubernetes-version $(KUBERNETES_VERSION:v%=%) --output $(OUTPUT)/ --config-patch @$(PATCHES)/all-nodes.yaml --config-patch-control-plane @$(PATCHES)/controlplane.yaml --force'
 
 $(OUTPUT)/rpi-%.yaml: $(OUTPUT)/controlplane.yaml $(PATCHES)/rpi-%-network.yaml
 	talosctl machineconfig patch $(OUTPUT)/controlplane.yaml \
