@@ -15,4 +15,5 @@ resources:
     # - ocidex-ci.kustomization.yaml
     - nfs.kustomization.yaml
     - zot.kustomization.yaml
+    - ocidex.kustomization.yaml
     # - tektonic-ci.kustomization.yaml

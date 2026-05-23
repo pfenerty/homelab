@@ -1,0 +1,27 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+    name: ocidex
+    namespace: ocidex
+spec:
+    parentRefs:
+        - name: cloudflare-gateway
+          namespace: cloudflare-gateway
+    hostnames:
+        - ocidex.app
+    rules:
+        - matches:
+              - path:
+                    type: PathPrefix
+                    value: /api
+          backendRefs:
+              - name: ocidex-api
+                port: 80
+        - matches:
+              - path:
+                    type: PathPrefix
+                    value: /
+          backendRefs:
+              - name: ocidex-web
+                port: 80
