@@ -22,7 +22,7 @@ spec:
                               - name: LOG_LEVEL
                                 value: debug
                               - name: RENOVATE_REPOSITORIES
-                                value: '["pfenerty/ocidex"], ["pfenerty/homelab"]'
+                                value: '["pfenerty/ocidex"]'
                           envFrom:
                               - secretRef:
                                     name: renovate-env
