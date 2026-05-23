@@ -52,7 +52,7 @@
       "groupName": "tekton"
     },
     {
-      "matchPackageNames": ["/^ghcr\\.io/fluxcd//"],
+      "matchPackageNames": ["/^ghcr\\.io/fluxcd//", "fluxcd/flux2"],
       "groupName": "fluxcd"
     },
     {
