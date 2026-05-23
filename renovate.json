@@ -1,7 +1,69 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
+  "timezone": "America/Los_Angeles",
+  "schedule": ["before 6am on monday"],
+  "prHourlyLimit": 4,
+  "prConcurrentLimit": 10,
   "nix": {
     "enabled": true
-  }
+  },
+  "flux": {
+    "fileMatch": [
+      "(^|/)talos-cluster/flux/.+\\.ya?ml$",
+      "(^|/)gke-cluster/flux/.+\\.ya?ml$"
+    ]
+  },
+  "helm-values": {
+    "fileMatch": [
+      "(^|/)talos-cluster/flux/.+\\.ya?ml$",
+      "(^|/)gke-cluster/flux/.+\\.ya?ml$"
+    ]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "(^|/)talos-cluster/flux/apps/.+\\.ya?ml$",
+      "(^|/)gke-cluster/flux/apps/.+\\.ya?ml$",
+      "(^|/)flux-system/gotk-components\\.ya?ml$"
+    ]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)talos-cluster/Makefile$"],
+      "matchStrings": [
+        "TALOS_VERSION\\s*:=\\s*(?<currentValue>v[0-9.]+)"
+      ],
+      "depNameTemplate": "siderolabs/talos",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)talos-cluster/Makefile$"],
+      "matchStrings": [
+        "KUBERNETES_VERSION\\s*:=\\s*(?<currentValue>v[0-9.]+)"
+      ],
+      "depNameTemplate": "kubernetes/kubernetes",
+      "datasourceTemplate": "github-releases"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["/^ghcr\\.io/tektoncd//"],
+      "groupName": "tekton"
+    },
+    {
+      "matchPackageNames": ["/^ghcr\\.io/fluxcd//"],
+      "groupName": "fluxcd"
+    },
+    {
+      "matchPackageNames": ["cilium", "/^quay\\.io/cilium//"],
+      "groupName": "cilium"
+    },
+    {
+      "matchDatasources": ["github-releases"],
+      "matchPackageNames": ["siderolabs/talos", "kubernetes/kubernetes"],
+      "groupName": "talos-cluster-core"
+    }
+  ]
 }
