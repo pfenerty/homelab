@@ -8,12 +8,11 @@ spec:
         - name: cilium
         - name: cloudflare-gateway
     interval: 10m0s
-    path: ./k8s/overlays/prod
+    path: ./talos-cluster/flux/apps/ocidex
     prune: true
-    targetNamespace: ocidex
     sourceRef:
         kind: GitRepository
-        name: ocidex-prod
+        name: flux-system
     decryption:
         provider: sops
         secretRef:
