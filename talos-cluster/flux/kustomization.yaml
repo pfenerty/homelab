@@ -8,12 +8,12 @@ resources:
     - local-path-provisioner.kustomization.yaml
     # - tekton.kustomization.yaml
     - tailscale.kustomization.yaml
-    - hubble.kustomization.yaml
+    # - hubble.kustomization.yaml
     - cloudflare-gateway.kustomization.yaml
-    - podinfo.kustomization.yaml
+    # - podinfo.kustomization.yaml
     - renovate.kustomization.yaml
     # - ocidex-ci.kustomization.yaml
     - nfs.kustomization.yaml
-    - zot.kustomization.yaml
+    # - zot.kustomization.yaml
     - ocidex.kustomization.yaml
     # - tektonic-ci.kustomization.yaml
