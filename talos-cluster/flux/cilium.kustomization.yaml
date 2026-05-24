@@ -20,10 +20,6 @@ spec:
           name: cilium-operator
           namespace: kube-system
         - apiVersion: apps/v1
-          kind: Deployment
-          name: hubble-relay
-          namespace: kube-system
-        - apiVersion: apps/v1
           kind: DaemonSet
           name: cilium
           namespace: kube-system
