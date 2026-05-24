@@ -43,14 +43,14 @@ spec:
             type: wireguard
         k8sServiceHost: localhost
         k8sServicePort: 7445
-        # hubble:
-        #     relay:
-        #         enabled: true
-        #     ui:
-        #         enabled: true
-        #     tls:
-        #         enabled: true
-        #         auto:
-        #             enabled: true
+        hubble:
+            relay:
+                enabled: false
+            ui:
+                enabled: false
+            # tls:
+            #     enabled: true
+            #     auto:
+            #         enabled: true
     targetNamespace: kube-system
     interval: 1m0s
