@@ -5,3 +5,4 @@ resources:
     - git.source.yaml
     - flux-kustomization.yaml
     - httproute.yaml
+    - secrets.enc.yaml
