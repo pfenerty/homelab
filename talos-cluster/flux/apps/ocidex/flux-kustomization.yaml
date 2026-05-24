@@ -6,9 +6,9 @@ metadata:
     namespace: flux-system
 spec:
     interval: 10m0s
-    path: ./k8s/overlays/prod
+    path: ./overlays/prod
     prune: true
     targetNamespace: ocidex
     sourceRef:
-        kind: GitRepository
-        name: ocidex-prod
+        kind: OCIRepository
+        name: ocidex-manifests
