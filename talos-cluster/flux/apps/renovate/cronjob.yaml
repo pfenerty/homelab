@@ -9,6 +9,7 @@ spec:
     startingDeadlineSeconds: 60
     jobTemplate:
         spec:
+            ttlSecondsAfterFinished: 3600
             template:
                 spec:
                     securityContext:
@@ -51,6 +52,7 @@ spec:
     startingDeadlineSeconds: 60
     jobTemplate:
         spec:
+            ttlSecondsAfterFinished: 3600
             template:
                 spec:
                     securityContext:
@@ -93,6 +95,7 @@ spec:
     startingDeadlineSeconds: 60
     jobTemplate:
         spec:
+            ttlSecondsAfterFinished: 3600
             template:
                 spec:
                     securityContext:
@@ -135,6 +138,7 @@ spec:
     startingDeadlineSeconds: 60
     jobTemplate:
         spec:
+            ttlSecondsAfterFinished: 3600
             template:
                 spec:
                     securityContext:
