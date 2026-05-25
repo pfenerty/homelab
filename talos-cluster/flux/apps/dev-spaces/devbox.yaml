@@ -9,6 +9,70 @@ data:
     {"TCP":{"22":{"TCPForward":"127.0.0.1:2222"}}}
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: devbox-entrypoint
+  namespace: dev-spaces
+data:
+  entrypoint.sh: |
+    #!/bin/sh
+    # Runs inside the flox-activated env (pod `args`, not `command`, so the image's
+    # flox-activation ENTRYPOINT stays and puts sshd/ssh-keygen on PATH).
+    set -eu
+
+    DEV_USER=patrick
+    DEV_UID=1000
+    DEV_GID=1000
+    HOME_DIR=/workspace
+
+    # No useradd in the minimal Nix image — append the account to /etc/* directly.
+    grep -q "^$DEV_USER:" /etc/group  2>/dev/null || echo "$DEV_USER:x:$DEV_GID:" >> /etc/group
+    grep -q "^$DEV_USER:" /etc/passwd 2>/dev/null || echo "$DEV_USER:x:$DEV_UID:$DEV_GID:$DEV_USER:$HOME_DIR:/bin/sh" >> /etc/passwd
+    # Pubkey-only account: '*' disables password login without "locking" the account.
+    [ -f /etc/shadow ] || { echo 'root:!:19000:0:99999:7:::' > /etc/shadow; chmod 600 /etc/shadow; }
+    grep -q "^$DEV_USER:" /etc/shadow 2>/dev/null || echo "$DEV_USER:*:19000:0:99999:7:::" >> /etc/shadow
+
+    mkdir -p "$HOME_DIR/.ssh" "$HOME_DIR/.ssh-host"
+    chmod 755 "$HOME_DIR"
+    chmod 700 "$HOME_DIR/.ssh"
+
+    # Stable host key on the work PVC (root-owned; sshd reads it as root).
+    [ -f "$HOME_DIR/.ssh-host/ssh_host_ed25519_key" ] || \
+      ssh-keygen -t ed25519 -f "$HOME_DIR/.ssh-host/ssh_host_ed25519_key" -N ""
+
+    if [ -n "${PUBLIC_KEY:-}" ]; then
+      printf '%s\n' "$PUBLIC_KEY" > "$HOME_DIR/.ssh/authorized_keys"
+      chmod 600 "$HOME_DIR/.ssh/authorized_keys"
+    fi
+
+    # The user owns their home + .ssh (PVC mounts root-owned). Non-recursive on /workspace
+    # so we don't churn over cloned repos on every restart.
+    chown "$DEV_UID:$DEV_GID" "$HOME_DIR"
+    chown -R "$DEV_UID:$DEV_GID" "$HOME_DIR/.ssh"
+
+    # sshd privilege-separation user + dir.
+    grep -q '^sshd:' /etc/passwd 2>/dev/null || \
+      echo 'sshd:x:74:74:Privilege-separated SSH:/var/empty:/bin/false' >> /etc/passwd
+    mkdir -p /run/sshd /var/empty
+
+    cat > /tmp/sshd_config <<EOF
+    Port 2222
+    HostKey $HOME_DIR/.ssh-host/ssh_host_ed25519_key
+    AuthorizedKeysFile $HOME_DIR/.ssh/authorized_keys
+    AllowUsers $DEV_USER
+    PermitRootLogin no
+    PasswordAuthentication no
+    KbdInteractiveAuthentication no
+    UsePAM no
+    PidFile /tmp/sshd.pid
+    Subsystem sftp internal-sftp
+    EOF
+
+    # sshd re-execs itself for privsep and refuses a bare name — needs an absolute path.
+    SSHD="$(command -v sshd)"
+    exec "$SSHD" -D -e -f /tmp/sshd_config
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: devbox-ts-state
@@ -18,6 +82,17 @@ spec:
   resources:
     requests:
       storage: 128Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: devbox-work
+  namespace: dev-spaces
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 20Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -37,27 +112,26 @@ spec:
         app: devbox
     spec:
       containers:
-        - name: sshd
-          # Placeholder image — proves the plumbing. Swap for the Flox dev image
-          # (flox containerize, built in GitHub Actions) once that pipeline exists.
-          image: lscr.io/linuxserver/openssh-server:latest
+        - name: workspace
+          # Flox dev image built by ocidex's .github/workflows/dev-image.yml.
+          image: ghcr.io/pfenerty/ocidex-dev:latest
+          imagePullPolicy: Always
+          # `args` (not `command`) so the image's flox-activation entrypoint runs our script in-env.
+          args: ["sh", "/config/entrypoint.sh"]
           env:
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
-            - name: USER_NAME
-              value: "patrick"
-            - name: SUDO_ACCESS
-              value: "true"
             - name: PUBLIC_KEY
               value: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMhE52ErCLPzPxXB/HSo8NjwR92Mm/vu52KZE0b4yHD9 patrickfenerty@GLaDOS.local"
           ports:
             - containerPort: 2222
               name: ssh
+          volumeMounts:
+            - name: entrypoint
+              mountPath: /config
+            - name: work
+              mountPath: /workspace
           resources:
-            requests: { cpu: "50m", memory: 64Mi }
-            limits: { cpu: "500m", memory: 256Mi }
+            requests: { cpu: "100m", memory: 256Mi }
+            limits: { cpu: "2", memory: 2Gi }
         - name: tailscale
           image: tailscale/tailscale:latest
           env:
@@ -90,6 +164,12 @@ spec:
         - name: serve
           configMap:
             name: devbox-ts-serve
+        - name: entrypoint
+          configMap:
+            name: devbox-entrypoint
         - name: ts-state
           persistentVolumeClaim:
             claimName: devbox-ts-state
+        - name: work
+          persistentVolumeClaim:
+            claimName: devbox-work
