@@ -28,3 +28,7 @@ spec:
       authKey:
         existingSecret: dev-ts-authkey
         key: TS_AUTHKEY
+    # NFS (the cluster default SC) root_squash blocks chown of the home volume;
+    # local-path is node-local so the container's root can own it.
+    persistence:
+      storageClass: local-path
