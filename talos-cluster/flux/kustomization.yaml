@@ -17,3 +17,4 @@ resources:
     # - zot.kustomization.yaml
     - ocidex.kustomization.yaml
     # - tektonic-ci.kustomization.yaml
+    - dev-spaces.kustomization.yaml
