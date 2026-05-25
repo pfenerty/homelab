@@ -1,0 +1,95 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: devbox-ts-serve
+  namespace: dev-spaces
+data:
+  serve-config.json: |
+    {"TCP":{"22":{"TCPForward":"127.0.0.1:2222"}}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: devbox-ts-state
+  namespace: dev-spaces
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 128Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devbox
+  namespace: dev-spaces
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: devbox
+  template:
+    metadata:
+      labels:
+        app: devbox
+    spec:
+      containers:
+        - name: sshd
+          # Placeholder image — proves the plumbing. Swap for the Flox dev image
+          # (flox containerize, built in GitHub Actions) once that pipeline exists.
+          image: lscr.io/linuxserver/openssh-server:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: USER_NAME
+              value: "patrick"
+            - name: SUDO_ACCESS
+              value: "true"
+            - name: PUBLIC_KEY
+              value: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMhE52ErCLPzPxXB/HSo8NjwR92Mm/vu52KZE0b4yHD9 patrickfenerty@GLaDOS.local"
+          ports:
+            - containerPort: 2222
+              name: ssh
+          resources:
+            requests: { cpu: "50m", memory: 64Mi }
+            limits: { cpu: "500m", memory: 256Mi }
+        - name: tailscale
+          image: tailscale/tailscale:latest
+          env:
+            - name: TS_AUTHKEY
+              valueFrom:
+                secretKeyRef:
+                  name: dev-ts-authkey
+                  key: TS_AUTHKEY
+            - name: TS_HOSTNAME
+              value: "devbox"
+            - name: TS_USERSPACE
+              value: "true"
+            - name: TS_EXTRA_ARGS
+              value: "--advertise-tags=tag:k8s"
+            - name: TS_STATE_DIR
+              value: "/var/lib/tailscale"
+            - name: TS_KUBE_SECRET
+              value: ""
+            - name: TS_SERVE_CONFIG
+              value: "/config/serve-config.json"
+          volumeMounts:
+            - name: serve
+              mountPath: /config
+            - name: ts-state
+              mountPath: /var/lib/tailscale
+          resources:
+            requests: { cpu: "20m", memory: 32Mi }
+            limits: { cpu: "200m", memory: 128Mi }
+      volumes:
+        - name: serve
+          configMap:
+            name: devbox-ts-serve
+        - name: ts-state
+          persistentVolumeClaim:
+            claimName: devbox-ts-state
