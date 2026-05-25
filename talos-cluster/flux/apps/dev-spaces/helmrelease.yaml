@@ -1,0 +1,30 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: devbox
+  namespace: dev-spaces
+spec:
+  interval: 30m
+  url: oci://ghcr.io/pfenerty/charts/devbox
+  ref:
+    tag: "0.1.0"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: devbox
+  namespace: dev-spaces
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: devbox
+  values:
+    dev:
+      publicKey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMhE52ErCLPzPxXB/HSo8NjwR92Mm/vu52KZE0b4yHD9 patrickfenerty@GLaDOS.local"
+    tailscale:
+      hostname: devbox
+      authKey:
+        existingSecret: dev-ts-authkey
+        key: TS_AUTHKEY

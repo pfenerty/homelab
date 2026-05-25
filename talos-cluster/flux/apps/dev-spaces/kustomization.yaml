@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
     - tailscale-auth.enc.yaml
     - namespace.yaml
-    - devbox.yaml
+    - helmrelease.yaml
