@@ -8,3 +8,4 @@ resources:
     - secrets.enc.yaml
     - postgres-app-secret.enc.yaml
     - postgres.yaml
+    - scaledobject.yaml

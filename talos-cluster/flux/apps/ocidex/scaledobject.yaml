@@ -1,0 +1,45 @@
+---
+# TriggerAuthentication lets KEDA's PostgreSQL scaler read DATABASE_URL from
+# the existing ocidex-secrets without us having to duplicate the password.
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: ocidex-pg-keda
+  namespace: ocidex
+spec:
+  secretTargetRef:
+    - parameter: connection
+      name: ocidex-secrets
+      key: DATABASE_URL
+---
+# Queue-driven autoscaling for scanner-worker. KEDA polls the same
+# scan_jobs table the workers claim from — backlog count is the signal.
+#
+# Tuning:
+#   targetQueryValue=5   → one pod per 5 queued jobs
+#   minReplicaCount=1    → always one warm pod to absorb the first hint
+#   maxReplicaCount=5    → cap to what one x86 worker node can run
+#                          (each Syft scan is ~1 core during analysis)
+#   cooldownPeriod=300s  → wait 5 min idle before scaling down
+#
+# When ocidex grows to a multi-node cluster, raise maxReplicaCount; KEDA
+# will spread the additional pods across nodes via the scheduler.
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: ocidex-scanner-worker
+  namespace: ocidex
+spec:
+  scaleTargetRef:
+    name: ocidex-scanner-worker
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  triggers:
+    - type: postgresql
+      authenticationRef:
+        name: ocidex-pg-keda
+      metadata:
+        query: "SELECT count(*) FROM scan_jobs WHERE state='queued'"
+        targetQueryValue: "5"

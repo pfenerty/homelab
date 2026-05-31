@@ -8,6 +8,7 @@ spec:
         - name: cilium
         - name: cloudflare-gateway
         - name: cnpg
+        - name: keda
     interval: 10m0s
     path: ./talos-cluster/flux/apps/ocidex
     prune: true
