@@ -6,4 +6,4 @@ metadata:
 spec:
   type: oci
   interval: 1h
-  url: oci://docker pull ghcr.io/cloudnative-pg/charts/cloudnative-pg
+  url: oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg
