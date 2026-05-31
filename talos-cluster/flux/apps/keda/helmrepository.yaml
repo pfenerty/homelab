@@ -4,6 +4,5 @@ metadata:
   name: kedacore
   namespace: flux-system
 spec:
-  type: oci
   interval: 1h
   url: https://kedacore.github.io/charts
