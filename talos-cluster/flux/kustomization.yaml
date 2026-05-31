@@ -6,6 +6,7 @@ resources:
     - gateway-api.kustomization.yaml
     - metrics-server.kustomization.yaml
     - local-path-provisioner.kustomization.yaml
+    - cnpg.kustomization.yaml
     # - tekton.kustomization.yaml
     - tailscale.kustomization.yaml
     # - hubble.kustomization.yaml
