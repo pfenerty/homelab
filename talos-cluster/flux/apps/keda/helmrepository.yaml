@@ -6,4 +6,4 @@ metadata:
 spec:
   type: oci
   interval: 1h
-  url: oci://ghcr.io/kedacore/charts
+  url: https://kedacore.github.io/charts
