@@ -6,4 +6,8 @@ metadata:
 spec:
   type: oci
   interval: 1h
-  url: oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg
+  # URL is the OCI namespace, not the full chart path. Flux concatenates
+  # the chart name (cloudnative-pg, from the HelmRelease's chart.spec.chart)
+  # at pull time, yielding oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg.
+  # Including the chart name in the URL here doubles it.
+  url: oci://ghcr.io/cloudnative-pg/charts
