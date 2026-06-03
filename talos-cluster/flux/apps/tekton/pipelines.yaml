@@ -25250,7 +25250,7 @@ spec:
       serviceAccountName: tekton-pipelines-controller
       containers:
         - name: tekton-pipelines-controller
-          image: ghcr.io/tektoncd/pipeline/controller-10a3e32792f33651396d02b6855a6e36:v1.6.0@sha256:84efabe03a5e5441379171d5c071bc28612aa7656ec4f508b01d89ee431e4141
+          image: ghcr.io/tektoncd/pipeline/controller-10a3e32792f33651396d02b6855a6e36:v1.13.0@sha256:f16f27c4cae8013e4d0f51b3a208d9367dd9a383d7ec9dea623068ece9180838
           args: [
             # These images are built on-demand by `ko resolve` and are replaced
             # by image references by digest.
@@ -25435,7 +25435,7 @@ spec:
       serviceAccountName: tekton-events-controller
       containers:
         - name: tekton-events-controller
-          image: ghcr.io/tektoncd/pipeline/events-a9042f7efb0cbade2a868a1ee5ddd52c:v1.6.0@sha256:a601df6f1ef7f031b004b108eb2d7c215577b3b5231a43fa6b0ae6bf5af31025
+          image: ghcr.io/tektoncd/pipeline/events-a9042f7efb0cbade2a868a1ee5ddd52c:v1.13.0@sha256:3f691419fdb79b8824e4184b4e1d41200d950b543b134b5a5c7fdf46234c9114
           args: []
           volumeMounts:
             - name: config-logging
@@ -26223,7 +26223,7 @@ spec:
       serviceAccountName: tekton-pipelines-resolvers
       containers:
         - name: controller
-          image: ghcr.io/tektoncd/pipeline/resolvers-ff86b24f130c42b88983d3c13993056d:v1.6.0@sha256:e77cc55c6e507c393be029335c765c6c34238ee48b49379428da3d01713e9293
+          image: ghcr.io/tektoncd/pipeline/resolvers-ff86b24f130c42b88983d3c13993056d:v1.13.0@sha256:6baeb2aa990387ed4afed4fa095845ed137b35c2471dffdc95ea8d32142775fa
           command:
             - /sbin/tini
             - --
@@ -26459,7 +26459,7 @@ spec:
         - name: webhook
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          image: ghcr.io/tektoncd/pipeline/webhook-d4749e605405422fd87700164e31b2d1:v1.6.0@sha256:c326a2f5c4988abcfd67b5a8edd5525da2110f2b8d3f6c50c27f8d25a721e566
+          image: ghcr.io/tektoncd/pipeline/webhook-d4749e605405422fd87700164e31b2d1:v1.13.0@sha256:4eb2519b2272a7b049bb721e1ebe00f2cb92d22b8c7fdee369924d690439684a
           # Resource request required for autoscaler to take any action for a metric
           resources:
             requests:
