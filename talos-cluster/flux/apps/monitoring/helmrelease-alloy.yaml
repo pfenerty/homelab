@@ -83,6 +83,9 @@ spec:
         dockercontainers: true
     controller:
       type: daemonset
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
     resources:
       requests:
         cpu: 50m
