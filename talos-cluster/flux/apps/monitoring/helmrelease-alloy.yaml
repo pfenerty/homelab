@@ -35,7 +35,7 @@ spec:
             rule {
               source_labels = ["__meta_kubernetes_pod_node_name"]
               action        = "keep"
-              regex         = env("MY_NODE_NAME")
+              regex         = sys.env("MY_NODE_NAME")
             }
             rule {
               source_labels = ["__meta_kubernetes_pod_node_name"]
@@ -72,7 +72,7 @@ spec:
 
           loki.write "default" {
             endpoint {
-              url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+              url = "http://monitoring-loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
             }
           }
       securityContext:
