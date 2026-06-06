@@ -43,6 +43,15 @@ spec:
       type: wireguard
     k8sServiceHost: localhost
     k8sServicePort: 7445
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    operator:
+      prometheus:
+        enabled: true
+        serviceMonitor:
+          enabled: true
     hubble:
       relay:
         enabled: true
@@ -51,6 +60,16 @@ spec:
       tls:
         enabled: true
         auto:
+          enabled: true
+      metrics:
+        enabled:
+          - dns
+          - drop
+          - tcp
+          - flow
+          - icmp
+          - http
+        serviceMonitor:
           enabled: true
   targetNamespace: kube-system
   interval: 1m0s

@@ -20,3 +20,4 @@ resources:
   - ocidex.kustomization.yaml
   # - tektonic-ci.kustomization.yaml
   - dev-spaces.kustomization.yaml
+  - monitoring.kustomization.yaml

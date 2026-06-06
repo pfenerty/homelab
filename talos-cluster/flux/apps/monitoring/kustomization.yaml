@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - helmrepository-prometheus.yaml
+  - helmrepository-grafana.yaml
+  - helmrelease-kube-prometheus-stack.yaml
+  - helmrelease-loki.yaml
+  - helmrelease-alloy.yaml
+  - helmrelease-grafana.yaml
+  - grafana-admin.secret.yaml
+  - tailscale-ingress-grafana.yaml
+  - podmonitor-cnpg.yaml
+  - servicemonitor-keda.yaml

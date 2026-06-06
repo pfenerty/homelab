@@ -1,0 +1,94 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: grafana
+      version: "8.x"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+      interval: 12h
+  targetNamespace: monitoring
+  values:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    persistence:
+      enabled: true
+      storageClassName: nfs-client
+      size: 2Gi
+      accessModes: [ReadWriteOnce]
+    admin:
+      existingSecret: grafana-admin-secret
+      userKey: admin-user
+      passwordKey: admin-password
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+            isDefault: true
+            access: proxy
+          - name: Loki
+            type: loki
+            url: http://loki.monitoring.svc.cluster.local:3100
+            access: proxy
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: default
+            orgId: 1
+            folder: Kubernetes
+            type: file
+            disableDeletion: false
+            options:
+              path: /var/lib/grafana/dashboards/default
+    dashboards:
+      default:
+        kubernetes-cluster:
+          gnetId: 17375
+          revision: 2
+          datasource: Prometheus
+        kubernetes-nodes:
+          gnetId: 17378
+          revision: 2
+          datasource: Prometheus
+        node-exporter-full:
+          gnetId: 1860
+          revision: 37
+          datasource: Prometheus
+        cnpg:
+          gnetId: 20417
+          revision: 1
+          datasource: Prometheus
+        keda:
+          gnetId: 21252
+          revision: 1
+          datasource: Prometheus
+        flux-cluster:
+          gnetId: 16714
+          revision: 1
+          datasource: Prometheus
+        cilium-overview:
+          gnetId: 16611
+          revision: 1
+          datasource: Prometheus
+        loki-operational:
+          gnetId: 13407
+          revision: 1
+          datasource: Prometheus

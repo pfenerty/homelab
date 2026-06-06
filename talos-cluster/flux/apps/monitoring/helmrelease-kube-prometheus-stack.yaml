@@ -1,0 +1,106 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: "70.x"
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+      interval: 12h
+  targetNamespace: monitoring
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  values:
+    # Deploy standalone Grafana and skip Alertmanager for now
+    grafana:
+      enabled: false
+    alertmanager:
+      enabled: false
+
+    prometheusOperator:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+
+    prometheus:
+      prometheusSpec:
+        # Pin to x86 worker to keep heavy load off RPi nodes
+        nodeSelector:
+          kubernetes.io/arch: amd64
+        resources:
+          requests:
+            cpu: 200m
+            memory: 400Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        retention: 15d
+        retentionSize: 10GB
+        # Watch all namespaces for PodMonitor/ServiceMonitor resources
+        podMonitorNamespaceSelector: {}
+        podMonitorSelector: {}
+        serviceMonitorNamespaceSelector: {}
+        serviceMonitorSelector: {}
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: nfs-client
+              accessModes: [ReadWriteOnce]
+              resources:
+                requests:
+                  storage: 12Gi
+
+    # Talos kubelet uses self-signed certs without IP SANs
+    kubelet:
+      serviceMonitor:
+        insecureSkipVerify: true
+
+    kubeStateMetrics:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+
+    # DaemonSet — runs on all 4 nodes (3x RPi ARM64 + 1x x86)
+    nodeExporter:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          cpu: 100m
+          memory: 64Mi
+
+    # Flux controller ServiceMonitors
+    additionalServiceMonitors:
+      - name: flux-system
+        namespaceSelector:
+          matchNames: [flux-system]
+        selector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - source-controller
+                - kustomize-controller
+                - helm-controller
+                - notification-controller
+        endpoints:
+          - port: http-prom
+            path: /metrics
