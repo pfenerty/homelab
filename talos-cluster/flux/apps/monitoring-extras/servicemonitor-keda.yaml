@@ -10,5 +10,5 @@ spec:
     matchLabels:
       app: keda-operator
   endpoints:
-    - port: metrics
+    - port: metricsservice
       path: /metrics

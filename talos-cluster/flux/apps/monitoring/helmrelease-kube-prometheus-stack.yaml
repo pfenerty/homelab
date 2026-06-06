@@ -101,20 +101,3 @@ spec:
           cpu: 100m
           memory: 64Mi
 
-    # Flux controller ServiceMonitors
-    additionalServiceMonitors:
-      - name: flux-system
-        namespaceSelector:
-          matchNames: [flux-system]
-        selector:
-          matchExpressions:
-            - key: app
-              operator: In
-              values:
-                - source-controller
-                - kustomize-controller
-                - helm-controller
-                - notification-controller
-        endpoints:
-          - port: http-prom
-            path: /metrics
