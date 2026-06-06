@@ -60,8 +60,21 @@ spec:
             type: loki
             url: http://monitoring-loki.monitoring.svc.cluster.local:3100
             access: proxy
-    # Extra dashboards beyond what kube-prometheus-stack provides.
-    # These are provisioned as ConfigMaps and picked up by the sidecar above.
+    # download-dashboards init container fetches these from grafana.com and writes
+    # them to /var/lib/grafana/dashboards/default/ on the PVC. dashboardProviders
+    # below tells Grafana to load from that path (separate from the sidecar's
+    # /tmp/dashboards which handles the kube-prometheus-stack ConfigMaps).
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: default
+            orgId: 1
+            folder: Apps
+            type: file
+            disableDeletion: false
+            options:
+              path: /var/lib/grafana/dashboards/default
     dashboards:
       default:
         cnpg:
@@ -76,8 +89,11 @@ spec:
           gnetId: 13407
           revision: 1
           datasource: Prometheus
-        # High-level single-page cluster overview
         k8s-views-global:
           gnetId: 15757
           revision: 37
+          datasource: Prometheus
+        flux-control-plane:
+          gnetId: 16715
+          revision: 2
           datasource: Prometheus

@@ -52,6 +52,12 @@ spec:
         enabled: true
         serviceMonitor:
           enabled: true
+    grafana:
+      dashboards:
+        enabled: true
+        namespace: monitoring
+        labels:
+          grafana_dashboard: "1"
     hubble:
       relay:
         enabled: true
