@@ -39,6 +39,9 @@ spec:
             wal_compression: "on"
             random_page_cost: "1.1"
 
+    monitoring:
+        enablePodMonitor: true
+
     bootstrap:
         initdb:
             database: ocidex
