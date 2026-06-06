@@ -8,7 +8,7 @@ spec:
     matchNames: [keda]
   selector:
     matchLabels:
-      app: keda-operator
+      app.kubernetes.io/name: keda-operator
   endpoints:
     - port: metricsservice
       path: /metrics
