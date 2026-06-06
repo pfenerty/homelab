@@ -1,0 +1,15 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: monitoring-extras
+  namespace: flux-system
+spec:
+  # Wait for kube-prometheus-stack CRDs to exist before applying PodMonitor/ServiceMonitor
+  dependsOn:
+    - name: monitoring
+  interval: 10m0s
+  path: ./talos-cluster/flux/apps/monitoring-extras
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system

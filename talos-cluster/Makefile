@@ -17,16 +17,20 @@ NODE_IP_rpi-02 := 192.168.1.102
 NODE_IP_rpi-03 := 192.168.1.103
 VIP            := 192.168.1.100
 
+WORKER_NODES       := x86-01
+NODE_IP_x86-01     := 192.168.1.104
+
 TALOS_VERSION      := v1.13.3
 KUBERNETES_VERSION := v1.36.1
 SCHEMATIC          := ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
 IMAGE_URL          := factory.talos.dev/installer/$(SCHEMATIC):$(TALOS_VERSION)
+WORKER_IMAGE_URL   := ghcr.io/siderolabs/installer:$(TALOS_VERSION)
 
 # ── Config generation ──────────────────────────────────────────
 
-.PHONY: generate validate clean repatch-all repatch-rpi-01 repatch-rpi-02 repatch-rpi-03
+.PHONY: generate validate clean repatch-all repatch-x86-01
 
-generate: $(OUTPUT)/rpi-01.yaml $(OUTPUT)/rpi-02.yaml $(OUTPUT)/rpi-03.yaml
+generate: $(OUTPUT)/rpi-01.yaml $(OUTPUT)/rpi-02.yaml $(OUTPUT)/rpi-03.yaml $(OUTPUT)/x86-01.yaml
 	@echo "✓ All configs generated in $(OUTPUT)/"
 
 $(OUTPUT)/controlplane.yaml: $(SECRETS) $(wildcard $(PATCHES)/*.yaml)
@@ -38,8 +42,13 @@ $(OUTPUT)/rpi-%.yaml: $(OUTPUT)/controlplane.yaml $(PATCHES)/rpi-%-network.yaml
 		--patch @$(PATCHES)/rpi-$*-network.yaml \
 		--output $@
 
+$(OUTPUT)/x86-01.yaml: $(OUTPUT)/controlplane.yaml $(PATCHES)/x86-01-network.yaml
+	talosctl machineconfig patch $(OUTPUT)/worker.yaml \
+		--patch @$(PATCHES)/x86-01-network.yaml \
+		--output $@
+
 validate: generate
-	@for f in $(NODES); do \
+	@for f in $(NODES) $(WORKER_NODES); do \
 		echo "Validating $$f..."; \
 		talosctl validate --config $(OUTPUT)/$$f.yaml --mode metal; \
 	done
@@ -73,10 +82,19 @@ repatch-%:
 		--patch @$(PATCHES)/controlplane.yaml \
 		--patch @$(PATCHES)/$*-network.yaml \
 		--output $$tmpfile && \
-	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes $(NODE_IP_$*) --file $$tmpfile; \
+	talosctl apply-config --talosconfig $(TALOSCONFIG) --endpoints $(NODE_IP_$*) --nodes $(NODE_IP_$*) --file $$tmpfile; \
 	rm -f $$tmpfile
 
-repatch-all: repatch-rpi-01 repatch-rpi-02 repatch-rpi-03
+repatch-x86-01:
+	@tmpfile=$$(mktemp /tmp/talos-x86-01-XXXXXX.yaml) && \
+	talosctl machineconfig patch $(OUTPUT)/x86-01.yaml \
+		--patch @$(PATCHES)/all-nodes.yaml \
+		--patch @$(PATCHES)/x86-01-network.yaml \
+		--output $$tmpfile && \
+	talosctl apply-config --talosconfig $(TALOSCONFIG) --endpoints $(NODE_IP_x86-01) --nodes $(NODE_IP_x86-01) --file $$tmpfile; \
+	rm -f $$tmpfile
+
+repatch-all: repatch-rpi-01 repatch-rpi-02 repatch-rpi-03 repatch-x86-01
 	@echo "✓ Patches re-applied to all nodes"
 
 # ── Bootstrap ──────────────────────────────────────────────────
@@ -102,3 +120,7 @@ upgrade-%:
 # Upgrade all nodes: last-to-first order (103 → 102 → 101)
 upgrade-all: upgrade-103 upgrade-102 upgrade-101
 	@echo "✓ All nodes upgraded to $(TALOS_VERSION)"
+
+# Upgrade x86 worker (uses standard installer, not RPi factory schematic)
+upgrade-x86-01:
+	talosctl upgrade --nodes $(NODE_IP_x86-01) --image $(WORKER_IMAGE_URL) --talosconfig $(TALOSCONFIG)

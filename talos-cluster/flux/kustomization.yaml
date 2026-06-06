@@ -21,3 +21,4 @@ resources:
   # - tektonic-ci.kustomization.yaml
   - dev-spaces.kustomization.yaml
   - monitoring.kustomization.yaml
+  - monitoring-extras.kustomization.yaml

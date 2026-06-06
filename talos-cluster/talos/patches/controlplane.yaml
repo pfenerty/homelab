@@ -5,4 +5,3 @@ cluster:
             name: none # We install Cilium ourselves
     proxy:
         disabled: true # Cilium replaces kube-proxy
-    allowSchedulingOnControlPlanes: true

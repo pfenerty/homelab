@@ -10,5 +10,3 @@ resources:
   - helmrelease-grafana.yaml
   - grafana-admin.secret.yaml
   - tailscale-ingress-grafana.yaml
-  - podmonitor-cnpg.yaml
-  - servicemonitor-keda.yaml
