@@ -17,7 +17,7 @@ NODE_IP_rpi-02 := 192.168.1.102
 NODE_IP_rpi-03 := 192.168.1.103
 VIP            := 192.168.1.100
 
-TALOS_VERSION      := v1.13.2
+TALOS_VERSION      := v1.13.3
 KUBERNETES_VERSION := v1.36.1
 SCHEMATIC          := ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
 IMAGE_URL          := factory.talos.dev/installer/$(SCHEMATIC):$(TALOS_VERSION)
