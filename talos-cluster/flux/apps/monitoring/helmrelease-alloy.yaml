@@ -17,57 +17,38 @@ spec:
   targetNamespace: monitoring
   values:
     alloy:
-      extraEnv:
-        - name: MY_NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
       configMap:
         content: |
-          discovery.kubernetes "pods" {
-            role = "pod"
-          }
-
-          discovery.relabel "pod_logs" {
-            targets = discovery.kubernetes.pods.targets
-
-            // Only collect logs for pods scheduled on this node
-            rule {
-              source_labels = ["__meta_kubernetes_pod_node_name"]
-              action        = "keep"
-              regex         = sys.env("MY_NODE_NAME")
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_node_name"]
-              target_label  = "node"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_namespace"]
-              target_label  = "namespace"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_name"]
-              target_label  = "pod"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_container_name"]
-              target_label  = "container"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
-              target_label  = "app"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
-              separator     = "/"
-              target_label  = "__path__"
-              replacement   = "/var/log/pods/*$1/*.log"
-            }
+          // Discover all pod log files on the local node.
+          // local.file_match only sees files on the host filesystem via the /var/log
+          // hostPath mount, so no explicit node filter is needed — each DaemonSet
+          // instance is naturally scoped to its own node.
+          local.file_match "pod_logs" {
+            path_targets = [{"__path__" = "/var/log/pods/*/*/*.log"}]
           }
 
           loki.source.file "pod_logs" {
-            targets    = discovery.relabel.pod_logs.output
+            targets    = local.file_match.pod_logs.targets
+            forward_to = [loki.process.k8s_labels.receiver]
+          }
+
+          // Parse namespace, pod, and container from the file path.
+          // Path format: /var/log/pods/{namespace}_{pod-name}_{uid}/{container}/{logfile}
+          loki.process "k8s_labels" {
             forward_to = [loki.write.default.receiver]
+
+            stage.regex {
+              expression = `/var/log/pods/(?P<namespace>[^_]+)_(?P<pod>[^_]+)_[^/]+/(?P<container>[^/]+)/`
+              source     = "filename"
+            }
+
+            stage.labels {
+              values = {
+                namespace = "",
+                pod       = "",
+                container = "",
+              }
+            }
           }
 
           loki.write "default" {
