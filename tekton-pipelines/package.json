@@ -13,6 +13,6 @@
   "devDependencies": {
     "cdk8s-cli": "^2.198.0",
     "ts-node": "^10.9.0",
-    "typescript": "^5.4.0"
+    "typescript": "^6.0.0"
   }
 }
