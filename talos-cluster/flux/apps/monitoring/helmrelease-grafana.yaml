@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: grafana
-      version: "8.x"
+      version: "8.15.0"
       sourceRef:
         kind: HelmRepository
         name: grafana
@@ -16,8 +16,6 @@ spec:
       interval: 12h
   targetNamespace: monitoring
   values:
-    nodeSelector:
-      kubernetes.io/arch: amd64
     resources:
       requests:
         cpu: 50m
@@ -25,18 +23,30 @@ spec:
       limits:
         cpu: 500m
         memory: 512Mi
-    # NFS root_squash prevents chown — disable init container
-    initChownData:
-      enabled: false
     persistence:
       enabled: true
       storageClassName: nfs-client
       size: 2Gi
       accessModes: [ReadWriteOnce]
+    # NFS root_squash prevents the init container from running chown
+    initChownData:
+      enabled: false
     admin:
       existingSecret: grafana-admin-secret
       userKey: admin-user
       passwordKey: admin-password
+    # Sidecar watches for ConfigMaps labeled grafana_dashboard=1 and loads them
+    sidecar:
+      dashboards:
+        enabled: true
+        searchNamespace: monitoring
+        label: grafana_dashboard
+        labelValue: "1"
+        folderAnnotation: grafana_folder
+        provider:
+          foldersFromFilesStructure: true
+      datasources:
+        enabled: false
     datasources:
       datasources.yaml:
         apiVersion: 1
@@ -48,33 +58,12 @@ spec:
             access: proxy
           - name: Loki
             type: loki
-            url: http://loki.monitoring.svc.cluster.local:3100
+            url: http://monitoring-loki.monitoring.svc.cluster.local:3100
             access: proxy
-    dashboardProviders:
-      dashboardproviders.yaml:
-        apiVersion: 1
-        providers:
-          - name: default
-            orgId: 1
-            folder: Kubernetes
-            type: file
-            disableDeletion: false
-            options:
-              path: /var/lib/grafana/dashboards/default
+    # Extra dashboards beyond what kube-prometheus-stack provides.
+    # These are provisioned as ConfigMaps and picked up by the sidecar above.
     dashboards:
       default:
-        kubernetes-cluster:
-          gnetId: 17375
-          revision: 2
-          datasource: Prometheus
-        kubernetes-nodes:
-          gnetId: 17378
-          revision: 2
-          datasource: Prometheus
-        node-exporter-full:
-          gnetId: 1860
-          revision: 37
-          datasource: Prometheus
         cnpg:
           gnetId: 20417
           revision: 1
@@ -83,15 +72,12 @@ spec:
           gnetId: 21252
           revision: 1
           datasource: Prometheus
-        flux-cluster:
-          gnetId: 16714
-          revision: 1
-          datasource: Prometheus
-        cilium-overview:
-          gnetId: 16611
-          revision: 1
-          datasource: Prometheus
         loki-operational:
           gnetId: 13407
           revision: 1
+          datasource: Prometheus
+        # High-level single-page cluster overview
+        k8s-views-global:
+          gnetId: 15757
+          revision: 37
           datasource: Prometheus

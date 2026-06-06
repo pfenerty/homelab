@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: kube-prometheus-stack
-      version: "70.x"
+      version: "70.10.0"
       sourceRef:
         kind: HelmRepository
         name: prometheus-community
@@ -25,6 +25,8 @@ spec:
     # Deploy standalone Grafana and skip Alertmanager for now
     grafana:
       enabled: false
+      # Create dashboard ConfigMaps for the external Grafana sidecar to discover
+      forceDeployDashboards: true
     alertmanager:
       enabled: false
 
