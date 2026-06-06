@@ -20,6 +20,8 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
+    # Short name override to prevent NFS path-too-long errors on PVC provisioning
+    fullnameOverride: kps
     # Deploy standalone Grafana and skip Alertmanager for now
     grafana:
       enabled: false
