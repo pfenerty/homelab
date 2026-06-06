@@ -17,6 +17,11 @@ spec:
   targetNamespace: monitoring
   values:
     alloy:
+      extraEnv:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
       configMap:
         content: |
           discovery.kubernetes "pods" {
@@ -26,6 +31,12 @@ spec:
           discovery.relabel "pod_logs" {
             targets = discovery.kubernetes.pods.targets
 
+            // Only collect logs for pods scheduled on this node
+            rule {
+              source_labels = ["__meta_kubernetes_pod_node_name"]
+              action        = "keep"
+              regex         = env("MY_NODE_NAME")
+            }
             rule {
               source_labels = ["__meta_kubernetes_pod_node_name"]
               target_label  = "node"
@@ -43,14 +54,14 @@ spec:
               target_label  = "container"
             }
             rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+              target_label  = "app"
+            }
+            rule {
               source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
               separator     = "/"
               target_label  = "__path__"
               replacement   = "/var/log/pods/*$1/*.log"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
-              target_label  = "app"
             }
           }
 
