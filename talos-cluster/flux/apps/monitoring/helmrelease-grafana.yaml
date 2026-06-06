@@ -81,10 +81,6 @@ spec:
           gnetId: 20417
           revision: 1
           datasource: Prometheus
-        keda:
-          gnetId: 21252
-          revision: 1
-          datasource: Prometheus
         loki-operational:
           gnetId: 13407
           revision: 1
@@ -92,8 +88,4 @@ spec:
         k8s-views-global:
           gnetId: 15757
           revision: 37
-          datasource: Prometheus
-        flux-control-plane:
-          gnetId: 16715
-          revision: 2
           datasource: Prometheus
