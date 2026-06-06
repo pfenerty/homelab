@@ -53,11 +53,15 @@ spec:
             memory: 1Gi
         retention: 15d
         retentionSize: 10GB
-        # Watch all namespaces for PodMonitor/ServiceMonitor resources
+        # Watch all namespaces for PodMonitor/ServiceMonitor resources.
+        # The nil-uses-helm-values flags must be false or the chart overrides
+        # these empty selectors with {release: monitoring-kube-prometheus-stack}.
         podMonitorNamespaceSelector: {}
         podMonitorSelector: {}
+        podMonitorSelectorNilUsesHelmValues: false
         serviceMonitorNamespaceSelector: {}
         serviceMonitorSelector: {}
+        serviceMonitorSelectorNilUsesHelmValues: false
         storageSpec:
           volumeClaimTemplate:
             spec:
