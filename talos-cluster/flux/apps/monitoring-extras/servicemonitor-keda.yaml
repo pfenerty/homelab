@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: keda
+  name: keda-operator
   namespace: monitoring
 spec:
   namespaceSelector:
@@ -10,5 +10,20 @@ spec:
     matchLabels:
       app.kubernetes.io/name: keda-operator
   endpoints:
-    - port: metricsservice
+    - port: metrics
+      path: /metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: keda-metrics-server
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [keda]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: keda-operator-metrics-apiserver
+  endpoints:
+    - port: metrics
       path: /metrics

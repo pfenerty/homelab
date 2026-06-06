@@ -20,6 +20,16 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
+    prometheus:
+      operator:
+        enabled: true
+        port: 8080
+      metricServer:
+        enabled: true
+        port: 9022
+      webhooks:
+        enabled: true
+        port: 8080
     # Modest resource asks — the KEDA controller is light at this scale.
     operator:
       resources:
