@@ -22,3 +22,4 @@ resources:
   - dev-spaces.kustomization.yaml
   - monitoring.kustomization.yaml
   - monitoring-extras.kustomization.yaml
+  - trek.kustomization.yaml
