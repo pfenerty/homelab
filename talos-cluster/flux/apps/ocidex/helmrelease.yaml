@@ -24,7 +24,7 @@ spec:
         gatewayApi:
             enabled: false
         keda:
-            enabled: true
+            enabled: false
         monitoring:
             enabled: true
         scannerWorker:
