@@ -18,6 +18,7 @@ resources:
   - nfs.kustomization.yaml
   # - zot.kustomization.yaml
   - ocidex.kustomization.yaml
+  - ocidex-dev.kustomization.yaml
   # - tektonic-ci.kustomization.yaml
   - dev-spaces.kustomization.yaml
   - monitoring.kustomization.yaml

@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+    - namespace.yaml
+    - helmrelease.yaml
+    - httproute.yaml
+    - postgres.yaml
+    # Uncomment after creating encrypted secrets (see secrets.template.yaml /
+    # postgres-app-secret.template.yaml for the SOPS workflow):
+    # - secrets.enc.yaml
+    # - postgres-app-secret.enc.yaml

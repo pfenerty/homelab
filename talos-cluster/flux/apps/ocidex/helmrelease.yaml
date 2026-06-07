@@ -1,0 +1,34 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+    name: ocidex
+    namespace: flux-system
+spec:
+    interval: 10m
+    targetNamespace: ocidex
+    chart:
+        spec:
+            chart: ocidex
+            version: ">=0.1.0"
+            sourceRef:
+                kind: HelmRepository
+                name: ocidex
+                namespace: flux-system
+    values:
+        existingSecret: ocidex-secrets
+        nats:
+            storage:
+                storageClass: local-path
+        gatewayApi:
+            enabled: false
+        keda:
+            enabled: true
+        monitoring:
+            enabled: true
+        api:
+            env:
+                environment: production
+                frontendUrl: "https://ocidex.app"
+                githubRedirectUrl: "https://ocidex.app/auth/callback"
+                corsAllowedOrigins: "https://ocidex.app"
