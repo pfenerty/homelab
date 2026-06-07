@@ -72,3 +72,9 @@ spec:
       replicas: 0
     bloomGateway:
       replicas: 0
+    # SingleBinary + filesystem doesn't need external memcached caches;
+    # defaults (8192Mi chunks, 1024Mi results) saturate node memory requests.
+    chunksCache:
+      replicas: 0
+    resultsCache:
+      replicas: 0
