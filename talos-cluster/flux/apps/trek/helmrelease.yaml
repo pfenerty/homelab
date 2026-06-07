@@ -18,7 +18,8 @@ spec:
       className: tailscale
       hosts:
         - host: trek
-          paths: /
+          paths:
+            - /
       tls:
         - hosts:
             - trek
