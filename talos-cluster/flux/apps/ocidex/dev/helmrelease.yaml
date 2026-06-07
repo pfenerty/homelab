@@ -6,6 +6,7 @@ metadata:
     namespace: flux-system
 spec:
     interval: 5m
+    releaseName: ocidex-dev
     targetNamespace: ocidex-dev
     chart:
         spec:
