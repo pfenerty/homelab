@@ -8,6 +8,9 @@ spec:
     interval: 10m
     releaseName: ocidex
     targetNamespace: ocidex
+    upgrade:
+        remediation:
+            retries: -1
     chart:
         spec:
             chart: ocidex
