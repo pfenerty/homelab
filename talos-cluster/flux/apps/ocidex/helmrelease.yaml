@@ -9,6 +9,9 @@ spec:
     releaseName: ocidex
     targetNamespace: ocidex
     upgrade:
+        # ScaledObjects never become Ready while keda.enabled=false + broken
+        # NATS trigger; disable wait until chart fix gates them properly.
+        disableWait: true
         remediation:
             retries: -1
     chart:
