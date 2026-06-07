@@ -8,6 +8,10 @@ spec:
     interval: 5m
     releaseName: ocidex-dev
     targetNamespace: ocidex-dev
+    install:
+        timeout: 10m
+        remediation:
+            retries: -1
     chart:
         spec:
             chart: ocidex
