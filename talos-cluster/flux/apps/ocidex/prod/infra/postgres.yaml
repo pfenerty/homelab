@@ -46,30 +46,5 @@ spec:
         initdb:
             database: ocidex
             owner: ocidex
-            # App user credentials. Must exist before the Cluster reconciles.
-            # See OPERATIONS.md (ocidex repo) for the one-liner that creates
-            # this Secret with the matching password from the legacy ocidex-secrets.
             secret:
                 name: ocidex-pg-app
-            # One-shot pg_dump|psql from the legacy StatefulSet. The CNPG
-            # init pod connects to the source via the externalCluster below.
-            import:
-                type: monolith
-                databases:
-                    - ocidex
-                source:
-                    externalCluster: legacy-pg
-
-    externalClusters:
-        # Legacy StatefulSet's headless Service. The Service stays around
-        # until ocidex-ujj.78.4 removes it from the ocidex repo.
-        - name: legacy-pg
-          connectionParameters:
-              host: postgres.ocidex.svc.cluster.local
-              port: "5432"
-              user: ocidex
-              dbname: ocidex
-              sslmode: disable
-          password:
-              name: ocidex-secrets
-              key: POSTGRES_PASSWORD
