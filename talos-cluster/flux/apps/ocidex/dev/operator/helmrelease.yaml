@@ -25,6 +25,7 @@ spec:
             repository: ghcr.io/pfenerty/ocidex-operator
             tag: main
             pullPolicy: Always
+        watchNamespace: ocidex-dev
         server:
             url: "http://ocidex-dev-api.ocidex-dev.svc.cluster.local:8080"
         apiKey:
