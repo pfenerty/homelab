@@ -1,0 +1,15 @@
+apiVersion: pipelinesascode.tekton.dev/v1alpha1
+kind: Repository
+metadata:
+    name: ocidex
+    namespace: ocidex-ci
+spec:
+    url: https://github.com/pfenerty/ocidex
+    git_provider:
+        type: github
+        secret:
+            name: pac-github-token
+            key: token
+        webhook_secret:
+            name: github-webhook-secret
+            key: secret

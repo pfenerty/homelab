@@ -1,0 +1,29 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+    name: pipelines-as-code
+    namespace: flux-system
+spec:
+    dependsOn:
+        - name: tekton
+        - name: tailscale
+    interval: 10m0s
+    retryInterval: 2m0s
+    path: ./talos-cluster/flux/apps/pipelines-as-code
+    prune: true
+    sourceRef:
+        kind: GitRepository
+        name: flux-system
+    healthChecks:
+        - apiVersion: apps/v1
+          kind: Deployment
+          name: pipelines-as-code-controller
+          namespace: pipelines-as-code
+        - apiVersion: apps/v1
+          kind: Deployment
+          name: pipelines-as-code-watcher
+          namespace: pipelines-as-code
+        - apiVersion: apps/v1
+          kind: Deployment
+          name: pipelines-as-code-webhook
+          namespace: pipelines-as-code

@@ -6,6 +6,7 @@ metadata:
 spec:
     dependsOn:
         - name: tekton
+        - name: pipelines-as-code
     interval: 10m0s
     path: ./talos-cluster/flux/apps/ocidex-ci
     prune: true

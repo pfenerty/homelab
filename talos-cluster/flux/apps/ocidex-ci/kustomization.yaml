@@ -7,3 +7,5 @@ resources:
     - eventlistener-ingress.yaml
     - github-webhook.secret.yaml
     - github-cli.secret.yaml
+    - pac-repository.yaml
+    - pac-github.secret.enc.yaml
