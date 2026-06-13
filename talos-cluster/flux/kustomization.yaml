@@ -20,9 +20,11 @@ resources:
   - ocidex-prod-infra.kustomization.yaml
   - ocidex-prod-main.kustomization.yaml
   - ocidex-prod-operator.kustomization.yaml
+  - ocidex-prod-registries.kustomization.yaml
   - ocidex-dev-infra.kustomization.yaml
   - ocidex-dev-main.kustomization.yaml
   - ocidex-dev-operator.kustomization.yaml
+  - ocidex-dev-registries.kustomization.yaml
   # - tektonic-ci.kustomization.yaml
   - dev-spaces.kustomization.yaml
   - monitoring.kustomization.yaml
