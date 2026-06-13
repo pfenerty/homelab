@@ -2,104 +2,109 @@
 apiVersion: ocidex.io/v1alpha1
 kind: OCIRegistry
 metadata:
-    name: redhat-ubi10
+    name: quay-container-tools
     namespace: ocidex-dev
 spec:
-    url: registry.access.redhat.com
-    name: "Red Hat UBI 10"
-    type: docker
+    name: "Quay.io — Container Tools (Red Hat)"
+    type: generic
+    url: quay.io
     visibility: public
     repositories:
-        - ubi10
+        - containers/buildah
+        - containers/podman
+        - containers/skopeo
     tagPatterns:
-        - "10.*"
+        - semver
+    scanMode: poll
+    pollIntervalMinutes: 360
 ---
 apiVersion: ocidex.io/v1alpha1
 kind: OCIRegistry
 metadata:
-    name: quay-ubuntu-22
+    name: quay-keycloak
     namespace: ocidex-dev
 spec:
+    name: "Quay.io — Keycloak"
+    type: generic
     url: quay.io
-    name: "Ubuntu 22"
-    type: docker
-    visibility: public
-    repositories:
-        - lib/ubuntu
-    tagPatterns:
-        - "22.*"
----
-apiVersion: ocidex.io/v1alpha1
-kind: OCIRegistry
-metadata:
-    name: quay-alpine-3
-    namespace: ocidex-dev
-spec:
-    url: quay.io
-    name: "Alpine 3"
-    type: docker
-    visibility: public
-    repositories:
-        - lib/alpine
-    tagPatterns:
-        - "3.*"
----
-apiVersion: ocidex.io/v1alpha1
-kind: OCIRegistry
-metadata:
-    name: quay-traefik-v35
-    namespace: ocidex-dev
-spec:
-    url: quay.io
-    name: "Traefik v3.5"
-    type: docker
-    visibility: public
-    repositories:
-        - lib/traefik
-    tagPatterns:
-        - "v3.5.*"
----
-apiVersion: ocidex.io/v1alpha1
-kind: OCIRegistry
-metadata:
-    name: quay-keycloak-26
-    namespace: ocidex-dev
-spec:
-    url: quay.io
-    name: "Keycloak 26"
-    type: docker
     visibility: public
     repositories:
         - keycloak/keycloak
     tagPatterns:
-        - "26.*"
+        - semver
+    scanMode: poll
+    pollIntervalMinutes: 360
 ---
 apiVersion: ocidex.io/v1alpha1
 kind: OCIRegistry
 metadata:
-    name: quay-ceph-v19
+    name: quay-metallb
     namespace: ocidex-dev
 spec:
+    name: "Quay.io — MetalLB"
+    type: generic
     url: quay.io
-    name: "Ceph v19"
-    type: docker
     visibility: public
     repositories:
-        - ceph/ceph
+        - metallb/controller
+        - metallb/speaker
     tagPatterns:
-        - "v19.*"
+        - semver
+    scanMode: poll
+    pollIntervalMinutes: 360
 ---
 apiVersion: ocidex.io/v1alpha1
 kind: OCIRegistry
 metadata:
-    name: quay-amazonlinux-2023
+    name: ghcr-traefik
     namespace: ocidex-dev
 spec:
-    url: quay.io
-    name: "Amazon Linux 2023.7"
-    type: docker
+    name: "GHCR — Traefik"
+    type: ghcr
+    url: ghcr.io
     visibility: public
     repositories:
-        - lib/amazonlinux
+        - traefik/traefik
     tagPatterns:
-        - "2023.7.*"
+        - semver
+    scanMode: poll
+    pollIntervalMinutes: 360
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: ghcr-flux
+    namespace: ocidex-dev
+spec:
+    name: "GHCR — Flux Controllers"
+    type: ghcr
+    url: ghcr.io
+    visibility: public
+    repositories:
+        - fluxcd/flux-cli
+        - fluxcd/source-controller
+        - fluxcd/kustomize-controller
+        - fluxcd/helm-controller
+        - fluxcd/notification-controller
+        - fluxcd/image-reflector-controller
+    tagPatterns:
+        - semver
+    scanMode: poll
+    pollIntervalMinutes: 360
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: ghcr-dex
+    namespace: ocidex-dev
+spec:
+    name: "GHCR — Dex OIDC"
+    type: ghcr
+    url: ghcr.io
+    visibility: public
+    repositories:
+        - dexidp/dex
+    tagPatterns:
+        - semver
+    scanMode: poll
+    pollIntervalMinutes: 360
