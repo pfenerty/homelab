@@ -23,6 +23,9 @@ spec:
                 name: ocidex
                 namespace: flux-system
     values:
+        image:
+            tag: main
+            pullPolicy: Always
         existingSecret: ocidex-secrets
         nats:
             storage:
