@@ -1,0 +1,33 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+    name: ocidex-operator-dev
+    namespace: flux-system
+spec:
+    interval: 5m
+    releaseName: ocidex-operator-dev
+    targetNamespace: ocidex-operator-dev
+    install:
+        crds: Skip
+    upgrade:
+        crds: Skip
+    chart:
+        spec:
+            chart: ocidex-operator
+            version: ">=0.0.0-0"
+            sourceRef:
+                kind: HelmRepository
+                name: ocidex
+                namespace: flux-system
+    values:
+        image:
+            repository: ghcr.io/pfenerty/ocidex-operator
+            tag: main
+            pullPolicy: Always
+        server:
+            url: "http://ocidex-dev-api.ocidex-dev.svc.cluster.local:8080"
+        apiKey:
+            secretName: ocidex-operator-dev-secrets
+            secretKey: OCIDEX_API_KEY
+        leaderElect: true

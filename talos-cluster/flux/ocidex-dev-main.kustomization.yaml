@@ -1,0 +1,22 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+    name: ocidex-dev-main
+    namespace: flux-system
+spec:
+    dependsOn:
+        - name: ocidex-dev-infra
+        - name: ocidex-prod-main
+        - name: cilium
+        - name: cloudflare-gateway
+        - name: keda
+    interval: 5m0s
+    path: ./talos-cluster/flux/apps/ocidex/dev/main
+    prune: true
+    sourceRef:
+        kind: GitRepository
+        name: flux-system
+    decryption:
+        provider: sops
+        secretRef:
+            name: sops-age

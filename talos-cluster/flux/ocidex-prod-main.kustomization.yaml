@@ -1,16 +1,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-    name: ocidex-dev
+    name: ocidex-prod-main
     namespace: flux-system
 spec:
     dependsOn:
+        - name: ocidex-prod-infra
         - name: cilium
         - name: cloudflare-gateway
-        - name: cnpg
-        - name: ocidex
-    interval: 5m0s
-    path: ./talos-cluster/flux/apps/ocidex/dev
+        - name: keda
+    interval: 10m0s
+    path: ./talos-cluster/flux/apps/ocidex/prod/main
     prune: true
     sourceRef:
         kind: GitRepository

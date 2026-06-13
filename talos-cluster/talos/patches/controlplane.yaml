@@ -5,3 +5,9 @@ cluster:
             name: none # We install Cilium ourselves
     proxy:
         disabled: true # Cilium replaces kube-proxy
+    etcd:
+        extraArgs:
+            # RPi4 SD card/SSD fsync latency causes leader elections at defaults (100ms/1000ms).
+            # 500ms heartbeat gives the leader 500ms to respond; election-timeout is 5x per etcd docs.
+            heartbeat-interval: "500"
+            election-timeout: "5000"

@@ -1,0 +1,105 @@
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: redhat-ubi10
+    namespace: ocidex-dev
+spec:
+    url: registry.access.redhat.com
+    name: "Red Hat UBI 10"
+    type: docker
+    visibility: public
+    repositories:
+        - ubi10
+    tagPatterns:
+        - "10.*"
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: quay-ubuntu-22
+    namespace: ocidex-dev
+spec:
+    url: quay.io
+    name: "Ubuntu 22"
+    type: docker
+    visibility: public
+    repositories:
+        - lib/ubuntu
+    tagPatterns:
+        - "22.*"
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: quay-alpine-3
+    namespace: ocidex-dev
+spec:
+    url: quay.io
+    name: "Alpine 3"
+    type: docker
+    visibility: public
+    repositories:
+        - lib/alpine
+    tagPatterns:
+        - "3.*"
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: quay-traefik-v35
+    namespace: ocidex-dev
+spec:
+    url: quay.io
+    name: "Traefik v3.5"
+    type: docker
+    visibility: public
+    repositories:
+        - lib/traefik
+    tagPatterns:
+        - "v3.5.*"
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: quay-keycloak-26
+    namespace: ocidex-dev
+spec:
+    url: quay.io
+    name: "Keycloak 26"
+    type: docker
+    visibility: public
+    repositories:
+        - keycloak/keycloak
+    tagPatterns:
+        - "26.*"
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: quay-ceph-v19
+    namespace: ocidex-dev
+spec:
+    url: quay.io
+    name: "Ceph v19"
+    type: docker
+    visibility: public
+    repositories:
+        - ceph/ceph
+    tagPatterns:
+        - "v19.*"
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: quay-amazonlinux-2023
+    namespace: ocidex-dev
+spec:
+    url: quay.io
+    name: "Amazon Linux 2023.7"
+    type: docker
+    visibility: public
+    repositories:
+        - lib/amazonlinux
+    tagPatterns:
+        - "2023.7.*"

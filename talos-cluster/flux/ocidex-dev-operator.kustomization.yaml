@@ -1,0 +1,19 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+    name: ocidex-dev-operator
+    namespace: flux-system
+spec:
+    dependsOn:
+        - name: ocidex-dev-main
+        - name: ocidex-prod-operator
+    interval: 5m0s
+    path: ./talos-cluster/flux/apps/ocidex/dev/operator
+    prune: true
+    sourceRef:
+        kind: GitRepository
+        name: flux-system
+    decryption:
+        provider: sops
+        secretRef:
+            name: sops-age
