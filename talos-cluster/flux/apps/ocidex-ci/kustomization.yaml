@@ -2,10 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
     - namespace.yaml
-    - git.source.yaml
-    - pipeline.kustomization.yaml
-    - eventlistener-ingress.yaml
     - github-webhook.secret.yaml
     - github-cli.secret.yaml
     - pac-repository.yaml
     - pac-github.secret.enc.yaml
+    - cache-pvcs.yaml
