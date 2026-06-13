@@ -6,7 +6,6 @@ metadata:
 spec:
     dependsOn:
         - name: ocidex-dev-infra
-        - name: ocidex-prod-main
         - name: cilium
         - name: cloudflare-gateway
         - name: keda

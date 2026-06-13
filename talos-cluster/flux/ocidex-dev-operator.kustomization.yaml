@@ -6,7 +6,6 @@ metadata:
 spec:
     dependsOn:
         - name: ocidex-dev-main
-        - name: ocidex-prod-operator
     interval: 5m0s
     path: ./talos-cluster/flux/apps/ocidex/dev/operator
     prune: true

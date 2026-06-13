@@ -9,9 +9,9 @@ spec:
     releaseName: ocidex-operator-dev
     targetNamespace: ocidex-operator-dev
     install:
-        crds: Skip
+        crds: CreateReplace
     upgrade:
-        crds: Skip
+        crds: CreateReplace
     chart:
         spec:
             chart: ocidex-operator
