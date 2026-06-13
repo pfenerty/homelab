@@ -27,7 +27,7 @@ spec:
             pullPolicy: Always
         watchNamespace: ocidex-dev
         server:
-            url: "http://ocidex-dev-api.ocidex-dev.svc.cluster.local:8080"
+            url: "http://ocidex-dev-api.ocidex-dev.svc.cluster.local"
         apiKey:
             secretName: ocidex-operator-dev-secrets
             secretKey: OCIDEX_API_KEY
