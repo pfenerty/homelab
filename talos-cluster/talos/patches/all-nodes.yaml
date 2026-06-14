@@ -14,3 +14,4 @@ machine:
       - 8.8.8.8
   sysctls:
     vm.dirty_writeback_centisecs: "1500"
+    user.max_user_namespaces: "62383"
