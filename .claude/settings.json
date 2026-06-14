@@ -20,6 +20,16 @@
           }
         ],
         "matcher": ""
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "statusMessage": "Checking cluster state…",
+            "command": "echo '=== Nodes ===' && kubectl get nodes --no-headers 2>/dev/null | awk '{print $1, $2, $5}' && echo '=== Flux (not ready) ===' && flux get all -A 2>/dev/null | grep -Ev 'True|Succeeded|^NAMESPACE|^$' || echo '(all reconciled)'"
+          }
+        ],
+        "matcher": ""
       }
     ]
   }

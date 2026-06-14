@@ -1,0 +1,551 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "schema-version": "1.12.0",
+    "install": {
+      "beads": {
+        "pkg-path": "beads"
+      },
+      "nushell": {
+        "pkg-path": "nushell"
+      },
+      "repomix": {
+        "pkg-path": "repomix"
+      },
+      "tektoncd-cli": {
+        "pkg-path": "tektoncd-cli"
+      }
+    },
+    "hook": {},
+    "profile": {},
+    "options": {}
+  },
+  "packages": [
+    {
+      "attr_path": "beads",
+      "broken": false,
+      "derivation": "/nix/store/0bij7n94ryg7rwzckma0s8zbkhifxz5x-beads-1.0.3.drv",
+      "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
+      "install_id": "beads",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "beads-1.0.3",
+      "pname": "beads",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:13:43.716907Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/m0964ylgmhhv0pb8pf1zpjl704l9lplv-beads-1.0.3"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "beads",
+      "broken": false,
+      "derivation": "/nix/store/7mh3rwjvfa38vzvw0vrbjlsvigfkgm8v-beads-1.0.3.drv",
+      "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
+      "install_id": "beads",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "beads-1.0.3",
+      "pname": "beads",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:44:32.339465Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/6akl9hhdlhffsj09rpmaqb5f000ialll-beads-1.0.3"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "beads",
+      "broken": false,
+      "derivation": "/nix/store/aampm62j0sy7qjklzprd4b03xswg9wdz-beads-1.0.3.drv",
+      "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
+      "install_id": "beads",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "beads-1.0.3",
+      "pname": "beads",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T04:14:36.414517Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/4ncq17cm1vbckmsh6wn7qpwahp67z3ls-beads-1.0.3"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "beads",
+      "broken": false,
+      "derivation": "/nix/store/lp900w30n2dl97bbfkcfbxjnr59ncz6q-beads-1.0.3.drv",
+      "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
+      "install_id": "beads",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "beads-1.0.3",
+      "pname": "beads",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T04:47:35.366213Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/b28s0b883v7n69mz4i250bbwbryisgqh-beads-1.0.3"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nushell",
+      "broken": false,
+      "derivation": "/nix/store/7szx9zazs2zqvrvbkbig0zy1qhqxdmxs-nushell-0.113.1.drv",
+      "description": "Modern shell written in Rust",
+      "install_id": "nushell",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "nushell-0.113.1",
+      "pname": "nushell",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:14:11.024345Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.113.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/0zcmb3zs2lm2r3cg7i3qdl5x3w7dfxrf-nushell-0.113.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nushell",
+      "broken": false,
+      "derivation": "/nix/store/l8bih2027c4dhfpm870f6y2mx4i4kskr-nushell-0.113.1.drv",
+      "description": "Modern shell written in Rust",
+      "install_id": "nushell",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "nushell-0.113.1",
+      "pname": "nushell",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:45:14.366375Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.113.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/ra7vampb11z1cq9wdxhanpmn7aan0jpv-nushell-0.113.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nushell",
+      "broken": false,
+      "derivation": "/nix/store/4pj0mk1idwk9cacrqxhj6rznv13vp209-nushell-0.113.1.drv",
+      "description": "Modern shell written in Rust",
+      "install_id": "nushell",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "nushell-0.113.1",
+      "pname": "nushell",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T04:15:02.928285Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.113.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/dj97hcqb0lq5j07mrx8bhnw225y3hang-nushell-0.113.1"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nushell",
+      "broken": false,
+      "derivation": "/nix/store/fw8i5lrnvanc9iix2gb07l273y37vsfl-nushell-0.113.1.drv",
+      "description": "Modern shell written in Rust",
+      "install_id": "nushell",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "nushell-0.113.1",
+      "pname": "nushell",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T04:48:18.428835Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.113.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/6rf5daj415jnir6218pjk6b78phhx6pf-nushell-0.113.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "repomix",
+      "broken": false,
+      "derivation": "/nix/store/hgvc1ihafw3sb0hyiqg7xa31shnb093l-repomix-1.14.0.drv",
+      "description": "Tool to pack repository contents to single file for AI consumption",
+      "install_id": "repomix",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "repomix-1.14.0",
+      "pname": "repomix",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:15:21.496548Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/bq6vk7xn3a8znzjs0ajvmy432cncpah3-repomix-1.14.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "repomix",
+      "broken": false,
+      "derivation": "/nix/store/0j3z7xmr8zv5cbmpwkqabrbl392xh0rb-repomix-1.14.0.drv",
+      "description": "Tool to pack repository contents to single file for AI consumption",
+      "install_id": "repomix",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "repomix-1.14.0",
+      "pname": "repomix",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:46:41.721079Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/rz94a9zrj0571y7lsy0yysx0vk175r3z-repomix-1.14.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "repomix",
+      "broken": false,
+      "derivation": "/nix/store/aicw8xkp0zxjxh7g1qykr9szkkr0cbxj-repomix-1.14.0.drv",
+      "description": "Tool to pack repository contents to single file for AI consumption",
+      "install_id": "repomix",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "repomix-1.14.0",
+      "pname": "repomix",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T04:16:12.853643Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/vnxxmgv30f1z9ma56kq42l6bify57p8v-repomix-1.14.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "repomix",
+      "broken": false,
+      "derivation": "/nix/store/y0p0s6m0g6bvm205nr4572jkv408dabi-repomix-1.14.0.drv",
+      "description": "Tool to pack repository contents to single file for AI consumption",
+      "install_id": "repomix",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "repomix-1.14.0",
+      "pname": "repomix",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T04:49:42.726816Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/lwi1k403d1yi21zrq6xfhpxr0jbhn1g7-repomix-1.14.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "tektoncd-cli",
+      "broken": false,
+      "derivation": "/nix/store/0162p8mf7il6l07pggbg0njqdask5939-tektoncd-cli-0.45.0.drv",
+      "description": "Provides a CLI for interacting with Tekton - tkn",
+      "install_id": "tektoncd-cli",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "tektoncd-cli-0.45.0",
+      "pname": "tektoncd-cli",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:15:53.010948Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.45.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/l5sbw333dym4w0mqdgisrlp15jr3rp97-tektoncd-cli-0.45.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "tektoncd-cli",
+      "broken": false,
+      "derivation": "/nix/store/ps3z54gqgiy6snabch7mw6hdg2dzqg7w-tektoncd-cli-0.45.0.drv",
+      "description": "Provides a CLI for interacting with Tekton - tkn",
+      "install_id": "tektoncd-cli",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "tektoncd-cli-0.45.0",
+      "pname": "tektoncd-cli",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:47:15.638404Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.45.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/cka45jr3s2vybakrbmik3gxq05p2mj8s-tektoncd-cli-0.45.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "tektoncd-cli",
+      "broken": false,
+      "derivation": "/nix/store/8gmc3hmmcnigi6zhifpdbva0ywr3bygf-tektoncd-cli-0.45.0.drv",
+      "description": "Provides a CLI for interacting with Tekton - tkn",
+      "install_id": "tektoncd-cli",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "tektoncd-cli-0.45.0",
+      "pname": "tektoncd-cli",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T04:16:39.614347Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.45.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/bnaxyr0c69hx50592xwm0civjymc69sc-tektoncd-cli-0.45.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "tektoncd-cli",
+      "broken": false,
+      "derivation": "/nix/store/8dn1d3pxpsq7qvb9zcna0ckmczgkzyk8-tektoncd-cli-0.45.0.drv",
+      "description": "Provides a CLI for interacting with Tekton - tkn",
+      "install_id": "tektoncd-cli",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "tektoncd-cli-0.45.0",
+      "pname": "tektoncd-cli",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T04:50:17.610298Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.45.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/1xzn9irzcwlcsg3b149d11cg156ccn79-tektoncd-cli-0.45.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ],
+  "compose": {
+    "composer": {
+      "schema-version": "1.12.0",
+      "install": {
+        "tektoncd-cli": {
+          "pkg-path": "tektoncd-cli"
+        }
+      },
+      "hook": {},
+      "profile": {},
+      "options": {},
+      "include": {
+        "environments": [
+          {
+            "dir": "../common"
+          }
+        ]
+      }
+    },
+    "include": [
+      {
+        "manifest": {
+          "schema-version": "1.12.0",
+          "install": {
+            "beads": {
+              "pkg-path": "beads"
+            },
+            "nushell": {
+              "pkg-path": "nushell"
+            },
+            "repomix": {
+              "pkg-path": "repomix"
+            }
+          },
+          "hook": {},
+          "profile": {},
+          "options": {}
+        },
+        "name": "planning",
+        "descriptor": {
+          "dir": "../common"
+        }
+      }
+    ],
+    "warnings": []
+  }
+}
