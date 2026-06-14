@@ -7,3 +7,4 @@ resources:
     - pac-repository.yaml
     - pac-github.secret.enc.yaml
     - cache-pvcs.yaml
+    - ghcr-docker-config.secret.enc.yaml
