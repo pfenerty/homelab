@@ -15,3 +15,14 @@ machine:
   sysctls:
     vm.dirty_writeback_centisecs: "1500"
     user.max_user_namespaces: "62383"
+  files:
+    - content: |
+        [plugins."io.containerd.grpc.v1.cri"]
+          [plugins."io.containerd.grpc.v1.cri".containerd]
+            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+              [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+                [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+                  NoNewPrivileges = false
+      path: /etc/cri/conf.d/20-customization.part
+      op: create
+      permissions: 0o644
