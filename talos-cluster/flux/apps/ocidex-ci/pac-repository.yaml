@@ -1,6 +1,3 @@
-# TODO(plan-0bn): after pipelines-as-code-secret is deployed, remove git_provider entirely
-# and delete pac-github.secret.enc.yaml + pac-github.secret.template.yaml +
-# github-webhook.secret.yaml from this directory (and their entries in kustomization.yaml).
 apiVersion: pipelinesascode.tekton.dev/v1alpha1
 kind: Repository
 metadata:
@@ -8,11 +5,3 @@ metadata:
     namespace: ocidex-ci
 spec:
     url: https://github.com/pfenerty/ocidex
-    git_provider:
-        type: github
-        secret:
-            name: pac-github-token
-            key: token
-        webhook_secret:
-            name: github-webhook-secret
-            key: secret
