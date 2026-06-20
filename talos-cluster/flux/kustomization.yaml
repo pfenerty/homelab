@@ -16,6 +16,7 @@ resources:
   # - podinfo.kustomization.yaml
   - renovate.kustomization.yaml
   - ocidex-ci.kustomization.yaml
+  # - apko-cicd.kustomization.yaml   # enable after secrets are created and encrypted
   - nfs.kustomization.yaml
   # - zot.kustomization.yaml
   - ocidex-prod-infra.kustomization.yaml
