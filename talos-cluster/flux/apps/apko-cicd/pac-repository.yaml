@@ -5,11 +5,3 @@ metadata:
     namespace: apko-cicd-ci
 spec:
     url: https://github.com/pfenerty/apko-cicd
-    git_provider:
-        type: github
-        secret:
-            name: pac-github-token
-            key: token
-        webhook_secret:
-            name: github-webhook-secret
-            key: secret
