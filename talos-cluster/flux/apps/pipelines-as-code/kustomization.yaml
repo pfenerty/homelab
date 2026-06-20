@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
     - release.yaml
     - tailscale-ingress.yaml
-    # - pipelines-as-code-secret.enc.yaml   # enable after GitHub App is created and secret encrypted (plan-0bn)
+    - pipelines-as-code-secret.enc.yaml
