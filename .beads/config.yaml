@@ -9,8 +9,10 @@
 # issue-prefix: ""
 
 # Multi-repo configuration (experimental - bd-307)
-# Allows hydrating from multiple repositories and routing writes to the correct JSONL
-repos:
-  primary: "."
-  additional:
-    - ~/code/common  # Cross-repo epics (apko-cicd → tektonic → ocidex)
+# DISABLED: repos.additional is unimplemented in the current beads version and
+# corrupts read consistency (bd list/show/export disagree; closed issues appear
+# under --status=open). See homelab-pn2. Cross-repo planning lives in ~/code/common.
+# repos:
+#   primary: "."
+#   additional:
+#     - ~/code/common  # Cross-repo epics (apko-cicd → tektonic → ocidex)

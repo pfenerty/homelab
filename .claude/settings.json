@@ -24,9 +24,9 @@
       {
         "hooks": [
           {
-            "type": "command",
+            "command": "echo '=== Nodes ===' \u0026\u0026 kubectl get nodes --no-headers 2\u003e/dev/null | awk '{print $1, $2, $5}' \u0026\u0026 echo '=== Flux (not ready) ===' \u0026\u0026 flux get all -A 2\u003e/dev/null | grep -Ev 'True|Succeeded|^NAMESPACE|^$' || echo '(all reconciled)'",
             "statusMessage": "Checking cluster state…",
-            "command": "echo '=== Nodes ===' && kubectl get nodes --no-headers 2>/dev/null | awk '{print $1, $2, $5}' && echo '=== Flux (not ready) ===' && flux get all -A 2>/dev/null | grep -Ev 'True|Succeeded|^NAMESPACE|^$' || echo '(all reconciled)'"
+            "type": "command"
           }
         ],
         "matcher": ""
