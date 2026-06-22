@@ -9,6 +9,7 @@ resources:
   - cnpg.kustomization.yaml
   - keda.kustomization.yaml
   - tekton.kustomization.yaml
+  - tekton-chains.kustomization.yaml
   - pac.kustomization.yaml
   - tailscale.kustomization.yaml
   - hubble.kustomization.yaml
