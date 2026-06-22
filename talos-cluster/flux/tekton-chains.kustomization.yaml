@@ -12,10 +12,11 @@ spec:
     sourceRef:
         kind: GitRepository
         name: flux-system
-    # The cosign signing keypair (`signing-secrets` in tekton-chains) is created
-    # out of band — see the app README. If you instead commit a SOPS-encrypted
-    # `*.secret.yaml` into the app dir, add a `decryption: { provider: sops,
-    # secretRef: { name: sops-age } }` block here (as pac.kustomization.yaml does).
+    # Decrypt the SOPS-encrypted signing-secrets (cosign keypair) before applying.
+    decryption:
+        provider: sops
+        secretRef:
+            name: sops-age
     healthChecks:
         - apiVersion: apps/v1
           kind: Deployment
