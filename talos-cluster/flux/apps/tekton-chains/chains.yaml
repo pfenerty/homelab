@@ -21,18 +21,6 @@ metadata:
     app.kubernetes.io/part-of: tekton-chains
 ---
 apiVersion: v1
-kind: Secret
-metadata:
-  name: signing-secrets
-  namespace: tekton-chains
-  labels:
-    app.kubernetes.io/instance: default
-    app.kubernetes.io/part-of: tekton-chains
-
-# The data is populated at install time.
-# data:
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: chains-config
