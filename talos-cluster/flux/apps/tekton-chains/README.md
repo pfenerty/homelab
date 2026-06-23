@@ -14,13 +14,32 @@ Vendored from the `tektoncd/chains` GitHub release; refresh with `./update-manif
 | Setting | Value |
 |---------|-------|
 | TaskRun / PipelineRun format | `slsa/v2alpha4` (SLSA v1.0 provenance) |
-| TaskRun / PipelineRun storage | `tekton` (attestation stored as Run annotations) |
+| TaskRun / PipelineRun storage | `tekton, oci` (Run annotations + Rekor, **and** attestations attached to the built images) |
 | Signer | `x509` (cosign key in `signing-secrets`) |
 | Pipeline deep inspection | enabled (captures child TaskRun subjects) |
-| OCI storage | disabled (no registry push creds configured) |
+| OCI storage | `oci` — signs images (simplesigning) + attaches SLSA attestations; **needs registry push creds** (below) |
 | Transparency | enabled → public Rekor (`https://rekor.sigstore.dev`) |
 
 > **Note:** transparency uploads make the signing public key and run metadata public.
+
+## Required: registry credentials for OCI storage
+
+With `artifacts.oci.storage: oci`, the controller pushes image signatures and SLSA
+attestations to the registry, so the `tekton-chains-controller` ServiceAccount needs a ghcr
+token with `write:packages` on `ghcr.io/pfenerty/*`. Until it has one, signing still works
+(tekton storage + Rekor) but OCI pushes log auth errors.
+
+```bash
+kubectl create secret docker-registry chains-registry -n tekton-chains \
+  --docker-server=ghcr.io --docker-username=pfenerty --docker-password=<GHCR_WRITE_TOKEN> \
+  --dry-run=client -o yaml > chains-registry.secret.yaml
+sops -e -i chains-registry.secret.yaml
+# add chains-registry.secret.yaml to kustomization.yaml resources, then attach it to the
+# controller SA (go-containerregistry's k8schain reads the SA's imagePullSecrets):
+#   kubectl patch sa tekton-chains-controller -n tekton-chains \
+#     -p '{"imagePullSecrets":[{"name":"chains-registry"}]}'
+# then: kubectl -n tekton-chains rollout restart deploy/tekton-chains-controller
+```
 
 ## Required: the signing key
 

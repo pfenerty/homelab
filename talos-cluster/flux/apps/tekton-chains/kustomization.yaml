@@ -17,12 +17,17 @@ patches:
         namespace: tekton-chains
       data:
         artifacts.taskrun.format: "slsa/v2alpha4"
-        artifacts.taskrun.storage: "tekton"
+        artifacts.taskrun.storage: "tekton, oci"
         artifacts.taskrun.signer: "x509"
         artifacts.pipelinerun.format: "slsa/v2alpha4"
-        artifacts.pipelinerun.storage: "tekton"
+        artifacts.pipelinerun.storage: "tekton, oci"
         artifacts.pipelinerun.signer: "x509"
         artifacts.pipelinerun.enable-deep-inspection: "true"
-        artifacts.oci.storage: ""
+        # Attach signed SLSA attestations + signatures to the built images in the
+        # registry so consumers can verify with `cosign verify[-attestation]`.
+        # Requires the chains controller to have ghcr push creds (see app README).
+        artifacts.oci.storage: "oci"
+        artifacts.oci.signer: "x509"
+        artifacts.oci.format: "simplesigning"
         transparency.enabled: "true"
         transparency.url: "https://rekor.sigstore.dev"
