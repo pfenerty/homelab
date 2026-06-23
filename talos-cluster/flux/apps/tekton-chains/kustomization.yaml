@@ -3,12 +3,14 @@ kind: Kustomization
 resources:
   - chains.yaml
   - signing-secrets.secret.yaml
+  # ghcr push creds for OCI storage. Create the encrypted secret from
+  # chains-registry.secret.template.yaml, then uncomment the line below:
+  # - chains-registry.secret.enc.yaml
 patches:
   # Configure chains-config (defaults are commented out in the release manifest).
-  # SLSA v1.0 provenance (slsa/v2alpha4), stored as annotations on the Runs
-  # (tekton storage), signed with the x509 cosign key in `signing-secrets`, and
-  # uploaded to the public Rekor transparency log. OCI storage is disabled — no
-  # registry push credentials are configured for Chains.
+  # SLSA v1.0 provenance (slsa/v2alpha4) stored as Run annotations + Rekor (tekton)
+  # and attached to the built images (oci), signed with the x509 cosign key in
+  # `signing-secrets`, and uploaded to the public Rekor transparency log.
   - patch: |-
       apiVersion: v1
       kind: ConfigMap
@@ -31,3 +33,15 @@ patches:
         artifacts.oci.format: "simplesigning"
         transparency.enabled: "true"
         transparency.url: "https://rekor.sigstore.dev"
+  # Give the chains controller ghcr push creds for OCI storage: go-containerregistry's
+  # k8schain reads the controller SA's imagePullSecrets. The chains-registry secret is
+  # created out of band (see chains-registry.secret.template.yaml); referencing it before
+  # it exists is harmless (the controller image is public).
+  - patch: |-
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: tekton-chains-controller
+        namespace: tekton-chains
+      imagePullSecrets:
+        - name: chains-registry

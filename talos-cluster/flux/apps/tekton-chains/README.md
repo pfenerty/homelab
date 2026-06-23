@@ -29,16 +29,19 @@ attestations to the registry, so the `tekton-chains-controller` ServiceAccount n
 token with `write:packages` on `ghcr.io/pfenerty/*`. Until it has one, signing still works
 (tekton storage + Rekor) but OCI pushes log auth errors.
 
+The SA `imagePullSecrets` reference and a (commented) resource line are **already wired** in
+`kustomization.yaml` — just create the secret and uncomment it (shape in
+`chains-registry.secret.template.yaml`):
+
 ```bash
 kubectl create secret docker-registry chains-registry -n tekton-chains \
   --docker-server=ghcr.io --docker-username=pfenerty --docker-password=<GHCR_WRITE_TOKEN> \
-  --dry-run=client -o yaml > chains-registry.secret.yaml
-sops -e -i chains-registry.secret.yaml
-# add chains-registry.secret.yaml to kustomization.yaml resources, then attach it to the
-# controller SA (go-containerregistry's k8schain reads the SA's imagePullSecrets):
-#   kubectl patch sa tekton-chains-controller -n tekton-chains \
-#     -p '{"imagePullSecrets":[{"name":"chains-registry"}]}'
-# then: kubectl -n tekton-chains rollout restart deploy/tekton-chains-controller
+  --dry-run=client -o yaml > chains-registry.secret.enc.yaml
+sops -e -i chains-registry.secret.enc.yaml
+# uncomment `- chains-registry.secret.enc.yaml` under resources: in kustomization.yaml
+git add chains-registry.secret.enc.yaml kustomization.yaml && git commit && git push
+# after Flux reconciles, restart the controller so it picks up the creds:
+kubectl -n tekton-chains rollout restart deploy/tekton-chains-controller
 ```
 
 ## Required: the signing key
