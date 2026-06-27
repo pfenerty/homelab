@@ -17,32 +17,37 @@ Vendored from the `tektoncd/chains` GitHub release; refresh with `./update-manif
 | TaskRun / PipelineRun storage | `tekton, oci` (Run annotations + Rekor, **and** attestations attached to the built images) |
 | Signer | `x509` (cosign key in `signing-secrets`) |
 | Pipeline deep inspection | enabled (captures child TaskRun subjects) |
-| OCI storage | `oci` — signs images (simplesigning) + attaches SLSA attestations; **needs registry push creds** (below) |
+| OCI storage | `oci` — signs images (simplesigning) + attaches SLSA attestations; **needs registry push creds on the run namespace's SA** (below) |
 | Transparency | enabled → public Rekor (`https://rekor.sigstore.dev`) |
 
 > **Note:** transparency uploads make the signing public key and run metadata public.
 
 ## Required: registry credentials for OCI storage
 
-With `artifacts.oci.storage: oci`, the controller pushes image signatures and SLSA
-attestations to the registry, so the `tekton-chains-controller` ServiceAccount needs a ghcr
-token with `write:packages` on `ghcr.io/pfenerty/*`. Until it has one, signing still works
-(tekton storage + Rekor) but OCI pushes log auth errors.
+With `artifacts.oci.storage: oci`, Chains pushes image signatures and SLSA attestations to
+the registry. **It authenticates as the TaskRun's ServiceAccount — the `default` SA in the
+*run* namespace — NOT the `tekton-chains-controller` SA.** (go-containerregistry's k8schain
+reads the run pod's SA, which is the controller's only for the controller's own pod.)
 
-The SA `imagePullSecrets` reference and a (commented) resource line are **already wired** in
-`kustomization.yaml` — just create the secret and uncomment it (shape in
-`chains-registry.secret.template.yaml`):
+So the credential lives with each run namespace, not here. Link a ghcr token
+(`write:packages` on `ghcr.io/pfenerty/*`) to that namespace's `default` SA via its app's
+`service-account.yaml`, e.g. `apps/ocidex-ci/service-account.yaml` and
+`apps/apko-cicd/service-account.yaml`:
 
-```bash
-kubectl create secret docker-registry chains-registry -n tekton-chains \
-  --docker-server=ghcr.io --docker-username=pfenerty --docker-password=<GHCR_WRITE_TOKEN> \
-  --dry-run=client -o yaml > chains-registry.secret.enc.yaml
-sops -e -i chains-registry.secret.enc.yaml
-# uncomment `- chains-registry.secret.enc.yaml` under resources: in kustomization.yaml
-git add chains-registry.secret.enc.yaml kustomization.yaml && git commit && git push
-# after Flux reconciles, restart the controller so it picks up the creds:
-kubectl -n tekton-chains rollout restart deploy/tekton-chains-controller
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+    name: default
+    namespace: ocidex-ci
+secrets:            # what Chains reads to authenticate the OCI push
+    - name: ghcr-docker-config
+imagePullSecrets:
+    - name: ghcr-docker-config
 ```
+
+Until that SA has the creds, signing still works (tekton storage + Rekor) but OCI pushes log
+`UNAUTHORIZED`. No controller restart is needed — the credential is read per-run.
 
 ## Required: the signing key
 
