@@ -5,7 +5,7 @@ resources:
   - signing-secrets.secret.yaml
   # ghcr push creds for OCI storage. Create the encrypted secret from
   # chains-registry.secret.template.yaml, then uncomment the line below:
-  # - chains-registry.secret.enc.yaml
+  - chains-registry.secret.enc.yaml
 patches:
   # Configure chains-config (defaults are commented out in the release manifest).
   # SLSA v1.0 provenance (slsa/v2alpha4) stored as Run annotations + Rekor (tekton)
