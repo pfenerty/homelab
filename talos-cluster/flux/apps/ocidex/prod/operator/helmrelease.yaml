@@ -15,15 +15,18 @@ spec:
     chart:
         spec:
             chart: ocidex-operator
-            version: ">=0.0.0-0"
+            # prod tracks the latest STABLE semver release only (no prereleases).
+            # ">=0.0.0" excludes prerelease versions like the 0.1.0-<sha> main builds.
+            version: ">=0.0.0"
             sourceRef:
                 kind: HelmRepository
                 name: ocidex
                 namespace: flux-system
     values:
+        # No image.tag override: the tag resolves to the chart's appVersion (vX.Y.Z),
+        # so prod runs the released semver image, not the rolling :main tag.
         image:
             repository: ghcr.io/pfenerty/ocidex-operator
-            tag: main
         watchNamespace: ocidex
         server:
             url: "http://ocidex-api.ocidex.svc.cluster.local"
