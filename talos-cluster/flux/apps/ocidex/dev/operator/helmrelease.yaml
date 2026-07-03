@@ -21,10 +21,10 @@ spec:
                 name: ocidex
                 namespace: flux-system
     values:
+        # No image.tag override: dev renders the chart's appVersion (sha-<sha>),
+        # an immutable tag that advances every build (see dev/main/helmrelease.yaml).
         image:
             repository: ghcr.io/pfenerty/ocidex-operator
-            tag: main
-            pullPolicy: Always
         watchNamespace: ocidex-dev
         server:
             url: "http://ocidex-dev-api.ocidex-dev.svc.cluster.local"
