@@ -25,9 +25,11 @@ spec:
                 name: ocidex
                 namespace: flux-system
     values:
-        image:
-            tag: main
-            pullPolicy: Always
+        # No image.tag override: dev renders the chart's appVersion (sha-<sha>),
+        # an immutable, reproducible tag that changes every build. Combined with the
+        # monotonic chart version, each main push advances the chart -> new appVersion
+        # -> Deployment rolls onto the new sha image. (Was tag=main + pullPolicy=Always,
+        # which never changed the pod spec so dev never rolled.)
         existingSecret: ocidex-secrets
         nats:
             storage:
