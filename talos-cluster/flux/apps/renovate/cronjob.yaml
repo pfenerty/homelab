@@ -173,7 +173,7 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-    name: renovate-apko-cicd
+    name: renovate-dotfiles
     namespace: renovate
 spec:
     schedule: "0 8 * * *"
