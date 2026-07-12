@@ -20,10 +20,6 @@ resources:
   - apko-cicd.kustomization.yaml
   - nfs.kustomization.yaml
   # - zot.kustomization.yaml
-  - ocidex-prod-infra.kustomization.yaml
-  - ocidex-prod-main.kustomization.yaml
-  - ocidex-prod-operator.kustomization.yaml
-  - ocidex-prod-registries.kustomization.yaml
   - ocidex-dev-infra.kustomization.yaml
   - ocidex-dev-main.kustomization.yaml
   - ocidex-dev-operator.kustomization.yaml
