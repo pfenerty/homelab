@@ -6,6 +6,7 @@ resources:
     - triggers.yaml
     - interceptors.yaml
     - tailscale-ingress.yaml
+    - pruner-cronjob.yaml
 patches:
     - patch: |-
           apiVersion: v1

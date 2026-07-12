@@ -1,10 +1,33 @@
 # talos/patches/controlplane.yaml
+machine:
+    kubelet:
+        extraConfig:
+            # RPi4 nodes have only ~3.2Gi allocatable RAM shared by etcd, kube-apiserver,
+            # kube-controller-manager, kube-scheduler, and required DaemonSets (Cilium, Alloy).
+            # Reserve headroom so kubelet evicts workload pods before starving those.
+            systemReserved:
+                cpu: 250m
+                memory: 384Mi
+                ephemeral-storage: 1Gi
+            kubeReserved:
+                cpu: 250m
+                memory: 384Mi
+                ephemeral-storage: 1Gi
+            evictionHard:
+                memory.available: 200Mi
+                nodefs.available: 10%
 cluster:
     network:
         cni:
             name: none # We install Cilium ourselves
     proxy:
         disabled: true # Cilium replaces kube-proxy
+    apiServer:
+        extraArgs:
+            # Lower default (100) watch cache per resource type — apiserver on RPi4 was
+            # consuming up to 1.6Gi (half the node's allocatable RAM), inflated by the
+            # ~70 CRDs across Cilium/Tekton/CNPG/KEDA/Prometheus-operator/Tailscale/Flux/Gateway API.
+            default-watch-cache-size: "50"
     etcd:
         extraArgs:
             # RPi4 SD card/SSD fsync latency causes leader elections at defaults (100ms/1000ms).

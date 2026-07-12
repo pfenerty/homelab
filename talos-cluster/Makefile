@@ -72,27 +72,22 @@ apply-all:
 	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes 192.168.1.102 --endpoints $(VIP) --file $(OUTPUT)/rpi-02.yaml
 	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes 192.168.1.103 --endpoints $(VIP) --file $(OUTPUT)/rpi-03.yaml
 
-# Re-apply patches to an existing generated config and apply to the node (no secrets needed).
-# Patches are strategic merge patches so re-applying is idempotent.
+# Re-apply patches to a node by regenerating its config from patches + existing
+# secrets (via the same $(OUTPUT)/%.yaml rules `generate` uses) and applying it.
+# `talosctl gen config --with-secrets` reuses the existing CA/tokens, so this is
+# idempotent and safe to re-run.
+# NOTE: previously this re-patched an *already-patched* $(OUTPUT)/%.yaml with
+# all-nodes.yaml/controlplane.yaml a second time. Since Talos merges list fields
+# (like `files:`) additively rather than replacing them, that duplicated any list
+# entries on every repatch — which surfaced as a `files.talos.dev already exists`
+# boot failure once all-nodes.yaml gained a `files:` block. Building from the
+# generate targets avoids double-applying any patch.
 # Usage: make repatch-rpi-01  or  make repatch-all
-repatch-%:
-	@tmpfile=$$(mktemp /tmp/talos-$*-XXXXXX.yaml) && \
-	talosctl machineconfig patch $(OUTPUT)/$*.yaml \
-		--patch @$(PATCHES)/all-nodes.yaml \
-		--patch @$(PATCHES)/controlplane.yaml \
-		--patch @$(PATCHES)/$*-network.yaml \
-		--output $$tmpfile && \
-	talosctl apply-config --talosconfig $(TALOSCONFIG) --endpoints $(NODE_IP_$*) --nodes $(NODE_IP_$*) --file $$tmpfile; \
-	rm -f $$tmpfile
+repatch-%: $(OUTPUT)/%.yaml
+	talosctl apply-config --talosconfig $(TALOSCONFIG) --endpoints $(NODE_IP_$*) --nodes $(NODE_IP_$*) --file $(OUTPUT)/$*.yaml
 
-repatch-x86-01:
-	@tmpfile=$$(mktemp /tmp/talos-x86-01-XXXXXX.yaml) && \
-	talosctl machineconfig patch $(OUTPUT)/x86-01.yaml \
-		--patch @$(PATCHES)/all-nodes.yaml \
-		--patch @$(PATCHES)/x86-01-network.yaml \
-		--output $$tmpfile && \
-	talosctl apply-config --talosconfig $(TALOSCONFIG) --endpoints $(NODE_IP_x86-01) --nodes $(NODE_IP_x86-01) --file $$tmpfile; \
-	rm -f $$tmpfile
+repatch-x86-01: $(OUTPUT)/x86-01.yaml
+	talosctl apply-config --talosconfig $(TALOSCONFIG) --endpoints $(NODE_IP_x86-01) --nodes $(NODE_IP_x86-01) --file $(OUTPUT)/x86-01.yaml
 
 repatch-all: repatch-rpi-01 repatch-rpi-02 repatch-rpi-03 repatch-x86-01
 	@echo "✓ Patches re-applied to all nodes"
