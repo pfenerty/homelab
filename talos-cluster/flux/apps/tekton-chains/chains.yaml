@@ -98,7 +98,7 @@ spec:
       serviceAccountName: tekton-chains-controller
       containers:
         - name: tekton-chains-controller
-          image: ghcr.io/tektoncd/chains/github.com/tektoncd/chains/cmd/controller:v0.27.3@sha256:f57e2c62308092a8064272b7596605b640674e8110bf70947e402d82f7487812
+          image: ghcr.io/tektoncd/chains/github.com/tektoncd/chains/cmd/controller:v0.28.0@sha256:acc471b39659b119d4099c251108845b0272bb77784f30aa77245995370fe5ce
           volumeMounts:
             - name: signing-secrets
               mountPath: /etc/signing-secrets
