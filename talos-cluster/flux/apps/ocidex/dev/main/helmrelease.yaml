@@ -43,8 +43,8 @@ spec:
         api:
             env:
                 environment: development
-                frontendUrl: "https://dev.ocidex.app"
-                githubRedirectUrl: "https://dev.ocidex.app/auth/callback"
-                corsAllowedOrigins: "https://dev.ocidex.app,https://ocidex.app"
+                frontendUrl: "https://ocidex.app"
+                githubRedirectUrl: "https://ocidex.app/auth/callback"
+                corsAllowedOrigins: "https://ocidex.app"
         enrichmentWorker:
             replicas: 1

@@ -9,7 +9,6 @@ spec:
         - name: cloudflare-gateway
           namespace: cloudflare-gateway
     hostnames:
-        - dev.ocidex.app
         - ocidex.app
     rules:
         - matches:
