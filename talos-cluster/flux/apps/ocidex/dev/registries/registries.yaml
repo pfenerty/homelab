@@ -108,3 +108,55 @@ spec:
         - semver
     scanMode: poll
     pollIntervalMinutes: 360
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: ghcr-ocidex
+    namespace: ocidex-dev
+spec:
+    name: "GHCR — OCIDex"
+    type: ghcr
+    url: ghcr.io
+    visibility: public
+    repositories:
+        - pfenerty/ocidex-api
+        - pfenerty/ocidex-web
+        - pfenerty/ocidex-operator
+        - pfenerty/ocidex-scanner-worker
+        - pfenerty/ocidex-enrichment-worker
+        - pfenerty/ocidex-oci-metadata-worker
+        - pfenerty/ocidex-provenance-worker
+        - pfenerty/ocidex-user-enricher-worker
+        - pfenerty/ocidex-vuln-worker
+        - pfenerty/ocidex-git-worker
+    scanMode: poll
+    pollIntervalMinutes: 360
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: ghcr-apko-cicd
+    namespace: ocidex-dev
+spec:
+    name: "GHCR — apko-cicd"
+    type: ghcr
+    url: ghcr.io
+    visibility: public
+    repositories:
+        - pfenerty/apko-cicd/base
+        - pfenerty/apko-cicd/syft
+        - pfenerty/apko-cicd/grype
+        - pfenerty/apko-cicd/oras
+        - pfenerty/apko-cicd/apko
+        - pfenerty/apko-cicd/melange
+        - pfenerty/apko-cicd/golangci-lint
+        - pfenerty/apko-cicd/gcloud
+        - pfenerty/apko-cicd/nodejs
+        - pfenerty/apko-cicd/golang
+        - pfenerty/apko-cicd/jdk
+        - pfenerty/apko-cicd/maven
+        - pfenerty/apko-cicd/gradle
+        - pfenerty/apko-cicd/rust
+    scanMode: poll
+    pollIntervalMinutes: 360
