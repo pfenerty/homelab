@@ -20,8 +20,8 @@ VIP            := 192.168.1.100
 WORKER_NODES       := x86-01
 NODE_IP_x86-01     := 192.168.1.104
 
-TALOS_VERSION      := v1.13.4
-KUBERNETES_VERSION := v1.36.2
+TALOS_VERSION      := v1.13.7
+KUBERNETES_VERSION := v1.36.3
 SCHEMATIC          := ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
 IMAGE_URL          := factory.talos.dev/installer/$(SCHEMATIC):$(TALOS_VERSION)
 WORKER_IMAGE_URL   := ghcr.io/siderolabs/installer:$(TALOS_VERSION)
