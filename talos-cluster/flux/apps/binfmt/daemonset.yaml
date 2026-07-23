@@ -1,0 +1,43 @@
+# Registers qemu-user binfmt_misc handlers on the amd64 worker so it can run
+# foreign-arch (arm64) binaries — required for multi-arch melange/apko builds that
+# are pinned to this node. Registration is kernel-global and persists until reboot;
+# the init container re-registers whenever the pod (re)starts, e.g. after a reboot.
+#
+# Depends on the binfmt_misc kernel module, provided by the siderolabs/binfmt-misc
+# system extension in the worker's factory image and loaded via the Talos
+# machine.kernel.modules patch (talos/patches/x86-01-network.yaml).
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: binfmt
+  namespace: binfmt
+  labels:
+    app: binfmt
+spec:
+  selector:
+    matchLabels:
+      app: binfmt
+  template:
+    metadata:
+      labels:
+        app: binfmt
+    spec:
+      # Only the amd64 worker has the binfmt-misc extension; RPi control-plane
+      # nodes are intentionally left untouched.
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      initContainers:
+        - name: install
+          image: docker.io/tonistiigi/binfmt:qemu-v10.2.3
+          args: ["--install", "arm64"]
+          securityContext:
+            privileged: true
+      containers:
+        - name: pause
+          image: registry.k8s.io/pause:3.10
+          resources:
+            requests:
+              cpu: 10m
+              memory: 8Mi
+            limits:
+              memory: 16Mi

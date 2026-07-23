@@ -22,9 +22,15 @@ NODE_IP_x86-01     := 192.168.1.104
 
 TALOS_VERSION      := v1.13.4
 KUBERNETES_VERSION := v1.36.2
+# RPi (arm64) control-plane nodes: unchanged (sbc-raspberrypi overlay, no extensions).
+# Multi-arch container builds are pinned to the amd64 worker, so binfmt lives only there.
 SCHEMATIC          := ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
 IMAGE_URL          := factory.talos.dev/installer/$(SCHEMATIC):$(TALOS_VERSION)
-WORKER_IMAGE_URL   := ghcr.io/siderolabs/installer:$(TALOS_VERSION)
+# amd64 worker schematic: siderolabs/binfmt-misc extension (ships binfmt_misc.ko,
+# which the stock image strips) so the worker can emulate arm64 for melange builds.
+# Source: customization.systemExtensions.officialExtensions: [siderolabs/binfmt-misc]
+WORKER_SCHEMATIC   := 14e9b0100f05654bedf19b92313cdc224cbff52879193d24f3741f1da4a3cbb1
+WORKER_IMAGE_URL   := factory.talos.dev/installer/$(WORKER_SCHEMATIC):$(TALOS_VERSION)
 
 # ── Config generation ──────────────────────────────────────────
 

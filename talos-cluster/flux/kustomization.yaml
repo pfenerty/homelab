@@ -19,6 +19,10 @@ resources:
   - ocidex-ci.kustomization.yaml
   - apko-cicd.kustomization.yaml
   - nfs.kustomization.yaml
+  # Enable only AFTER the amd64 worker is upgraded to the binfmt-misc schematic and
+  # the binfmt_misc module is loaded — otherwise the registrar cannot mount
+  # binfmt_misc and the DaemonSet crashloops. See talos/patches/x86-01-network.yaml.
+  # - binfmt.kustomization.yaml
   # - zot.kustomization.yaml
   - ocidex-dev-infra.kustomization.yaml
   - ocidex-dev-main.kustomization.yaml
