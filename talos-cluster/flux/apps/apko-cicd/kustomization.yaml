@@ -6,3 +6,5 @@ resources:
     - pac-repository.yaml
     - ghcr-docker-config.secret.enc.yaml
     - github-pipeline-token.secret.enc.yaml
+    - github-automerge-token.secret.enc.yaml
+    - apko-cicd.source.yaml
