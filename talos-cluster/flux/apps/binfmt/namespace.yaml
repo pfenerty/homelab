@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: binfmt
+  labels:
+    # The registrar runs privileged to mount binfmt_misc and register qemu handlers.
+    pod-security.kubernetes.io/enforce: privileged

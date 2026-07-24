@@ -19,6 +19,15 @@ resources:
   - ocidex-ci.kustomization.yaml
   - apko-cicd.kustomization.yaml
   - nfs.kustomization.yaml
+  # DISABLED: the binfmt_misc module is loaded on the worker (schematic + kernel
+  # module, done), but the tonistiigi/binfmt DaemonSet registers qemu in its own
+  # container mount-namespace instance, which does NOT persist host-globally on
+  # Talos (Talos does not host-mount binfmt_misc like systemd distros do). A
+  # verified TaskRun confirmed qemu-aarch64 is absent kernel-wide after the init
+  # container exits, so cross-arch (arm64) melange builds still fail. Needs a
+  # host-init-namespace registrar (e.g. nsenter into PID 1 + qemu-user-static)
+  # before enabling. See bd issue.
+  # - binfmt.kustomization.yaml
   # - zot.kustomization.yaml
   - ocidex-dev-infra.kustomization.yaml
   - ocidex-dev-main.kustomization.yaml
