@@ -18,6 +18,7 @@ resources:
   - renovate.kustomization.yaml
   - ocidex-ci.kustomization.yaml
   - apko-cicd.kustomization.yaml
+  - apko-cicd-update.kustomization.yaml
   - nfs.kustomization.yaml
   # - zot.kustomization.yaml
   - ocidex-dev-infra.kustomization.yaml

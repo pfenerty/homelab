@@ -1,0 +1,28 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+    name: apko-cicd-update
+    namespace: flux-system
+spec:
+    # Needs the apko-cicd-ci namespace, service account, github-automerge-token
+    # secret, and the apko-cicd GitRepository source (all from apko-cicd-ci), plus
+    # the Tekton CRDs.
+    dependsOn:
+        - name: apko-cicd-ci
+        - name: tekton
+    interval: 10m0s
+    # Path within the apko-cicd repo (its GitRepository source), not this one.
+    path: ./.tekton/update
+    prune: true
+    sourceRef:
+        kind: GitRepository
+        name: apko-cicd
+    healthChecks:
+        - apiVersion: tekton.dev/v1
+          kind: Pipeline
+          name: apko-cicd-update-update-packages
+          namespace: apko-cicd-ci
+        - apiVersion: batch/v1
+          kind: CronJob
+          name: update-packages
+          namespace: apko-cicd-ci
