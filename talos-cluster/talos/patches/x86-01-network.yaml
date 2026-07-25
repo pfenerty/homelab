@@ -1,4 +1,11 @@
 machine:
+  # binfmt_misc is provided by the siderolabs/binfmt-misc system extension baked
+  # into this worker's factory image (WORKER_SCHEMATIC). Load it at boot so the
+  # binfmt DaemonSet can register qemu handlers — enabling arm64 emulation for
+  # multi-arch melange/apko builds pinned to this amd64 node.
+  kernel:
+    modules:
+      - name: binfmt_misc
   network:
     interfaces:
       - interface: enp0s31f6
