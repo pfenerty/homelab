@@ -28,6 +28,35 @@ cluster:
             # consuming up to 1.6Gi (half the node's allocatable RAM), inflated by the
             # ~70 CRDs across Cilium/Tekton/CNPG/KEDA/Prometheus-operator/Tailscale/Flux/Gateway API.
             default-watch-cache-size: "50"
+            # 2026-08: one wedged CronJob produced 66% of all cluster events (1560 of 2354
+            # FailedCreate). Halving the 1h default bounds how much event write traffic a
+            # misbehaving controller can push onto the SD-card-backed etcd.
+            event-ttl: 30m
+            # 4 nodes, ~107 pods. Shed load rather than melt down when etcd is slow and
+            # requests queue up. Defaults are 400/200.
+            max-requests-inflight: "200"
+            max-mutating-requests-inflight: "100"
+        env:
+            # apiserver RSS measured at 1.7-2.0Gi of the node's 3.7Gi, squeezing page cache
+            # (466Mi) below the etcd DB size (204Mi) so reads that should be cached hit the
+            # SD card. Cap the Go heap and collect more aggressively to give the cache room.
+            # Deliberately conservative — if the apiserver GC-thrashes (CPU up, RSS pinned at
+            # the limit), raise GOMEMLIMIT rather than lowering it.
+            GOGC: "50"
+            GOMEMLIMIT: 1400MiB
+    controllerManager:
+        extraArgs:
+            # A single slow etcd read must not cost leadership. Defaults (15s/10s/2s) assume
+            # datacentre latency; measured Lease GET here has multi-second outliers, which was
+            # crash-looping kube-controller-manager ~1100 times over 20 days.
+            leader-elect-lease-duration: 60s
+            leader-elect-renew-deadline: 45s
+            leader-elect-retry-period: 10s
+    scheduler:
+        extraArgs:
+            leader-elect-lease-duration: 60s
+            leader-elect-renew-deadline: 45s
+            leader-elect-retry-period: 10s
     etcd:
         extraArgs:
             # RPi4 SD card/SSD fsync latency causes leader elections at defaults (100ms/1000ms).
