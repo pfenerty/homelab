@@ -47,33 +47,72 @@ metadata:
   name: tekton-pruner
   namespace: tekton-pipelines
 spec:
-  schedule: "17 3 * * *"
+  # Twice daily: a single missed run must not be able to rebuild a large backlog.
+  schedule: "17 3,15 * * *"
+  # Explicit so it survives any manual `kubectl patch --suspend` under server-side apply.
+  suspend: false
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       backoffLimit: 1
+      # Without this a Job whose pod is never admitted (e.g. rejected by PodSecurity)
+      # stays Active forever — it neither succeeds nor fails, so backoffLimit and
+      # failedJobsHistoryLimit never apply and the job controller retries pod creation
+      # indefinitely. 20 such Jobs accumulated over 19 days and produced 66% of all
+      # cluster events. activeDeadlineSeconds forces the Job to fail so it gets cleaned up.
+      activeDeadlineSeconds: 600
       template:
         spec:
           serviceAccountName: tekton-pruner
           restartPolicy: Never
+          # The tekton-pipelines namespace enforces pod-security "restricted".
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
           containers:
             - name: prune
-              image: bitnami/kubectl:1.34
+              # Upstream bitnami/kubectl stopped publishing to docker.io/bitnami in late
+              # 2025. alpine/kubectl is multi-arch (arm64 + amd64) and ships /bin/sh,
+              # which this script needs.
+              image: alpine/kubectl:1.36.2
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              # kubectl writes its discovery cache under $HOME; point it at the emptyDir
+              # so readOnlyRootFilesystem holds.
+              env:
+                - name: HOME
+                  value: /tmp
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
               command:
                 - /bin/sh
                 - -c
                 - |
                   set -eu
-                  KEEP=10
+                  KEEP=5
                   for ns in ocidex-ci apko-cicd-ci; do
                     echo "Pruning completed PipelineRuns in $ns, keeping last $KEEP"
                     # Only completed runs (status.completionTime set) are candidates,
-                    # so in-flight PipelineRuns are never touched.
+                    # so in-flight PipelineRuns are never touched. Sorted newest-first and
+                    # then skipping the first KEEP, rather than `head -n -"$KEEP"`, because
+                    # busybox head has no negative line count.
                     kubectl get pipelinerun -n "$ns" \
                         -o jsonpath='{range .items[?(@.status.completionTime)]}{.status.completionTime}{"\t"}{.metadata.name}{"\n"}{end}' \
-                      | sort \
+                      | sort -r \
                       | cut -f2 \
-                      | head -n -"$KEEP" \
+                      | tail -n +"$((KEEP + 1))" \
                       | xargs -r kubectl delete pipelinerun -n "$ns"
                   done
+          volumes:
+            - name: tmp
+              emptyDir: {}
