@@ -7,3 +7,4 @@ resources:
     - cache-pvcs.yaml
     - ghcr-docker-config.secret.enc.yaml
     - github-pipeline-token.secret.enc.yaml
+    - ocidex-api-key.secret.enc.yaml
