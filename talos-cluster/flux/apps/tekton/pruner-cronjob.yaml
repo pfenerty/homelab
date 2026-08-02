@@ -80,7 +80,7 @@ spec:
               # Upstream bitnami/kubectl stopped publishing to docker.io/bitnami in late
               # 2025. alpine/kubectl is multi-arch (arm64 + amd64) and ships /bin/sh,
               # which this script needs.
-              image: alpine/kubectl:1.36.2
+              image: alpine/kubectl:1.36.3
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
