@@ -23,3 +23,39 @@ spec:
     resources:
         requests:
             storage: 2Gi
+---
+# buildkitd state dirs for the two image-build chains (ocidex-2vr.2). Without these,
+# buildctl-daemonless.sh starts a throwaway daemon per step and discards the base image,
+# the module cache, builder-base, and the Go build cache on every one of the ten builds.
+#
+# Two claims, not one: the push chain (linux/amd64) and the tag chain (multi-arch) can
+# overlap in wall-clock time, and buildkitd takes an exclusive lock on its root.
+#
+# 25Gi because --oci-worker-snapshotter=native copies rather than overlays, so every
+# derived stage is a full copy of builder-base. buildkitd.toml sets a keepBytes GC
+# policy well below this ceiling; the claim size is headroom, not the working set.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: ocidex-buildkit-cache
+    namespace: ocidex-ci
+spec:
+    accessModes:
+        - ReadWriteOnce
+    storageClassName: local-path
+    resources:
+        requests:
+            storage: 25Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: ocidex-buildkit-release-cache
+    namespace: ocidex-ci
+spec:
+    accessModes:
+        - ReadWriteOnce
+    storageClassName: local-path
+    resources:
+        requests:
+            storage: 25Gi
