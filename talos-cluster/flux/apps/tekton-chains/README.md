@@ -14,13 +14,34 @@ Vendored from the `tektoncd/chains` GitHub release; refresh with `./update-manif
 | Setting | Value |
 |---------|-------|
 | TaskRun / PipelineRun format | `slsa/v2alpha4` (SLSA v1.0 provenance) |
-| TaskRun / PipelineRun storage | `tekton, oci` (Run annotations + Rekor, **and** attestations attached to the built images) |
+| TaskRun storage | `tekton, oci` (Run annotations + Rekor, **and** attestations attached to the built images) |
+| PipelineRun storage | `oci` only — see [PipelineRun annotation storage](#why-pipelinerun-storage-omits-tekton) |
 | Signer | `x509` (cosign key in `signing-secrets`) |
 | Pipeline deep inspection | enabled (captures child TaskRun subjects) |
 | OCI storage | `oci` — signs images (simplesigning) + attaches SLSA attestations; **needs registry push creds on the run namespace's SA** (below) |
 | Transparency | enabled → public Rekor (`https://rekor.sigstore.dev`) |
 
 > **Note:** transparency uploads make the signing public key and run metadata public.
+
+### Why PipelineRun storage omits `tekton`
+
+The `tekton` backend writes the signed DSSE payload back onto the Run as a k8s annotation.
+With deep inspection enabled, a large pipeline's aggregate `slsa/v2alpha4` payload exceeds
+the 256 KiB annotation limit, so the write fails with:
+
+```
+metadata.annotations: Too long: may not be more than 262144 bytes
+```
+
+Chains then re-runs the *entire* sign+store cycle on every requeue. One ocidex push run
+produced **9 Rekor entries and 90 OCI attestation uploads** before giving up with
+`chains.tekton.dev/signed=failed` — while the provenance had in fact been stored correctly
+on the first attempt (homelab-374, originally ocidex-tb9).
+
+Dropping `tekton` for PipelineRuns removes the failing write. The full signed attestation
+still reaches the registry (`oci`) and the transparency log (Rekor); only the redundant
+in-cluster annotation copy is gone. TaskRun storage keeps `tekton` — those payloads are
+small and stay well under the limit.
 
 ## Required: registry credentials for OCI storage
 

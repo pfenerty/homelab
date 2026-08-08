@@ -19,7 +19,12 @@ patches:
         artifacts.taskrun.storage: "tekton, oci"
         artifacts.taskrun.signer: "x509"
         artifacts.pipelinerun.format: "slsa/v2alpha4"
-        artifacts.pipelinerun.storage: "tekton, oci"
+        # No `tekton` (annotation) storage for PipelineRuns: with deep inspection the
+        # aggregate payload exceeds the 256 KiB k8s annotation limit on larger pipelines,
+        # so the write 422s and the reconciler re-runs the whole sign+store cycle each
+        # requeue — one ocidex run produced 9 Rekor entries and 90 OCI uploads (homelab-374).
+        # `oci` + Rekor still carry the full signed attestation.
+        artifacts.pipelinerun.storage: "oci"
         artifacts.pipelinerun.signer: "x509"
         artifacts.pipelinerun.enable-deep-inspection: "true"
         # Attach signed SLSA attestations + signatures to the built images in the
