@@ -5,3 +5,9 @@ metadata:
     name: ocidex-ci
     labels:
         pod-security.kubernetes.io/enforce: privileged
+        # Opts the namespace out of Tekton's validating AND defaulting webhooks
+        # (both select `webhooks.knative.dev/exclude DoesNotExist`, so the value is
+        # irrelevant). Required so `kubectl apply -f .tekton/tasks/image-release-*.k8s.yaml`
+        # isn't rejected with "non-existent variable" for shell `${VAR#prefix}` in step
+        # scripts — see ocidex CLAUDE.md § Tekton CI Dev Loop (ocidex-m7xq).
+        webhooks.knative.dev/exclude: "true"
