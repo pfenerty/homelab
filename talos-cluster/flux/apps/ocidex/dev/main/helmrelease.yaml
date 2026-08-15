@@ -46,5 +46,5 @@ spec:
                 frontendUrl: "https://ocidex.app"
                 githubRedirectUrl: "https://ocidex.app/auth/callback"
                 corsAllowedOrigins: "https://ocidex.app"
-        enrichmentWorker:
+        enricherWorkerDefaults:
             replicas: 1
