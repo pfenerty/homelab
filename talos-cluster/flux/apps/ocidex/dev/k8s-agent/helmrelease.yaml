@@ -33,7 +33,7 @@ spec:
       # PLACEHOLDER — register this cluster in OCIDex (POST /api/v1/clusters) and paste
       # its UUID here. Deliberately not guessed: the id decides whose inventory this
       # agent's full-snapshot pushes REPLACE (ADR-044 K7).
-      id: ""
+      id: "cb905b74-84c6-4c4b-ba6c-f17ec024efb5"
     # Every namespace. Narrowing this later prunes the dropped namespaces' workloads
     # from OCIDex on the next push — a deletion, not a filter.
     namespaces: []
