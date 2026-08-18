@@ -33,6 +33,17 @@ resources:
   - ocidex-dev-infra.kustomization.yaml
   - ocidex-dev-main.kustomization.yaml
   - ocidex-dev-operator.kustomization.yaml
+  # SCAFFOLD: enable once the cluster is registered in OCIDex and the key is sealed.
+  # Both are missing on purpose — cluster.id in the HelmRelease is empty, and
+  # apps/ocidex/dev/k8s-agent/ has no secrets.enc.yaml, so reconciling this now would
+  # fail the kustomize build. To turn it on:
+  #   1. POST /api/v1/clusters (or the UI) and paste the returned UUID into
+  #      apps/ocidex/dev/k8s-agent/helmrelease.yaml under values.cluster.id
+  #   2. cp apps/ocidex/dev/k8s-agent/secrets.template.yaml \
+  #         apps/ocidex/dev/k8s-agent/secrets.enc.yaml, fill in a read-write API key
+  #      owned by the namespace owner, then `sops -e -i` it
+  #   3. uncomment the line below
+  # - ocidex-dev-k8s-agent.kustomization.yaml
   - ocidex-dev-registries.kustomization.yaml
   - dev-spaces.kustomization.yaml
   - monitoring.kustomization.yaml

@@ -1,0 +1,41 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ocidex-k8s-agent-dev
+  namespace: flux-system
+spec:
+  interval: 5m
+  releaseName: ocidex-k8s-agent-dev
+  targetNamespace: ocidex-k8s-agent-dev
+  chart:
+    spec:
+      chart: ocidex-k8s-agent
+      version: ">=0.0.0-0"
+      sourceRef:
+        kind: HelmRepository
+        name: ocidex
+        namespace: flux-system
+  values:
+    # No image.tag override: dev renders chart's appVersion (sha-<sha>),
+    # immutable tag advances every build (see dev/main/helmrelease.yaml).
+    image:
+      repository: ghcr.io/pfenerty/ocidex-k8s-agent
+    # In-cluster URL: unlike most agent installs (ADR-044 K1 assumes a cluster with no
+    # OCIDex in it) this one reports on the same cluster that hosts ocidex-dev, so the
+    # push never leaves the cluster network.
+    server:
+      url: "http://ocidex-dev-api.ocidex-dev.svc.cluster.local"
+    apiKey:
+      secretName: ocidex-k8s-agent-dev-secrets
+      secretKey: OCIDEX_API_KEY
+    cluster:
+      # PLACEHOLDER — register this cluster in OCIDex (POST /api/v1/clusters) and paste
+      # its UUID here. Deliberately not guessed: the id decides whose inventory this
+      # agent's full-snapshot pushes REPLACE (ADR-044 K7).
+      id: ""
+    # Every namespace. Narrowing this later prunes the dropped namespaces' workloads
+    # from OCIDex on the next push — a deletion, not a filter.
+    namespaces: []
+    reportInterval: 5m
+    logLevel: info
