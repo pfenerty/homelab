@@ -86,6 +86,24 @@ Talos and Kubernetes upgrade independently. `TALOS_VERSION` and
 make upgrade-all          # upgrade all nodes (103 → 102 → 101)
 make upgrade-101          # upgrade single node by last octet
 make upgrade-x86-01       # amd64 worker (different schematic)
+```
+
+The worker needs one extra step. It runs the `ocidex-pg` CloudNativePG cluster
+as a single instance on `local-path` storage, so the PVC is pinned to that node
+and the PDB allows zero disruptions — `talosctl upgrade`'s drain can never
+succeed there. Open CNPG's node-maintenance window around the upgrade:
+
+```bash
+make cnpg-maintenance-on
+make upgrade-x86-01
+make cnpg-maintenance-off
+```
+
+`reusePVC` keeps the local volume in place while the node reboots. To skip the
+drain entirely instead (pods stop with the reboot), use
+`make upgrade-x86-01 DRAIN=false`.
+
+```bash
 
 # Kubernetes (one run covers every node, control plane and workers)
 make k8s-versions         # kubelet + apiserver versions per node

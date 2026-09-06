@@ -35,7 +35,8 @@ WORKER_IMAGE_URL   := factory.talos.dev/installer/$(WORKER_SCHEMATIC):$(TALOS_VE
 # ── Config generation ──────────────────────────────────────────
 
 .PHONY: generate validate clean repatch-all repatch-x86-01 \
-	upgrade-k8s upgrade-k8s-dry-run k8s-versions
+	upgrade-k8s upgrade-k8s-dry-run k8s-versions \
+	cnpg-maintenance-on cnpg-maintenance-off
 
 generate: $(OUTPUT)/rpi-01.yaml $(OUTPUT)/rpi-02.yaml $(OUTPUT)/rpi-03.yaml $(OUTPUT)/x86-01.yaml
 	@echo "✓ All configs generated in $(OUTPUT)/"
@@ -130,9 +131,34 @@ upgrade-%:
 upgrade-all: upgrade-103 upgrade-102 upgrade-101 upgrade-x86-01
 	@echo "✓ All nodes upgraded to $(TALOS_VERSION)"
 
-# Upgrade x86 worker (uses standard installer, not RPi factory schematic)
+# Upgrade x86 worker (uses standard installer, not RPi factory schematic).
+#
+# The worker hosts single-instance workloads on local-path storage (the ocidex
+# CloudNativePG cluster), whose PVC is bound to this node. Their PDB allows 0
+# disruptions and the pod has nowhere to move, so `talosctl upgrade`'s drain
+# times out and the upgrade never runs. Two ways through:
+#
+#   1. Put CNPG in its node-maintenance window first (graceful, preferred):
+#        make cnpg-maintenance-on && make upgrade-x86-01 && make cnpg-maintenance-off
+#   2. Skip the drain and let the reboot stop the pods:
+#        make upgrade-x86-01 DRAIN=false
+DRAIN ?= true
+
 upgrade-x86-01:
-	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(NODE_IP_x86-01) --image $(WORKER_IMAGE_URL)
+	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(NODE_IP_x86-01) --image $(WORKER_IMAGE_URL) --drain=$(DRAIN)
+
+# CloudNativePG relaxes its PDB while a node-maintenance window is open, and
+# reusePVC keeps the local-path volume in place for when the node returns.
+CNPG_CLUSTER := ocidex-pg
+CNPG_NS      := ocidex-dev
+
+cnpg-maintenance-on:
+	kubectl patch cluster $(CNPG_CLUSTER) -n $(CNPG_NS) --type=merge \
+		-p '{"spec":{"nodeMaintenanceWindow":{"inProgress":true,"reusePVC":true}}}'
+
+cnpg-maintenance-off:
+	kubectl patch cluster $(CNPG_CLUSTER) -n $(CNPG_NS) --type=merge \
+		-p '{"spec":{"nodeMaintenanceWindow":{"inProgress":false}}}'
 
 # ── Kubernetes upgrades ────────────────────────────────────────
 
