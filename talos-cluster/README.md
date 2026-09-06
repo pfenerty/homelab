@@ -17,7 +17,8 @@ All nodes run as control planes with `allowSchedulingOnControlPlanes: true`.
 
 | Component | Details |
 |-----------|---------|
-| OS | Talos Linux v1.12.5 |
+| OS | Talos Linux v1.13.9 (`TALOS_VERSION` in the `Makefile`) |
+| Kubernetes | v1.36.4 (`KUBERNETES_VERSION` in the `Makefile`) |
 | CNI | Cilium 1.19.1 (kube-proxy replacement, WireGuard encryption, VXLAN routing) |
 | GitOps | Flux CD |
 | Secrets | SOPS + age |
@@ -76,10 +77,27 @@ make health
 
 ### Upgrades
 
+Talos and Kubernetes upgrade independently. `TALOS_VERSION` and
+`KUBERNETES_VERSION` in the `Makefile` are the source of truth for both
+(Renovate bumps them).
+
 ```bash
+# Talos (reboots each node — one at a time)
 make upgrade-all          # upgrade all nodes (103 → 102 → 101)
 make upgrade-101          # upgrade single node by last octet
+make upgrade-x86-01       # amd64 worker (different schematic)
+
+# Kubernetes (one run covers every node, control plane and workers)
+make k8s-versions         # kubelet + apiserver versions per node
+make upgrade-k8s-dry-run  # show the plan, change nothing
+make upgrade-k8s          # upgrade to $(KUBERNETES_VERSION)
+make upgrade-k8s K8S_TO=1.36.5   # ad-hoc target version
 ```
+
+`make health` between steps. Note that `make repatch-<node>` carries the
+current `KUBERNETES_VERSION` into that node's machine config, so re-patching a
+single node can leave the cluster version-skewed until `make upgrade-k8s`
+converges it — `make k8s-versions` shows the skew.
 
 ## Prerequisites
 

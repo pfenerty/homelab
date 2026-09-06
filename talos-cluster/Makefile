@@ -34,7 +34,8 @@ WORKER_IMAGE_URL   := factory.talos.dev/installer/$(WORKER_SCHEMATIC):$(TALOS_VE
 
 # ── Config generation ──────────────────────────────────────────
 
-.PHONY: generate validate clean repatch-all repatch-x86-01
+.PHONY: generate validate clean repatch-all repatch-x86-01 \
+	upgrade-k8s upgrade-k8s-dry-run k8s-versions
 
 generate: $(OUTPUT)/rpi-01.yaml $(OUTPUT)/rpi-02.yaml $(OUTPUT)/rpi-03.yaml $(OUTPUT)/x86-01.yaml
 	@echo "✓ All configs generated in $(OUTPUT)/"
@@ -125,3 +126,39 @@ upgrade-all: upgrade-103 upgrade-102 upgrade-101
 # Upgrade x86 worker (uses standard installer, not RPi factory schematic)
 upgrade-x86-01:
 	talosctl upgrade --nodes $(NODE_IP_x86-01) --image $(WORKER_IMAGE_URL) --talosconfig $(TALOSCONFIG)
+
+# ── Kubernetes upgrades ────────────────────────────────────────
+
+# `talosctl upgrade-k8s` upgrades the whole cluster in a single run: it rewrites
+# the control-plane static-pod manifests on every control-plane node, rolls the
+# kubelet on every node (workers included), and re-applies the bundled manifests.
+# It is driven through one control-plane node — the VIP is fine.
+#
+# KUBERNETES_VERSION at the top of this file is the source of truth (Renovate
+# bumps it, and `make generate` bakes it into the machine configs). Override
+# ad hoc with: make upgrade-k8s K8S_TO=1.36.5
+K8S_TO ?= $(KUBERNETES_VERSION:v%=%)
+
+# --with-docs/--with-examples default to true, which injects commented field
+# documentation into the machine config talosctl writes back to each node.
+# Configs here are generated from patches, so keep the node-side copies lean.
+K8S_UPGRADE_FLAGS := --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(VIP) \
+	--with-docs=false --with-examples=false
+
+# Show the upgrade plan without touching the cluster.
+upgrade-k8s-dry-run:
+	talosctl upgrade-k8s $(K8S_UPGRADE_FLAGS) --to $(K8S_TO) --dry-run
+
+# Usage: make upgrade-k8s  (upgrades to $(KUBERNETES_VERSION))
+upgrade-k8s:
+	talosctl upgrade-k8s $(K8S_UPGRADE_FLAGS) --to $(K8S_TO)
+	@echo "✓ Kubernetes upgraded to v$(K8S_TO)"
+
+# Kubelet + control-plane versions per node. Skew here (e.g. after a `repatch-%`
+# that carried a newer KUBERNETES_VERSION into one node's config) means the
+# cluster needs `make upgrade-k8s` to converge.
+k8s-versions:
+	@echo "Target: v$(K8S_TO)"
+	@kubectl get nodes -o custom-columns=NODE:.metadata.name,IP:.status.addresses[0].address,KUBELET:.status.nodeInfo.kubeletVersion,OS-IMAGE:.status.nodeInfo.osImage
+	@kubectl get pods -n kube-system -l k8s-app=kube-apiserver \
+		-o custom-columns=APISERVER:.spec.nodeName,IMAGE:.spec.containers[0].image
