@@ -613,7 +613,7 @@ spec:
         - name: controller
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          image: ghcr.io/tektoncd/pruner/controller-fb9e5cbe6aa14ed1aa64e966d9e4d295:v0.4.1@sha256:fdf683105a9ad0501cc855967a9ba8f7b5a1d38835d519f3075a2b8cb2fa506a
+          image: ghcr.io/tektoncd/pruner/controller-fb9e5cbe6aa14ed1aa64e966d9e4d295:v0.4.3@sha256:640eb96a899cce942dfef98aa401c7e71a63d1789b447fd766aea47bfee7e962
           ports:
             - name: metrics
               containerPort: 9090
@@ -717,7 +717,7 @@ spec:
         - name: webhook
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          image: ghcr.io/tektoncd/pruner/webhook-19748cdf3f89caca6b5e27d42f93fa7f:v0.4.1@sha256:d286f3a294df96a0662008145e5904d808c22b6a3e770b151326116ec441f308
+          image: ghcr.io/tektoncd/pruner/webhook-19748cdf3f89caca6b5e27d42f93fa7f:v0.4.3@sha256:40b80d72ea6e779c9e6d906ad15d05d448fe787bb868e85f461116a9450e8922
           env:
             - name: SYSTEM_NAMESPACE
               valueFrom:
