@@ -143,22 +143,36 @@ upgrade-all: upgrade-103 upgrade-102 upgrade-101 upgrade-x86-01
 #   2. Skip the drain and let the reboot stop the pods:
 #        make upgrade-x86-01 DRAIN=false
 DRAIN ?= true
+# Postgres gets terminationGracePeriodSeconds=1800 from CNPG's stopDelay; its
+# smart shutdown usually lands well inside a couple of minutes, but the 5m
+# talosctl default leaves no margin on a Pi-class cluster.
+DRAIN_TIMEOUT ?= 10m
 
 upgrade-x86-01:
-	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(NODE_IP_x86-01) --image $(WORKER_IMAGE_URL) --drain=$(DRAIN)
+	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(NODE_IP_x86-01) --image $(WORKER_IMAGE_URL) --drain=$(DRAIN) --drain-timeout=$(DRAIN_TIMEOUT)
 
-# CloudNativePG relaxes its PDB while a node-maintenance window is open, and
+# CloudNativePG drops its PDB while a node-maintenance window is open, and
 # reusePVC keeps the local-path volume in place for when the node returns.
+#
+# The Cluster CR is Flux-managed, so the window has to be opened behind a
+# suspended kustomization — otherwise the next reconcile reverts the patch and
+# restores the PDB, which is exactly what breaks a drain that is already in
+# flight.
 CNPG_CLUSTER := ocidex-pg
 CNPG_NS      := ocidex-dev
+CNPG_FLUX_KS := ocidex-dev-infra
 
 cnpg-maintenance-on:
+	flux suspend kustomization $(CNPG_FLUX_KS)
 	kubectl patch cluster $(CNPG_CLUSTER) -n $(CNPG_NS) --type=merge \
 		-p '{"spec":{"nodeMaintenanceWindow":{"inProgress":true,"reusePVC":true}}}'
+	@echo "✓ maintenance window open ($(CNPG_FLUX_KS) suspended)"
 
 cnpg-maintenance-off:
 	kubectl patch cluster $(CNPG_CLUSTER) -n $(CNPG_NS) --type=merge \
 		-p '{"spec":{"nodeMaintenanceWindow":{"inProgress":false}}}'
+	flux resume kustomization $(CNPG_FLUX_KS)
+	@echo "✓ maintenance window closed ($(CNPG_FLUX_KS) resumed)"
 
 # ── Kubernetes upgrades ────────────────────────────────────────
 

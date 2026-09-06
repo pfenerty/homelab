@@ -99,6 +99,10 @@ make upgrade-x86-01
 make cnpg-maintenance-off
 ```
 
+`cnpg-maintenance-on` suspends the `ocidex-dev-infra` Flux kustomization first:
+the Cluster CR is Flux-managed, so without that the next reconcile reverts the
+window and restores the PDB mid-drain. `cnpg-maintenance-off` resumes it.
+
 `reusePVC` keeps the local volume in place while the node reboots. To skip the
 drain entirely instead (pods stop with the reboot), use
 `make upgrade-x86-01 DRAIN=false`.
