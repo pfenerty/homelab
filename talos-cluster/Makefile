@@ -20,7 +20,7 @@ VIP            := 192.168.1.100
 WORKER_NODES       := x86-01
 NODE_IP_x86-01     := 192.168.1.104
 
-TALOS_VERSION      := v1.13.9
+TALOS_VERSION      := v1.14.0
 KUBERNETES_VERSION := v1.36.4
 # RPi (arm64) control-plane nodes: unchanged (sbc-raspberrypi overlay, no extensions).
 # Multi-arch container builds are pinned to the amd64 worker, so binfmt lives only there.
@@ -40,9 +40,16 @@ WORKER_IMAGE_URL   := factory.talos.dev/installer/$(WORKER_SCHEMATIC):$(TALOS_VE
 generate: $(OUTPUT)/rpi-01.yaml $(OUTPUT)/rpi-02.yaml $(OUTPUT)/rpi-03.yaml $(OUTPUT)/x86-01.yaml
 	@echo "✓ All configs generated in $(OUTPUT)/"
 
-$(OUTPUT)/controlplane.yaml: $(SECRETS) $(wildcard $(PATCHES)/*.yaml)
+# Makefile is a prerequisite so a TALOS_VERSION/KUBERNETES_VERSION bump forces a
+# regenerate — otherwise the configs on disk keep the versions they were pinned
+# to and `repatch-%` silently applies a stale one.
+$(OUTPUT)/controlplane.yaml: $(SECRETS) $(wildcard $(PATCHES)/*.yaml) Makefile
 	@mkdir -p $(OUTPUT)
 	sops exec-file $(SECRETS) 'talosctl gen config $(CLUSTER_NAME) $(ENDPOINT) --with-secrets {} --talos-version $(TALOS_VERSION) --kubernetes-version $(KUBERNETES_VERSION:v%=%) --output $(OUTPUT)/ --config-patch @$(PATCHES)/all-nodes.yaml --config-patch-control-plane @$(PATCHES)/controlplane.yaml --force'
+	@# `gen config` writes talosconfig with `endpoints: []`, so every talosctl
+	@# call that does not pass --endpoints fails with "failed to determine
+	@# endpoints". Point it at the control-plane nodes once, here.
+	talosctl --talosconfig $(TALOSCONFIG) config endpoint $(NODE_IPS)
 
 $(OUTPUT)/rpi-%.yaml: $(OUTPUT)/controlplane.yaml $(PATCHES)/rpi-%-network.yaml
 	talosctl machineconfig patch $(OUTPUT)/controlplane.yaml \
@@ -108,10 +115,10 @@ bootstrap:
 	talosctl bootstrap --nodes 192.168.1.101
 
 kubeconfig:
-	talosctl kubeconfig --nodes $(VIP) -f ~/.kube/config
+	talosctl kubeconfig --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(VIP) -f ~/.kube/config
 
 health:
-	talosctl health --nodes $(VIP) --wait-timeout 15m
+	talosctl health --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(VIP) --wait-timeout 15m
 
 # ── Upgrades ───────────────────────────────────────────────────
 
@@ -120,12 +127,12 @@ upgrade-%:
 	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints 192.168.1.$* --nodes 192.168.1.$* --image $(IMAGE_URL)
 
 # Upgrade all nodes: last-to-first order (103 → 102 → 101)
-upgrade-all: upgrade-103 upgrade-102 upgrade-101
+upgrade-all: upgrade-103 upgrade-102 upgrade-101 upgrade-x86-01
 	@echo "✓ All nodes upgraded to $(TALOS_VERSION)"
 
 # Upgrade x86 worker (uses standard installer, not RPi factory schematic)
 upgrade-x86-01:
-	talosctl upgrade --nodes $(NODE_IP_x86-01) --image $(WORKER_IMAGE_URL) --talosconfig $(TALOSCONFIG)
+	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(NODE_IP_x86-01) --image $(WORKER_IMAGE_URL)
 
 # ── Kubernetes upgrades ────────────────────────────────────────
 
