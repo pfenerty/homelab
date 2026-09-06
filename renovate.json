@@ -2,11 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
   "timezone": "America/Los_Angeles",
-  "prHourlyLimit": 4,
-  "prConcurrentLimit": 10,
-  "nix": {
-    "enabled": true
-  },
   "flux": {
     "fileMatch": [
       "(^|/)talos-cluster/flux/.+\\.ya?ml$",
