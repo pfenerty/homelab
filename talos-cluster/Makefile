@@ -35,8 +35,8 @@ WORKER_IMAGE_URL   := factory.talos.dev/installer/$(WORKER_SCHEMATIC):$(TALOS_VE
 # ── Config generation ──────────────────────────────────────────
 
 .PHONY: generate validate clean repatch-all repatch-x86-01 \
-	upgrade-k8s upgrade-k8s-dry-run k8s-versions \
-	cnpg-maintenance-on cnpg-maintenance-off
+	upgrade-all upgrade-x86-01 upgrade-k8s upgrade-k8s-dry-run k8s-versions \
+	cnpg-maintenance-on cnpg-maintenance-off bootstrap kubeconfig health
 
 generate: $(OUTPUT)/rpi-01.yaml $(OUTPUT)/rpi-02.yaml $(OUTPUT)/rpi-03.yaml $(OUTPUT)/x86-01.yaml
 	@echo "✓ All configs generated in $(OUTPUT)/"
@@ -123,55 +123,112 @@ health:
 
 # ── Upgrades ───────────────────────────────────────────────────
 
-# Usage: make upgrade-103  (upgrades node at 192.168.1.103)
-upgrade-%:
-	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints 192.168.1.$* --nodes 192.168.1.$* --image $(IMAGE_URL)
+# Every Talos upgrade cordons and drains the node before rebooting it, so a run
+# that dies partway leaves the node cordoned with nothing upgraded. Each target
+# below uncordons on the way out — success, failure or Ctrl-C.
 
-# Upgrade all nodes: last-to-first order (103 → 102 → 101)
-upgrade-all: upgrade-103 upgrade-102 upgrade-101 upgrade-x86-01
-	@echo "✓ All nodes upgraded to $(TALOS_VERSION)"
-
-# Upgrade x86 worker (uses standard installer, not RPi factory schematic).
-#
-# The worker hosts single-instance workloads on local-path storage (the ocidex
-# CloudNativePG cluster), whose PVC is bound to this node. Their PDB allows 0
-# disruptions and the pod has nowhere to move, so `talosctl upgrade`'s drain
-# times out and the upgrade never runs. Two ways through:
-#
-#   1. Put CNPG in its node-maintenance window first (graceful, preferred):
-#        make cnpg-maintenance-on && make upgrade-x86-01 && make cnpg-maintenance-off
-#   2. Skip the drain and let the reboot stop the pods:
-#        make upgrade-x86-01 DRAIN=false
-DRAIN ?= true
-# Postgres gets terminationGracePeriodSeconds=1800 from CNPG's stopDelay; its
-# smart shutdown usually lands well inside a couple of minutes, but the 5m
-# talosctl default leaves no margin on a Pi-class cluster.
+DRAIN         ?= true
+# CNPG gives the Postgres pod terminationGracePeriodSeconds=1800; talosctl's 5m
+# default leaves no margin on Pi-class hardware.
 DRAIN_TIMEOUT ?= 10m
 
-upgrade-x86-01:
-	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(NODE_IP_x86-01) --image $(WORKER_IMAGE_URL) --drain=$(DRAIN) --drain-timeout=$(DRAIN_TIMEOUT)
+# Talos node names are generated (talos-jlf-6ro), so resolve them from the IP.
+node_name = kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.addresses[?(@.type=="InternalIP")].address}{"\n"}{end}' 2>/dev/null | awk '$$2=="$(1)"{print $$1}'
 
-# CloudNativePG drops its PDB while a node-maintenance window is open, and
-# reusePVC keeps the local-path volume in place for when the node returns.
+# Usage: make upgrade-103  (upgrades node at 192.168.1.103)
+upgrade-%:
+	@if [ "$*" = "104" ]; then \
+		echo "✗ 192.168.1.104 is the amd64 worker — use 'make upgrade-x86-01' (different schematic)"; \
+		exit 1; \
+	fi
+	@set -e; \
+	node=$$($(call node_name,192.168.1.$*)); rc=0; \
+	trap 'kubectl uncordon "$$node" >/dev/null 2>&1 || true; exit 130' INT TERM; \
+	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints 192.168.1.$* --nodes 192.168.1.$* \
+		--image $(IMAGE_URL) --drain=$(DRAIN) --drain-timeout=$(DRAIN_TIMEOUT) || rc=$$?; \
+	kubectl uncordon "$$node" >/dev/null 2>&1 || true; \
+	exit $$rc
+
+# Upgrade every node: control plane last-to-first (103 → 102 → 101), then the
+# worker, then prove the cluster actually came back.
+upgrade-all: upgrade-103 upgrade-102 upgrade-101 upgrade-x86-01
+	@echo "✓ All nodes upgraded to $(TALOS_VERSION)"
+	@$(MAKE) --no-print-directory health
+
+# Upgrade the amd64 worker (its own schematic — binfmt-misc, not the RPi overlay).
 #
-# The Cluster CR is Flux-managed, so the window has to be opened behind a
-# suspended kustomization — otherwise the next reconcile reverts the patch and
-# restores the PDB, which is exactly what breaks a drain that is already in
-# flight.
+# The worker runs ocidex's CloudNativePG instance on local-path storage: the PVC
+# is pinned to this node and the PDB allows zero disruptions, so a plain drain
+# can never evict it. Opening CNPG's node-maintenance window drops that PDB —
+# but the Cluster CR is Flux-managed, and a reconcile puts the PDB straight back
+# mid-drain, so the window only holds while its kustomization is suspended.
+# This target runs that whole sequence and always unwinds it, failure included.
+#
+#   make upgrade-x86-01                    # maintenance window + drain
+#   make upgrade-x86-01 MAINTENANCE=false  # leave CNPG and Flux alone
+#   make upgrade-x86-01 DRAIN=false        # no cordon/drain; reboot stops pods
+MAINTENANCE ?= true
+
+upgrade-x86-01:
+	@set -e; \
+	node=$$($(call node_name,$(NODE_IP_x86-01))); rc=0; \
+	unwind() { \
+		if [ "$(MAINTENANCE)" = "true" ]; then $(MAKE) --no-print-directory cnpg-maintenance-off; fi; \
+		kubectl uncordon "$$node" >/dev/null 2>&1 || true; \
+	}; \
+	trap 'unwind; exit 130' INT TERM; \
+	if [ "$(MAINTENANCE)" = "true" ]; then $(MAKE) --no-print-directory cnpg-maintenance-on; fi; \
+	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(NODE_IP_x86-01) \
+		--image $(WORKER_IMAGE_URL) --drain=$(DRAIN) --drain-timeout=$(DRAIN_TIMEOUT) || rc=$$?; \
+	unwind; \
+	exit $$rc
+
+# ── CloudNativePG node-maintenance window ──────────────────────
+
 CNPG_CLUSTER := ocidex-pg
 CNPG_NS      := ocidex-dev
 CNPG_FLUX_KS := ocidex-dev-infra
 
+# Suspend Flux, open the window, and confirm the PDB is actually gone — that is
+# the precondition a drain depends on, and it is worth failing early rather than
+# discovering it five minutes into an eviction retry loop. If the window cannot
+# be opened, unwind (resume Flux) rather than leaving reconciliation suspended.
 cnpg-maintenance-on:
-	flux suspend kustomization $(CNPG_FLUX_KS)
-	kubectl patch cluster $(CNPG_CLUSTER) -n $(CNPG_NS) --type=merge \
-		-p '{"spec":{"nodeMaintenanceWindow":{"inProgress":true,"reusePVC":true}}}'
-	@echo "✓ maintenance window open ($(CNPG_FLUX_KS) suspended)"
+	@set -e; \
+	flux suspend kustomization $(CNPG_FLUX_KS); \
+	for i in 1 2 3 4 5 6; do \
+		if kubectl patch cluster $(CNPG_CLUSTER) -n $(CNPG_NS) --type=merge \
+			-p '{"spec":{"nodeMaintenanceWindow":{"inProgress":true,"reusePVC":true}}}' >/dev/null 2>&1; then \
+			break; \
+		fi; \
+		echo "  CNPG webhook not answering yet ($$i/6) — its operator pod may still be rescheduling"; \
+		sleep 10; \
+	done; \
+	for i in 1 2 3 4 5 6; do \
+		if [ -z "$$(kubectl get pdb -n $(CNPG_NS) -l cnpg.io/cluster=$(CNPG_CLUSTER) -o name 2>/dev/null)" ]; then \
+			echo "✓ maintenance window open ($(CNPG_FLUX_KS) suspended, PDB dropped)"; \
+			exit 0; \
+		fi; \
+		sleep 5; \
+	done; \
+	echo "✗ $(CNPG_CLUSTER) PDB is still present — a drain would block. Unwinding."; \
+	$(MAKE) --no-print-directory cnpg-maintenance-off; \
+	exit 1
 
+# The patch can fail right after the worker reboots: CNPG's webhook is served by
+# an operator pod that runs on that very node. Retry it, but resume Flux either
+# way — a resumed reconcile clears the window on its own, since git never
+# declared it.
 cnpg-maintenance-off:
-	kubectl patch cluster $(CNPG_CLUSTER) -n $(CNPG_NS) --type=merge \
-		-p '{"spec":{"nodeMaintenanceWindow":{"inProgress":false}}}'
-	flux resume kustomization $(CNPG_FLUX_KS)
+	@for i in 1 2 3 4 5 6; do \
+		if kubectl patch cluster $(CNPG_CLUSTER) -n $(CNPG_NS) --type=merge \
+			-p '{"spec":{"nodeMaintenanceWindow":{"inProgress":false}}}' >/dev/null 2>&1; then \
+			break; \
+		fi; \
+		echo "  CNPG webhook not answering yet ($$i/6) — its operator runs on the node that just rebooted"; \
+		sleep 10; \
+	done
+	@flux resume kustomization $(CNPG_FLUX_KS)
 	@echo "✓ maintenance window closed ($(CNPG_FLUX_KS) resumed)"
 
 # ── Kubernetes upgrades ────────────────────────────────────────

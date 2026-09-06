@@ -88,24 +88,28 @@ make upgrade-101          # upgrade single node by last octet
 make upgrade-x86-01       # amd64 worker (different schematic)
 ```
 
-The worker needs one extra step. It runs the `ocidex-pg` CloudNativePG cluster
-as a single instance on `local-path` storage, so the PVC is pinned to that node
-and the PDB allows zero disruptions — `talosctl upgrade`'s drain can never
-succeed there. Open CNPG's node-maintenance window around the upgrade:
+`make upgrade-x86-01` handles the worker's complication on its own. That node
+runs `ocidex-pg` as a single CloudNativePG instance on `local-path` storage, so
+the PVC is pinned there and the PDB allows zero disruptions — a plain drain can
+never evict it. The target opens CNPG's node-maintenance window (which drops the
+PDB, with `reusePVC` keeping the volume) and closes it afterwards, on failure
+and Ctrl-C too.
+
+The window is opened behind a suspended `ocidex-dev-infra` kustomization,
+because the Cluster CR is Flux-managed: an unsuspended reconcile puts the PDB
+back mid-drain, which is precisely what deadlocks a drain already in flight.
+`make cnpg-maintenance-on` / `off` expose the two halves if you need them by
+hand — `off` is safe to run at any time to get back to a clean state.
+
+Escape hatches, both of which leave CNPG alone:
 
 ```bash
-make cnpg-maintenance-on
-make upgrade-x86-01
-make cnpg-maintenance-off
+make upgrade-x86-01 MAINTENANCE=false  # no window, no Flux suspend
+make upgrade-x86-01 DRAIN=false        # no cordon/drain; reboot stops the pods
 ```
 
-`cnpg-maintenance-on` suspends the `ocidex-dev-infra` Flux kustomization first:
-the Cluster CR is Flux-managed, so without that the next reconcile reverts the
-window and restores the PDB mid-drain. `cnpg-maintenance-off` resumes it.
-
-`reusePVC` keeps the local volume in place while the node reboots. To skip the
-drain entirely instead (pods stop with the reboot), use
-`make upgrade-x86-01 DRAIN=false`.
+Every upgrade target uncordons its node on the way out, so an interrupted run
+doesn't leave the cluster short a node.
 
 ```bash
 
