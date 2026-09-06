@@ -41,7 +41,7 @@ generate: $(OUTPUT)/rpi-01.yaml $(OUTPUT)/rpi-02.yaml $(OUTPUT)/rpi-03.yaml $(OU
 
 $(OUTPUT)/controlplane.yaml: $(SECRETS) $(wildcard $(PATCHES)/*.yaml)
 	@mkdir -p $(OUTPUT)
-	sops exec-file $(SECRETS) 'talosctl gen config $(CLUSTER_NAME) $(ENDPOINT) --with-secrets {} --kubernetes-version $(KUBERNETES_VERSION:v%=%) --output $(OUTPUT)/ --config-patch @$(PATCHES)/all-nodes.yaml --config-patch-control-plane @$(PATCHES)/controlplane.yaml --force'
+	sops exec-file $(SECRETS) 'talosctl gen config $(CLUSTER_NAME) $(ENDPOINT) --with-secrets {} --talos-version $(TALOS_VERSION) --kubernetes-version $(KUBERNETES_VERSION:v%=%) --output $(OUTPUT)/ --config-patch @$(PATCHES)/all-nodes.yaml --config-patch-control-plane @$(PATCHES)/controlplane.yaml --force'
 
 $(OUTPUT)/rpi-%.yaml: $(OUTPUT)/controlplane.yaml $(PATCHES)/rpi-%-network.yaml
 	talosctl machineconfig patch $(OUTPUT)/controlplane.yaml \
@@ -116,7 +116,7 @@ health:
 
 # Usage: make upgrade-103  (upgrades node at 192.168.1.103)
 upgrade-%:
-	talosctl upgrade --nodes 192.168.1.$* --image $(IMAGE_URL)
+	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints 192.168.1.$* --nodes 192.168.1.$* --image $(IMAGE_URL)
 
 # Upgrade all nodes: last-to-first order (103 → 102 → 101)
 upgrade-all: upgrade-103 upgrade-102 upgrade-101
