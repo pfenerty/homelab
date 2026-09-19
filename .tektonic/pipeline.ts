@@ -142,13 +142,32 @@ const talosPatches = new Task({
     ],
 });
 
-// Every check is independent, so Tekton would start all five at once. Three of the
+/**
+ * Vendored upstream release manifests must match the version their update script pins.
+ *
+ * Each is one file carrying CRDs, RBAC and ConfigMaps alongside image tags, so an
+ * image-only bump leaves new binaries on old CRDs. PAC ran v0.51.0 binaries against
+ * v0.48.0 CRDs for months this way, unseen.
+ */
+const vendoredManifests = new Task({
+    name: "vendored-manifests",
+    timeout: "5m",
+    steps: [
+        {
+            name: "check-versions",
+            image: K8S_TOOLS,
+            script: sh`sh .tektonic/scripts/check-vendored-manifests.sh`,
+        },
+    ],
+});
+
+// Every check is independent, so Tekton would start all six at once. Three of the
 // four nodes are Pi 4s and the workspace PVC is local-path (node-pinned), which puts
-// all five pods on one node — two at a time finishes no slower and leaves the node
+// all six pods on one node — two at a time finishes no slower and leaves the node
 // able to run the workloads it is actually hosting.
 const checks = () =>
     withConcurrency(
-        [manifests, fluxWiring, sopsEncryption, secretScan, talosPatches],
+        [manifests, fluxWiring, sopsEncryption, secretScan, talosPatches, vendoredManifests],
         2,
     );
 

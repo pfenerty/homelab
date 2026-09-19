@@ -1,0 +1,39 @@
+# Scrape targets for Pipelines as Code.
+#
+# Upstream ships these inside pipelines-as-code/release.yaml, but they are
+# monitoring.coreos.com/v1 and that CRD comes from kube-prometheus-stack. The
+# `pipelines-as-code` Kustomization deliberately does not depend on `monitoring`
+# (CI should not be gated on the monitoring stack), so they live here instead —
+# monitoring-extras already dependsOn monitoring. See that app's
+# update-manifests.sh, which strips them on every re-vendor.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pipelines-as-code-watcher
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [pipelines-as-code]
+  selector:
+    matchLabels:
+      app: pipelines-as-code-watcher
+  jobLabel: app
+  endpoints:
+    - port: http-metrics
+      interval: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pipelines-as-code-controller
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [pipelines-as-code]
+  selector:
+    matchLabels:
+      app: pipelines-as-code-controller
+  jobLabel: app
+  endpoints:
+    - port: http-metrics
+      interval: 10s

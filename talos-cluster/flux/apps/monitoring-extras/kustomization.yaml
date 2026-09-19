@@ -4,4 +4,5 @@ resources:
   - podmonitor-cnpg.yaml
   - podmonitor-flux.yaml
   - servicemonitor-keda.yaml
+  - servicemonitor-pac.yaml
   - dashboard-keda.yaml
