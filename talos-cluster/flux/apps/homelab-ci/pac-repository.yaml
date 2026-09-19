@@ -1,0 +1,10 @@
+# Tells Pipelines as Code to watch this repository and run the PipelineRun
+# templates committed under .tekton/. Those templates are generated — see
+# .tektonic/ for the definition they come from.
+apiVersion: pipelinesascode.tekton.dev/v1alpha1
+kind: Repository
+metadata:
+    name: homelab
+    namespace: homelab-ci
+spec:
+    url: https://github.com/pfenerty/homelab

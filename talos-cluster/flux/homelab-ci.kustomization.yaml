@@ -1,18 +1,17 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-    name: tekton-pipelines
+    name: homelab-ci
     namespace: flux-system
 spec:
+    # The Repository CR is a PAC resource, and PAC only reconciles it once its own
+    # CRDs and controller exist.
     dependsOn:
         - name: tekton
+        - name: pipelines-as-code
     interval: 10m0s
-    path: ./talos-cluster/flux/apps/tekton-pipelines
+    path: ./talos-cluster/flux/apps/homelab-ci
     prune: true
     sourceRef:
         kind: GitRepository
         name: flux-system
-    decryption:
-        provider: sops
-        secretRef:
-            name: sops-age

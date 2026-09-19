@@ -1,0 +1,45 @@
+# gitleaks configuration for homelab.
+#
+# The repo deliberately commits encrypted material and vendored upstream release
+# manifests. Both are dense with high-entropy strings that are not secrets, and an
+# scanner that cries wolf on them gets ignored — which is how a real leak gets through.
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "SOPS ciphertext and age recipients are meant to be committed."
+paths = [
+    '''.*\.enc\.yaml$''',
+    '''.*\.secret\.yaml$''',
+    '''talos-cluster/talos/secrets\.yaml$''',
+    '''\.sops\.yaml$''',
+]
+
+[[allowlists]]
+description = """
+Build output. build-manifests.sh concatenates the vendored manifests below into
+.ci/, where their own path allowlists no longer match them. It is a build artifact
+in the Tekton workspace, never committed."""
+paths = ['''(^|/)\.ci/''']
+
+[[allowlists]]
+description = "Vendored upstream release manifests — refreshed by update-manifests.sh, not authored here."
+paths = [
+    '''talos-cluster/flux/flux-system/gotk-components\.yaml$''',
+    '''talos-cluster/flux/apps/tekton/(pipelines|triggers|interceptors|dashboard)\.yaml$''',
+    '''talos-cluster/flux/apps/tekton-chains/chains\.yaml$''',
+    '''talos-cluster/flux/apps/pipelines-as-code/release\.yaml$''',
+    '''talos-cluster/flux/apps/cloudflare-gateway/install\.yaml$''',
+]
+
+[[allowlists]]
+description = "Public half of the Tekton Chains signing key — publishing it is the point."
+paths = ['''talos-cluster/flux/apps/tekton-chains/cosign\.pub$''']
+
+[[allowlists]]
+description = """
+Placeholder bodies in *.secret.template.yaml. Matched on content, not path, so a
+template that ever gets a real key pasted into it still trips the scanner."""
+regexTarget = "match"
+regexes = ['''REPLACE_WITH_[A-Z_]+''']

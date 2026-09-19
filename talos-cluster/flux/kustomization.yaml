@@ -15,6 +15,7 @@ resources:
   - hubble.kustomization.yaml
   - cloudflare-gateway.kustomization.yaml
   - renovate.kustomization.yaml
+  - homelab-ci.kustomization.yaml
   - ocidex-ci.kustomization.yaml
   - apko-cicd.kustomization.yaml
   - apko-cicd-update.kustomization.yaml

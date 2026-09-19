@@ -1,0 +1,17 @@
+{
+  "name": "homelab-ci",
+  "private": true,
+  "description": "Tektonic definition for this repository's CI. Synthesizes ../.tekton/.",
+  "tektonic": {
+    "entry": "pipeline.ts"
+  },
+  "scripts": {
+    "synth": "tektonic synth",
+    "check": "tektonic check",
+    "graph": "tektonic graph",
+    "lint": "tektonic lint scripts"
+  },
+  "dependencies": {
+    "@pfenerty/tektonic": "github:pfenerty/tektonic#ddac5dcbc716395a3f10710ba22ef3c537da7c7a"
+  }
+}
