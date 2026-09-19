@@ -1,4 +1,8 @@
 # talos/patches/all-nodes.yaml
+#
+# Talos 1.14 moved several settings out of the v1alpha1 document into dedicated
+# configuration documents, and rejects a config that sets the same thing in both
+# places. What stays in v1alpha1 below is what 1.14 still owns there.
 machine:
   time:
     disabled: false
@@ -8,21 +12,30 @@ machine:
       - time.cloudflare.com
       - pool.ntp.org
     bootTimeout: 5m # RPi has no RTC; give extra time for NTP sync before cert generation
-  network:
-    nameservers:
-      - 1.1.1.1
-      - 8.8.8.8
   sysctls:
     vm.dirty_writeback_centisecs: "1500"
     user.max_user_namespaces: "62383"
-  files:
-    - content: |
-        [plugins."io.containerd.grpc.v1.cri"]
-          [plugins."io.containerd.grpc.v1.cri".containerd]
-            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
-              [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
-                [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
-                  NoNewPrivileges = false
-      path: /etc/cri/conf.d/20-customization.part
-      op: create
-      permissions: 0o644
+---
+# Was machine.network.nameservers. 1.14 takes nameservers as a list of objects
+# rather than bare strings, so each entry can carry a protocol (DoT/DoH) and TLS
+# server name; plain Do53 stays the default and is what these two are.
+apiVersion: v1alpha1
+kind: ResolverConfig
+nameservers:
+  - address: 1.1.1.1
+  - address: 8.8.8.8
+---
+# Was a machine.files entry writing this TOML to /etc/cri/conf.d/20-customization.part.
+# `machine.files` is deprecated in 1.14; CRICustomizationConfig is its replacement and
+# writes the same fragment. The name is kept as `20-customization` because Talos merges
+# customizations in lexicographical order by name — the leading 20 is the ordering.
+apiVersion: v1alpha1
+kind: CRICustomizationConfig
+name: 20-customization
+content: |
+  [plugins."io.containerd.grpc.v1.cri"]
+    [plugins."io.containerd.grpc.v1.cri".containerd]
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            NoNewPrivileges = false

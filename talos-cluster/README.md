@@ -17,8 +17,8 @@ All nodes run as control planes with `allowSchedulingOnControlPlanes: true`.
 
 | Component | Details |
 |-----------|---------|
-| OS | Talos Linux v1.13.9 (`TALOS_VERSION` in the `Makefile`) |
-| Kubernetes | v1.36.4 (`KUBERNETES_VERSION` in the `Makefile`) |
+| OS | Talos Linux v1.14.0 (`TALOS_VERSION` in the `Makefile`) |
+| Kubernetes | v1.37.0 (`KUBERNETES_VERSION` in the `Makefile`) |
 | CNI | Cilium 1.19.1 (kube-proxy replacement, WireGuard encryption, VXLAN routing) |
 | GitOps | Flux CD |
 | Secrets | SOPS + age |
@@ -40,6 +40,41 @@ talos-cluster/
     ├── apps.kustomization.yaml
     └── apps/                 # Application workloads
 ```
+
+## Machine config patches
+
+Talos 1.14 split most settings out of the single `v1alpha1` document into dedicated
+configuration documents, and **rejects a config that sets the same thing in both
+places**. The patches under `talos/patches/` are multi-document as a result: a
+`v1alpha1` document for what still lives there, then one document per component.
+
+| Setting | Before 1.14 | Now |
+|---|---|---|
+| Nameservers | `machine.network.nameservers` | `ResolverConfig` (list of objects, not strings) |
+| Kubelet reservations | `machine.kubelet.extraConfig` | `KubeletConfig.config` |
+| No bundled CNI | `cluster.network.cni.name: none` | delete the `KubeFlannelCNIConfig` document |
+| kube-proxy off | `cluster.proxy.disabled: true` | `KubeProxyConfig.enabled: false` |
+| apiserver flags/env | `cluster.apiServer` | `KubeAPIServerConfig` |
+| controller-manager flags | `cluster.controllerManager` | `KubeControllerManagerConfig` |
+| scheduler flags | `cluster.scheduler` | `KubeSchedulerConfig` |
+| containerd CRI fragment | `machine.files` (deprecated) | `CRICustomizationConfig` |
+
+etcd (`cluster.etcd.extraArgs`), `machine.time` and `machine.sysctls` are still read
+from `v1alpha1` and stay there.
+
+There is no "disable the bundled CNI" switch in 1.14. `talosctl gen config` always
+emits a `KubeFlannelCNIConfig`, so running Cilium instead means removing that document
+— `$patch: delete` in `controlplane.yaml` does it. Leave it in and Talos deploys
+Flannel alongside Cilium.
+
+Check a patch change without touching secrets or the cluster:
+
+```bash
+make validate-patches
+```
+
+It generates the node configs against throwaway PKI and validates each one, which is
+the same check CI runs.
 
 ## Common Operations
 
