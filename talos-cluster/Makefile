@@ -34,7 +34,7 @@ WORKER_IMAGE_URL   := factory.talos.dev/installer/$(WORKER_SCHEMATIC):$(TALOS_VE
 
 # ── Config generation ──────────────────────────────────────────
 
-.PHONY: generate validate clean repatch-all repatch-x86-01 \
+.PHONY: generate validate validate-patches clean apply-all repatch-all repatch-x86-01 \
 	upgrade-all upgrade-x86-01 upgrade-k8s upgrade-k8s-dry-run k8s-versions \
 	cnpg-maintenance-on cnpg-maintenance-off bootstrap kubeconfig health
 
@@ -61,6 +61,12 @@ $(OUTPUT)/x86-01.yaml: $(OUTPUT)/controlplane.yaml $(PATCHES)/x86-01-network.yam
 	talosctl machineconfig patch $(OUTPUT)/worker.yaml \
 		--patch @$(PATCHES)/x86-01-network.yaml \
 		--output $@
+
+# Validate the committed patches without touching secrets or the cluster — the same
+# check CI runs (.tektonic/scripts/validate-talos-patches.sh), so a red pipeline can
+# be reproduced locally in one command.
+validate-patches:
+	@../.tektonic/scripts/validate-talos-patches.sh
 
 validate: generate
 	@for f in $(NODES) $(WORKER_NODES); do \

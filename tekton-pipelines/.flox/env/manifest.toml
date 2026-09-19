@@ -1,4 +1,0 @@
-schema-version = "1.10.0"
-
-[install]
-nodejs.pkg-path = "nodejs"

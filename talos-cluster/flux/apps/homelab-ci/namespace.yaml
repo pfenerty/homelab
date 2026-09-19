@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: homelab-ci
+    labels:
+        # `baseline`, not `privileged` as the other CI namespaces use: these checks
+        # build manifests and run linters, so nothing here needs host access.
+        #
+        # Not `restricted` either. That level requires allowPrivilegeEscalation and
+        # capabilities.drop on *every* container, including the ones Tekton injects
+        # itself, and this cluster does not set Tekton's `set-security-context`
+        # feature flag — so `restricted` would reject the PipelineRun pods outright.
+        # Revisit if that flag is ever enabled.
+        pod-security.kubernetes.io/enforce: baseline
