@@ -5,7 +5,7 @@ metadata:
     pipelinesascode.tekton.dev/max-keep-runs: "5"
     pipelinesascode.tekton.dev/on-event: "[push]"
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
-    pipelinesascode.tekton.dev/task: "[.tekton/tasks/git-clone.k8s.yaml, .tekton/tasks/manifests.k8s.yaml, .tekton/tasks/flux-wiring.k8s.yaml, .tekton/tasks/sops-encryption.k8s.yaml, .tekton/tasks/secret-scan.k8s.yaml, .tekton/tasks/talos-patches.k8s.yaml]"
+    pipelinesascode.tekton.dev/task: "[.tekton/tasks/git-clone.k8s.yaml, .tekton/tasks/manifests.k8s.yaml, .tekton/tasks/flux-wiring.k8s.yaml, .tekton/tasks/sops-encryption.k8s.yaml, .tekton/tasks/secret-scan.k8s.yaml, .tekton/tasks/talos-patches.k8s.yaml, .tekton/tasks/vendored-manifests.k8s.yaml]"
   name: homelab-validate-push
 spec:
   params:
@@ -94,6 +94,16 @@ spec:
           kind: Task
           name: homelab-talos-patches
         timeout: 15m
+        workspaces:
+          - name: workspace
+            workspace: workspace
+      - name: vendored-manifests
+        runAfter:
+          - secret-scan
+        taskRef:
+          kind: Task
+          name: homelab-vendored-manifests
+        timeout: 5m
         workspaces:
           - name: workspace
             workspace: workspace
