@@ -9,15 +9,11 @@ ROOT_KS="$FLUX_DIR/kustomization.yaml"
 
 # Kustomization files deliberately not wired into the root kustomization.
 #
-# This list is a ratchet, not a config knob: it exists so the orphan check can be
-# enforced today without first clearing the backlog. Shrink it, never grow it.
-#
-#   binfmt   tonistiigi/binfmt registers qemu inside its own container mount
-#            namespace, which does not persist host-globally on Talos, so cross-arch
-#            melange builds still fail. Needs a host-init-namespace registrar first.
-#   zot      parked — never enabled.
-#   podinfo  parked — never enabled.
-ALLOWED_ORPHANS="binfmt podinfo zot"
+# Empty, and worth keeping that way: the three that used to be here (binfmt, zot,
+# podinfo) were deleted rather than carried, so every *.kustomization.yaml in the tree
+# is now reachable. An entry here is a manifest that exists but does nothing, which is
+# indistinguishable from a mistake — prefer deleting it.
+ALLOWED_ORPHANS=""
 
 rc=0
 fail() { printf 'FAIL  %s\n' "$*"; rc=1; }
