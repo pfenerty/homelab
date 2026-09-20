@@ -18,8 +18,8 @@ set -- "$OUT"/*.yaml
 
 printf 'validating against Kubernetes v%s\n\n' "$k8s"
 
-# -ignore-missing-schemas keeps CRDs the catalog does not carry (ocidex, trek, zot,
-# and friends) from failing the run; the catalog covers the ones that matter here —
+# -ignore-missing-schemas keeps CRDs the catalog does not carry (ocidex, trek, and
+# friends) from failing the run; the catalog covers the ones that matter here —
 # HelmRelease, Kustomization, HelmRepository, Repository, Cluster.
 exec kubeconform \
     -strict \

@@ -1,8 +1,15 @@
 machine:
   # binfmt_misc is provided by the siderolabs/binfmt-misc system extension baked
-  # into this worker's factory image (WORKER_SCHEMATIC). Load it at boot so the
-  # binfmt DaemonSet can register qemu handlers — enabling arm64 emulation for
-  # multi-arch melange/apko builds pinned to this amd64 node.
+  # into this worker's factory image (WORKER_SCHEMATIC). Loaded at boot so qemu
+  # handlers can be registered for multi-arch melange/apko builds, which are pinned
+  # to this amd64 node.
+  #
+  # Nothing registers them today: the tonistiigi/binfmt DaemonSet that used to was
+  # removed, because it registers qemu inside its own container mount namespace and
+  # that does not persist host-globally on Talos. A verified TaskRun confirmed
+  # qemu-aarch64 was absent kernel-wide once its init container exited. Re-enabling
+  # cross-arch builds needs a registrar that enters the host init namespace; the
+  # module and the extension are kept so that work has somewhere to land.
   kernel:
     modules:
       - name: binfmt_misc

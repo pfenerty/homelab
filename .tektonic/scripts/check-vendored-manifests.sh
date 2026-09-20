@@ -23,18 +23,17 @@ talos-cluster/flux/apps/tekton/dashboard.yaml:DASHBOARD_VERSION:talos-cluster/fl
 talos-cluster/flux/apps/tekton-chains/chains.yaml:CHAINS_VERSION:talos-cluster/flux/apps/tekton-chains/update-manifests.sh
 "
 
-# Manifests whose committed copy is already behind the images in it, from before
-# Renovate was pointed away from these files. Each needs its update script re-run and
-# the result reviewed as a real upstream upgrade — a Tekton Pipelines jump of ten minor
-# versions brings new CRDs, not just new tags.
+# Manifests whose committed copy is still behind the images in it, from before Renovate
+# was pointed away from these files. Re-running the update script fixes one, but each is
+# a real upstream upgrade and wants reviewing as such.
 #
 # This list is a ratchet: it reports the drift without failing the build. Shrink it,
 # never grow it. Anything not listed here is enforced.
-KNOWN_DRIFT="talos-cluster/flux/apps/tekton/pipelines.yaml
-talos-cluster/flux/apps/tekton/triggers.yaml
-talos-cluster/flux/apps/tekton/interceptors.yaml
-talos-cluster/flux/apps/tekton/dashboard.yaml
-talos-cluster/flux/apps/tekton-chains/chains.yaml"
+#
+# chains is what is left: pinned at v0.27.1 with v0.29.5 images. Note that its update
+# script would *downgrade* the running images if run as-is — bump CHAINS_VERSION to
+# match what is deployed before re-vendoring, the way tekton/ was.
+KNOWN_DRIFT="talos-cluster/flux/apps/tekton-chains/chains.yaml"
 
 rc=0
 
