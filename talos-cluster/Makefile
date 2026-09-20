@@ -87,11 +87,19 @@ apply-%: $(OUTPUT)/%.yaml
 		--nodes $(NODE_DHCP_IP) \
 		--file $(OUTPUT)/$*.yaml
 
-# Re-apply to already-configured nodes (using their static IPs)
-apply-all:
-	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes 192.168.1.101 --endpoints $(VIP) --file $(OUTPUT)/rpi-01.yaml
-	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes 192.168.1.102 --endpoints $(VIP) --file $(OUTPUT)/rpi-02.yaml
-	talosctl apply-config --talosconfig $(TALOSCONFIG) --nodes 192.168.1.103 --endpoints $(VIP) --file $(OUTPUT)/rpi-03.yaml
+# Re-apply to already-configured nodes (using their static IPs).
+#
+# Driven from $(NODES)/$(WORKER_NODES) rather than a hand-written list: the worker was
+# missing here while the target still claimed to cover every node, so `make apply-all`
+# quietly left x86-01 on whatever config it last received.
+# `foreach` rather than a shell loop: NODE_IP_<node> is a Make variable, so the lookup
+# has to happen at parse time — $(NODE_IP_$$n) inside a `for` would expand to nothing.
+apply-all: generate
+	$(foreach n,$(NODES) $(WORKER_NODES), \
+		talosctl apply-config --talosconfig $(TALOSCONFIG) \
+			--nodes $(NODE_IP_$(n)) --endpoints $(VIP) \
+			--file $(OUTPUT)/$(n).yaml;)
+	@echo "✓ Configs applied to all nodes"
 
 # Re-apply patches to a node by regenerating its config from patches + existing
 # secrets (via the same $(OUTPUT)/%.yaml rules `generate` uses) and applying it.

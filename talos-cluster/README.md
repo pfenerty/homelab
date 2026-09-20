@@ -1,6 +1,7 @@
 # talos-cluster
 
-A three-node Kubernetes cluster running on Raspberry Pi 4s, managed with [Talos Linux](https://www.talos.dev/) and [Flux CD](https://fluxcd.io/).
+A four-node Kubernetes cluster — three Raspberry Pi 4 control planes and one amd64
+worker — managed with [Talos Linux](https://www.talos.dev/) and [Flux CD](https://fluxcd.io/).
 
 ## Hardware
 
@@ -9,9 +10,15 @@ A three-node Kubernetes cluster running on Raspberry Pi 4s, managed with [Talos 
 | rpi-01 | 192.168.1.101 | Control plane |
 | rpi-02 | 192.168.1.102 | Control plane |
 | rpi-03 | 192.168.1.103 | Control plane |
+| x86-01 | 192.168.1.104 | Worker (amd64) |
 | VIP | 192.168.1.100 | Kubernetes API (floating) |
 
-All nodes run as control planes with `allowSchedulingOnControlPlanes: true`.
+The three Pis run as control planes with `allowSchedulingOnControlPlanes: true`.
+
+`x86-01` is an amd64 worker on its own Talos schematic (`WORKER_SCHEMATIC`, with the
+`siderolabs/binfmt-misc` extension), so it upgrades separately — see `make upgrade-x86-01`.
+It also hosts `ocidex-pg` on `local-path` storage, which is why that target opens a
+CloudNativePG maintenance window.
 
 ## Stack
 
@@ -19,7 +26,7 @@ All nodes run as control planes with `allowSchedulingOnControlPlanes: true`.
 |-----------|---------|
 | OS | Talos Linux v1.14.0 (`TALOS_VERSION` in the `Makefile`) |
 | Kubernetes | v1.37.0 (`KUBERNETES_VERSION` in the `Makefile`) |
-| CNI | Cilium 1.19.1 (kube-proxy replacement, WireGuard encryption, VXLAN routing) |
+| CNI | Cilium 1.20.2 (kube-proxy replacement, WireGuard encryption, VXLAN routing) |
 | GitOps | Flux CD |
 | Secrets | SOPS + age |
 | VPN | Tailscale operator |
@@ -86,7 +93,7 @@ All operations are driven by `make`. Run `make <target>` from the `talos-cluster
 # Regenerate all node configs from patches + secrets (SOPS decrypt is automatic)
 make generate
 
-# Apply configs to all running nodes
+# Apply configs to all four nodes (regenerates first)
 make apply-all
 
 # Re-apply only the patches to existing configs (no secrets needed)

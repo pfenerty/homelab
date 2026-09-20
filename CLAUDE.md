@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal infrastructure managed as code. Two sub-projects:
+Personal infrastructure managed as code.
 
-| Directory | What |
-|-----------|------|
-| `talos-cluster/` | Three-node Kubernetes cluster on Raspberry Pi 4s (Talos Linux + Flux CD) |
-| `nix-dev-server/` | NixOS remote development server (GPU workstation) |
+| Path | What |
+|------|------|
+| `talos-cluster/` | Four-node Kubernetes cluster: three RPi4 control planes + an amd64 worker (Talos Linux + Flux CD) |
+| `.tektonic/` | This repository's own CI definition and check scripts |
+| `.tekton/` | Generated from `.tektonic/` — PAC reads it from the pushed commit. Never hand-edit; run `npm run synth` |
 
 ## Secrets
 
@@ -38,22 +39,49 @@ make kubeconfig      # Fetch kubeconfig to ~/.kube/config
 
 ```
 talos-cluster/flux/
-├── flux-system/     # Flux bootstrap components
-├── apps/            # Application workloads
-└── *.kustomization.yaml  # Top-level kustomizations (cilium, apps)
+├── kustomization.yaml     # Root: lists every *.kustomization.yaml below
+├── flux-system/           # Flux bootstrap components (managed by `flux bootstrap`)
+├── <app>.kustomization.yaml   # One Flux Kustomization per app, ~26 of them
+├── cilium/                # CNI, reconciled ahead of everything else
+├── gateway-api/           # Gateway API CRDs
+└── apps/<app>/            # The manifests each Kustomization points at
 ```
 
-## NixOS Dev Server
+A `*.kustomization.yaml` that the root `kustomization.yaml` does not list will never
+reconcile. CI checks for that, for `spec.path` values that do not exist, and for
+`dependsOn` naming a Kustomization that is gone.
 
-Flake-based NixOS configuration. Modules live in `nix-dev-server/modules/`, host configs in `nix-dev-server/hosts/`.
+## CI
+
+Runs on this cluster via Pipelines as Code, defined in `.tektonic/pipeline.ts` and
+synthesized to `.tekton/`. Each check is a script under `.tektonic/scripts/` and runs
+the same locally as in the cluster:
+
+```bash
+.tektonic/scripts/build-manifests.sh          # kustomize build the whole Flux tree
+.tektonic/scripts/validate-manifests.sh       # kubeconform against KUBERNETES_VERSION
+.tektonic/scripts/check-flux-wiring.sh        # orphaned / dangling Kustomizations
+.tektonic/scripts/check-sops-encryption.sh    # nothing committed in the clear
+.tektonic/scripts/check-vendored-manifests.sh # vendored manifests match their pins
+make -C talos-cluster validate-patches        # Talos configs generate and validate
+```
+
+After changing `.tektonic/pipeline.ts`, run `npm run synth` in `.tektonic/` and commit
+the regenerated `.tekton/`.
 
 ## Dependency Updates
 
-Automated via [Renovate](https://docs.renovatebot.com/) — covers Nix flake inputs, Helm chart versions, and container image tags.
+Automated via [Renovate](https://docs.renovatebot.com/) — Helm charts, container image
+tags, Flux sources, and the Talos/Kubernetes versions in `talos-cluster/Makefile`.
+
+Vendored upstream release manifests are excluded on purpose: they carry CRDs and RBAC
+alongside image tags, so an image-only bump leaves new binaries on old CRDs. Renovate
+tracks the version pinned in each app's `update-manifests.sh`; re-run that script to
+re-vendor, never edit the manifest.
 
 ## Prerequisites
 
-talosctl, kubectl, sops, helm, flux CLI, Tailscale
+talosctl, kubectl, sops, helm, flux CLI, Tailscale. For CI scripts locally: kustomize, kubeconform, yq (all in `alpine/k8s`), and Node 22+ for `.tektonic/`.
 
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
