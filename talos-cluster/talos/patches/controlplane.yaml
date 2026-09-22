@@ -10,6 +10,9 @@ cluster:
             # 500ms heartbeat gives the leader 500ms to respond; election-timeout is 5x per etcd docs.
             heartbeat-interval: "500"
             election-timeout: "5000"
+            # Talos binds etcd metrics to localhost; expose them (plain HTTP, metrics
+            # only, no client API) so kube-prometheus-stack can scrape each member.
+            listen-metrics-urls: http://0.0.0.0:2381
 ---
 # Was machine.kubelet.extraConfig.
 apiVersion: v1alpha1
@@ -80,6 +83,9 @@ extraArgs:
     leader-elect-lease-duration: 60s
     leader-elect-renew-deadline: 45s
     leader-elect-retry-period: 10s
+    # Serve /metrics (10257, authn/authz still enforced) on the node IP rather than
+    # localhost so Prometheus can scrape it.
+    bind-address: 0.0.0.0
 ---
 # Was cluster.scheduler.
 apiVersion: v1alpha1
@@ -88,3 +94,5 @@ extraArgs:
     leader-elect-lease-duration: 60s
     leader-elect-renew-deadline: 45s
     leader-elect-retry-period: 10s
+    # Same as the controller manager: /metrics on 10259 via the node IP.
+    bind-address: 0.0.0.0

@@ -4,9 +4,12 @@ resources:
   - namespace.yaml
   - helmrepository-prometheus.yaml
   - helmrepository-grafana.yaml
+  - helmrepository-grafana-community.yaml
   - helmrelease-kube-prometheus-stack.yaml
   - helmrelease-loki.yaml
   - helmrelease-alloy.yaml
+  - helmrelease-alloy-otel.yaml
+  - helmrelease-tempo.yaml
   - helmrelease-grafana.yaml
   - grafana-admin.secret.yaml
   - tailscale-ingress-grafana.yaml
