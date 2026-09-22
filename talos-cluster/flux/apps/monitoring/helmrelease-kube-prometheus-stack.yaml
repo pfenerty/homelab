@@ -22,13 +22,77 @@ spec:
   values:
     # Short name override to prevent NFS path-too-long errors on PVC provisioning
     fullnameOverride: kps
-    # Deploy standalone Grafana and skip Alertmanager for now
+    # Deploy standalone Grafana
     grafana:
       enabled: false
       # Create dashboard ConfigMaps for the external Grafana sidecar to discover
       forceDeployDashboards: true
+
     alertmanager:
-      enabled: false
+      enabled: true
+      # Chart defaults (inhibit rules, Watchdog -> null) with everything else sent to
+      # Discord. The webhook URL is read from a file so it never appears in the
+      # generated config; see alertmanager-discord.secret.template.yaml.
+      config:
+        global:
+          resolve_timeout: 5m
+        inhibit_rules:
+          - source_matchers: ['severity = critical']
+            target_matchers: ['severity =~ warning|info']
+            equal: [namespace, alertname]
+          - source_matchers: ['severity = warning']
+            target_matchers: ['severity = info']
+            equal: [namespace, alertname]
+          - source_matchers: ['alertname = InfoInhibitor']
+            target_matchers: ['severity = info']
+            equal: [namespace]
+          - target_matchers: ['alertname = InfoInhibitor']
+        route:
+          group_by: [namespace, alertname]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 12h
+          receiver: discord
+          routes:
+            - receiver: "null"
+              matchers: ['alertname =~ "Watchdog|InfoInhibitor"']
+        receivers:
+          - name: "null"
+          - name: discord
+            discord_configs:
+              - webhook_url_file: /etc/alertmanager/discord/webhook-url
+                send_resolved: true
+        templates:
+          - /etc/alertmanager/config/*.tmpl
+      alertmanagerSpec:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+        # Silences and notification log; small, and fine on NFS (periodic snapshots,
+        # not a database).
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: nfs-client
+              accessModes: [ReadWriteOnce]
+              resources:
+                requests:
+                  storage: 1Gi
+        # Mounted optional so Alertmanager still starts (and the HelmRelease still
+        # goes Ready) before the encrypted secret exists; sends fail until then.
+        volumes:
+          - name: discord
+            secret:
+              secretName: alertmanager-discord
+              optional: true
+        volumeMounts:
+          - name: discord
+            mountPath: /etc/alertmanager/discord
+            readOnly: true
 
     prometheusOperator:
       resources:
@@ -53,6 +117,23 @@ spec:
             memory: 1Gi
         retention: 15d
         retentionSize: 10GB
+        # Native OTLP ingestion at /api/v1/otlp/v1/metrics, fed by the alloy-otel gateway.
+        enableOTLPReceiver: true
+        otlp:
+          # Resource attributes are otherwise only on target_info; promote the ones
+          # the gateway's k8sattributes processor adds so they are plain labels.
+          promoteResourceAttributes:
+            - k8s.namespace.name
+            - k8s.pod.name
+            - k8s.node.name
+            - k8s.deployment.name
+            - k8s.statefulset.name
+            - k8s.daemonset.name
+            - k8s.cronjob.name
+            - k8s.job.name
+        # Pushed OTLP samples can arrive late or out of order (batching, retries).
+        tsdb:
+          outOfOrderTimeWindow: 30m
         # Watch all namespaces for PodMonitor/ServiceMonitor resources.
         # The nil-uses-helm-values flags must be false or the chart overrides
         # these empty selectors with {release: monitoring-kube-prometheus-stack}.
@@ -62,10 +143,17 @@ spec:
         serviceMonitorNamespaceSelector: {}
         serviceMonitorSelector: {}
         serviceMonitorSelectorNilUsesHelmValues: false
+        # Local disk on the x86 node, not NFS: Prometheus does not support NFS for
+        # its TSDB (locking/mmap/fsync semantics). The new claim name makes the
+        # operator create a fresh PVC instead of reusing the old nfs-client one
+        # (prometheus-kps-prometheus-db-prometheus-kps-prometheus-0), which can be deleted
+        # once this is running. Existing history is not migrated.
         storageSpec:
           volumeClaimTemplate:
+            metadata:
+              name: prometheus-local
             spec:
-              storageClassName: nfs-client
+              storageClassName: local-path
               accessModes: [ReadWriteOnce]
               resources:
                 requests:
@@ -76,10 +164,21 @@ spec:
       serviceMonitor:
         insecureSkipVerify: true
 
-    # Talos binds controller-manager and scheduler to localhost — not scrapeable
+    # Control-plane components run as static pods on the three RPis. Talos binds
+    # their metrics to localhost unless talos/patches/controlplane.yaml sets
+    # bind-address / listen-metrics-urls, which it does. Endpoints are listed
+    # explicitly because the static pods' labels don't match the chart's selectors.
+    # Ports and scheme (https 10257/10259, insecureSkipVerify) are chart defaults.
     kubeControllerManager:
-      enabled: false
+      endpoints: [192.168.1.101, 192.168.1.102, 192.168.1.103]
     kubeScheduler:
+      endpoints: [192.168.1.101, 192.168.1.102, 192.168.1.103]
+    kubeEtcd:
+      endpoints: [192.168.1.101, 192.168.1.102, 192.168.1.103]
+
+    # Cilium replaces kube-proxy (KubeProxyConfig enabled: false), so there is
+    # nothing to scrape and KubeProxyDown would fire permanently.
+    kubeProxy:
       enabled: false
 
     kubeStateMetrics:

@@ -61,15 +61,15 @@ spec:
       mounts:
         varlog: true
         dockercontainers: true
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
     controller:
       type: daemonset
       tolerations:
         - operator: Exists
           effect: NoSchedule
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
