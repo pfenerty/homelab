@@ -108,17 +108,17 @@ spec:
                           env:
                               - name: LOG_LEVEL
                                 value: debug
-                              # The repo moved to the tektonic-ci org. RENOVATE_TOKEN (renovate-env)
-                              # must be a PAT whose resource owner can reach tektonic-ci/core.
                               - name: RENOVATE_REPOSITORIES
                                 value: '["tektonic-ci/core"]'
                               # tektonic's renovate.json re-synthesizes .tekton/ in postUpgradeTasks;
                               # without this allowlist Renovate refuses both commands.
                               - name: RENOVATE_ALLOWED_COMMANDS
                                 value: '["^npm ci --ignore-scripts$", "^npm run synth$"]'
+                          # Its own token: the repo is in the tektonic-ci org, which the
+                          # personal fine-grained PAT in renovate-env cannot reach.
                           envFrom:
                               - secretRef:
-                                    name: renovate-env
+                                    name: renovate-env-tektonic-ci
                           resources:
                               requests:
                                   cpu: 250m
