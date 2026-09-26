@@ -1,6 +1,6 @@
 # .tektonic/
 
-CI for this repository, defined with [tektonic](https://github.com/pfenerty/tektonic)
+CI for this repository, defined with [tektonic](https://github.com/tektonic-ci/core)
 and run by Pipelines as Code on the cluster this repository configures.
 
 ```
@@ -33,9 +33,7 @@ npm run graph     # print the task DAG
 npm run lint      # shellcheck the scripts/
 ```
 
-`@pfenerty/tektonic` is installed from git, pinned to a commit: it is not published
-to npm yet despite the README there saying so, and the registry 404s for the package.
-Switch the dependency to a version range once it is published.
+`@tektonic-ci/core` comes from npm; bump it and re-run `npm run synth`.
 
 ## The checks
 
