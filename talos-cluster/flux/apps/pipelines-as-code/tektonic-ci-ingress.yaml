@@ -1,0 +1,25 @@
+# Webhook endpoint for the tektonic-ci GitHub App, which the second controller
+# (tektonic-ci-controller.yaml) serves. The App's webhook URL is
+# https://pac-webhook-tektonic-ci.bear-velociraptor.ts.net.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pac-webhook-tektonic-ci
+  namespace: pipelines-as-code
+  annotations:
+    tailscale.com/funnel: "true"
+spec:
+  ingressClassName: tailscale
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tektonic-ci-controller
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - pac-webhook-tektonic-ci

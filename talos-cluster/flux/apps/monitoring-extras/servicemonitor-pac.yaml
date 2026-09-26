@@ -37,3 +37,21 @@ spec:
   endpoints:
     - port: http-metrics
       interval: 10s
+---
+# Second controller, for the tektonic-ci GitHub App. Its generated Service is
+# labelled app: tektonic-ci rather than after the Deployment.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: tektonic-ci-controller
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [pipelines-as-code]
+  selector:
+    matchLabels:
+      app: tektonic-ci
+  jobLabel: app
+  endpoints:
+    - port: http-metrics
+      interval: 10s
