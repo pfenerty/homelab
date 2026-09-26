@@ -1,0 +1,14 @@
+# Cache for tektonic-ci/core's self-CI (npm node_modules, grype DB). tektonic emits the
+# `claimName: tektonic-cache` reference; the claim itself lives here.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: tektonic-cache
+    namespace: tektonic-ci
+spec:
+    accessModes:
+        - ReadWriteOnce
+    storageClassName: local-path
+    resources:
+        requests:
+            storage: 5Gi

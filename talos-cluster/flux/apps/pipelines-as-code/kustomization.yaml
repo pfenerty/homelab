@@ -4,3 +4,6 @@ resources:
     - release.yaml
     - tailscale-ingress.yaml
     - pipelines-as-code-secret.enc.yaml
+    - tektonic-ci-controller.yaml
+    - tektonic-ci-ingress.yaml
+    - tektonic-ci-secret.enc.yaml

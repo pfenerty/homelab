@@ -16,6 +16,7 @@ set -eu
 # manifest : version variable : update script
 SPECS="
 talos-cluster/flux/apps/pipelines-as-code/release.yaml:PAC_VERSION:talos-cluster/flux/apps/pipelines-as-code/update-manifests.sh
+talos-cluster/flux/apps/pipelines-as-code/tektonic-ci-controller.yaml:PAC_VERSION:talos-cluster/flux/apps/pipelines-as-code/update-manifests.sh
 talos-cluster/flux/apps/tekton/pipelines.yaml:PIPELINES_VERSION:talos-cluster/flux/apps/tekton/update-manifests.sh
 talos-cluster/flux/apps/tekton/triggers.yaml:TRIGGERS_VERSION:talos-cluster/flux/apps/tekton/update-manifests.sh
 talos-cluster/flux/apps/tekton/interceptors.yaml:TRIGGERS_VERSION:talos-cluster/flux/apps/tekton/update-manifests.sh
