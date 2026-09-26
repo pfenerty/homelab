@@ -1,5 +1,7 @@
-# Cache for tektonic-ci/core's self-CI (npm node_modules, grype DB). tektonic emits the
-# `claimName: tektonic-cache` reference; the claim itself lives here.
+# Caches for the tektonic-ci repos' self-CI. tektonic emits each `claimName:
+# <project>-cache` reference; the claims themselves live here.
+#
+# tektonic-ci/core: npm node_modules and the grype DB.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -12,3 +14,31 @@ spec:
     resources:
         requests:
             storage: 5Gi
+---
+# tektonic-ci/reporter-github: npm node_modules.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: reporter-github-cache
+    namespace: tektonic-ci
+spec:
+    accessModes:
+        - ReadWriteOnce
+    storageClassName: local-path
+    resources:
+        requests:
+            storage: 2Gi
+---
+# tektonic-ci/cache-gcs: npm node_modules.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: cache-gcs-cache
+    namespace: tektonic-ci
+spec:
+    accessModes:
+        - ReadWriteOnce
+    storageClassName: local-path
+    resources:
+        requests:
+            storage: 2Gi
