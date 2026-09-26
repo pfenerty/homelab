@@ -5,3 +5,19 @@ metadata:
     namespace: tektonic-ci
 spec:
     url: https://github.com/tektonic-ci/core
+---
+apiVersion: pipelinesascode.tekton.dev/v1alpha1
+kind: Repository
+metadata:
+    name: reporter-github
+    namespace: tektonic-ci
+spec:
+    url: https://github.com/tektonic-ci/reporter-github
+---
+apiVersion: pipelinesascode.tekton.dev/v1alpha1
+kind: Repository
+metadata:
+    name: cache-gcs
+    namespace: tektonic-ci
+spec:
+    url: https://github.com/tektonic-ci/cache-gcs
