@@ -149,6 +149,26 @@
         "kubernetes/kubernetes"
       ],
       "groupName": "talos-cluster-core"
+    },
+    {
+      "description": "Re-synthesize .tekton/ on any branch that touches .tektonic/ (a @tektonic-ci/core bump or any other .tektonic dependency). Without this the PR carries the new library but the old manifests. Needs RENOVATE_ALLOWED_COMMANDS on the renovate-homelab cronjob. installTools makes node available whatever manager produced the branch; executionMode 'branch' runs the synth once over the final set of updates.",
+      "matchFileNames": [
+        ".tektonic/**"
+      ],
+      "postUpgradeTasks": {
+        "installTools": {
+          "node": {}
+        },
+        "workingDirTemplate": ".tektonic",
+        "commands": [
+          "npm ci --ignore-scripts",
+          "npm run synth"
+        ],
+        "fileFilters": [
+          ".tekton/**"
+        ],
+        "executionMode": "branch"
+      }
     }
   ]
 }
