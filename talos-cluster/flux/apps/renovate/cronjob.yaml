@@ -24,6 +24,10 @@ spec:
                                 value: debug
                               - name: RENOVATE_REPOSITORIES
                                 value: '["pfenerty/ocidex"]'
+                              # renovate.json re-synthesizes .tekton/ from .tektonic/ in postUpgradeTasks;
+                              # without this allowlist Renovate refuses both commands.
+                              - name: RENOVATE_ALLOWED_COMMANDS
+                                value: '["^npm ci --ignore-scripts$", "^npm run synth$"]'
                           envFrom:
                               - secretRef:
                                     name: renovate-env
@@ -67,6 +71,10 @@ spec:
                                 value: debug
                               - name: RENOVATE_REPOSITORIES
                                 value: '["pfenerty/homelab"]'
+                              # renovate.json re-synthesizes .tekton/ from .tektonic/ in postUpgradeTasks;
+                              # without this allowlist Renovate refuses both commands.
+                              - name: RENOVATE_ALLOWED_COMMANDS
+                                value: '["^npm ci --ignore-scripts$", "^npm run synth$"]'
                           envFrom:
                               - secretRef:
                                     name: renovate-env
