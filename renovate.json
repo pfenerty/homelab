@@ -122,7 +122,8 @@
     },
     {
       "matchPackageNames": [
-        "/^ghcr\\.io/tektoncd//"
+        "/^ghcr\\.io/tektoncd//",
+        "/^tektoncd//"
       ],
       "groupName": "tekton"
     },
