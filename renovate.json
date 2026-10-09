@@ -109,7 +109,7 @@
   ],
   "packageRules": [
     {
-      "description": "Vendored upstream release manifests. Each is one file carrying the CRDs, RBAC and ConfigMaps for a single version alongside its image tags, so bumping the tags in place leaves new binaries on old CRDs \u2014 which is exactly what happened to pipelines-as-code (v0.51.0 images, v0.48.0 CRDs) and to tekton pipelines, whose injected entrypoint image the manager cannot even see. Renovate tracks the *_VERSION pins in the update-manifests.sh scripts instead (see customManagers), and CI enforces that the manifest matches.",
+      "description": "Vendored upstream release manifests. Each is one file carrying the CRDs, RBAC and ConfigMaps for a single version alongside its image tags, so bumping the tags in place leaves new binaries on old CRDs — which is exactly what happened to pipelines-as-code (v0.51.0 images, v0.48.0 CRDs) and to tekton pipelines, whose injected entrypoint image the manager cannot even see. Renovate tracks the *_VERSION pins in the update-manifests.sh scripts instead (see customManagers), and CI enforces that the manifest matches.",
       "matchFileNames": [
         "talos-cluster/flux/apps/pipelines-as-code/release.yaml",
         "talos-cluster/flux/apps/tekton/pipelines.yaml",
@@ -167,6 +167,29 @@
         ],
         "fileFilters": [
           ".tekton/**"
+        ],
+        "executionMode": "branch"
+      }
+    },
+    {
+      "description": "Re-vendor the manifests on any branch that bumps a *_VERSION pin in an update-manifests.sh (see customManagers). Without this the PR carries the new pin but the old manifest, and check-vendored-manifests.sh fails it. All three scripts run unconditionally: tekton updates share one grouped branch, and executionMode 'branch' runs the commands once with no per-update templating, so a script whose pin did not move just rewrites identical files. uv and python are for the PAC script's second-controller.py. Needs RENOVATE_ALLOWED_COMMANDS on the renovate-homelab cronjob.",
+      "matchFileNames": [
+        "talos-cluster/flux/apps/pipelines-as-code/update-manifests.sh",
+        "talos-cluster/flux/apps/tekton/update-manifests.sh",
+        "talos-cluster/flux/apps/tekton-chains/update-manifests.sh"
+      ],
+      "postUpgradeTasks": {
+        "installTools": {
+          "python": {},
+          "uv": {}
+        },
+        "commands": [
+          "sh talos-cluster/flux/apps/pipelines-as-code/update-manifests.sh",
+          "sh talos-cluster/flux/apps/tekton/update-manifests.sh",
+          "sh talos-cluster/flux/apps/tekton-chains/update-manifests.sh"
+        ],
+        "fileFilters": [
+          "talos-cluster/flux/apps/**/*.yaml"
         ],
         "executionMode": "branch"
       }
