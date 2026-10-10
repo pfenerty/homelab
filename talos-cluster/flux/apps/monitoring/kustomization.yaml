@@ -13,3 +13,4 @@ resources:
   - helmrelease-grafana.yaml
   - grafana-admin.secret.yaml
   - tailscale-ingress-grafana.yaml
+  - alertmanager-discord.secret.enc.yaml
