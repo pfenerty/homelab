@@ -149,6 +149,10 @@ spec:
         # (prometheus-kps-prometheus-db-prometheus-kps-prometheus-0), which can be deleted
         # once this is running. Existing history is not migrated.
         storageSpec:
+          # local-path volumes are plain host dirs, so fsGroup is never applied; the
+          # kubelet-created subPath dir would be root 0755 and unwritable by UID 1000.
+          # The volume root itself is created 0777.
+          disableMountSubPath: true
           volumeClaimTemplate:
             metadata:
               name: prometheus-local
