@@ -1,0 +1,21 @@
+# Secret guards, run before every commit. Hooks are driven by prek from
+# .beads/hooks/pre-commit (core.hooksPath points there, so `prek install` is not
+# used). Full sweep of the tree: `prek run --all-files`.
+repos:
+  - repo: https://github.com/betterleaks/betterleaks
+    # Keep in lockstep with BETTERLEAKS in .tektonic/pipeline.ts (Renovate groups them).
+    rev: v2.0.0-rc.2
+    hooks:
+      - id: betterleaks
+        args: [--config, .betterleaks.toml]
+
+  - repo: local
+    hooks:
+      # betterleaks skips SOPS-managed paths, so plaintext landing in one of them
+      # is only caught here (and by the same script in CI).
+      - id: sops-encrypted
+        name: SOPS-managed files are encrypted
+        entry: .tektonic/scripts/check-sops-encryption.sh
+        language: script
+        files: (\.secret\.yaml|\.enc\.yaml|(^|/)secrets\.yaml)$
+        exclude: template

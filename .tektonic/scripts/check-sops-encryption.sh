@@ -3,7 +3,9 @@
 #
 # .sops.yaml decides what *gets* encrypted when someone runs `sops -e`; nothing
 # enforces that they did. A secret committed before encryption is in git history
-# for good, so this runs on every pull request rather than at review time.
+# for good, so this runs on every pull request rather than at review time, and
+# as a pre-commit hook (see .pre-commit-config.yaml), which passes the staged
+# files as arguments instead of scanning the whole tree.
 set -eu
 
 rc=0
@@ -11,8 +13,12 @@ found=0
 
 # `*.secret.template.yaml` and `secrets.template.yaml` are plaintext placeholders
 # by design and do not match these patterns.
-files=$(find . -path ./.git -prune -o -type f \
-    \( -name '*.secret.yaml' -o -name '*.enc.yaml' -o -name 'secrets.yaml' \) -print | sort)
+if [ "$#" -gt 0 ]; then
+    files="$*"
+else
+    files=$(find . -path ./.git -prune -o -type f \
+        \( -name '*.secret.yaml' -o -name '*.enc.yaml' -o -name 'secrets.yaml' \) -print | sort)
+fi
 
 for f in $files; do
     case "$f" in
@@ -29,7 +35,7 @@ for f in $files; do
     fi
 done
 
-if [ "$found" -eq 0 ]; then
+if [ "$#" -eq 0 ] && [ "$found" -eq 0 ]; then
     printf '✗ no secret files matched — the patterns in this script have drifted\n' >&2
     exit 1
 fi
@@ -38,6 +44,6 @@ printf '\n'
 if [ "$rc" -eq 0 ]; then
     printf '✓ all %s secret files are SOPS-encrypted\n' "$found"
 else
-    printf '✗ plaintext secrets found — do NOT merge; rotate anything already pushed\n'
+    printf '✗ plaintext secrets found — encrypt with `sops -e -i <file>`; rotate anything already pushed\n'
 fi
 exit "$rc"

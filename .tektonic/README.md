@@ -45,11 +45,11 @@ the tools on `$PATH` — there is no CI-only behaviour to reproduce.
 | `build-manifests.sh` | a kustomization that no longer builds — the usual shape of a bad Renovate bump |
 | `validate-manifests.sh` | manifests that build but are not valid for the cluster's Kubernetes version |
 | `check-flux-wiring.sh` | a Kustomization nothing references, a `spec.path` pointing nowhere, a `dependsOn` naming something gone |
-| `check-sops-encryption.sh` | a secret committed before anyone ran `sops -e` |
+| `check-sops-encryption.sh` | a secret committed before anyone ran `sops -e` (also a pre-commit hook) |
 | `validate-talos-patches.sh` | machine-config patches that no longer generate or validate |
 
 `build-manifests.sh` writes to `.ci/` in the workspace, which is gitignored and
-allow-listed in `.gitleaks.toml`.
+skipped by the prefilter in `.betterleaks.toml`.
 
 ### No age key in CI
 

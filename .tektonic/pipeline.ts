@@ -29,7 +29,8 @@ import {
 const K8S_TOOLS = "alpine/k8s:1.37.0";
 
 // Scratch image — no shell — so this step runs the binary via command/args.
-const GITLEAKS = "ghcr.io/gitleaks/gitleaks:v8.30.1";
+// Keep in lockstep with the betterleaks rev in .pre-commit-config.yaml (Renovate groups them).
+const BETTERLEAKS = "ghcr.io/betterleaks/betterleaks:v2.0.0-rc.2";
 
 // RPi4 nodes have ~3.2Gi allocatable. kustomize building the whole tree and
 // kubeconform holding schemas are the only checks that need more than the default.
@@ -101,24 +102,25 @@ const sopsEncryption = new Task({
 
 /**
  * Second, independent line on the same risk: SOPS coverage only protects paths that
- * match a creation rule, while gitleaks looks at content wherever it lands.
- * Configuration (including why the encrypted files are allow-listed) is .gitleaks.toml.
+ * match a creation rule, while betterleaks looks at content wherever it lands.
+ * Configuration (including why the encrypted files are skipped) is .betterleaks.toml;
+ * the same scanner and config also run locally as a pre-commit hook.
  */
 const secretScan = new Task({
     name: "secret-scan",
     timeout: "10m",
     steps: [
         {
-            name: "gitleaks",
-            image: GITLEAKS,
+            name: "betterleaks",
+            image: BETTERLEAKS,
             // No shell in this image, so no `script:` — exec the binary directly.
-            command: ["gitleaks"],
+            // v2 exits 1 on findings by default and never auto-loads a config file.
+            command: ["betterleaks"],
             args: [
-                "dir", ".",
-                "--config", ".gitleaks.toml",
                 "--no-banner",
+                "fs", ".",
+                "--config", ".betterleaks.toml",
                 "--redact",
-                "--exit-code", "1",
             ],
         },
     ],

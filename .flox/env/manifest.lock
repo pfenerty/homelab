@@ -10,6 +10,9 @@
       "nushell": {
         "pkg-path": "nushell"
       },
+      "prek": {
+        "pkg-path": "prek"
+      },
       "repomix": {
         "pkg-path": "repomix"
       },
@@ -79,36 +82,6 @@
         "out": "/nix/store/6akl9hhdlhffsj09rpmaqb5f000ialll-beads-1.0.3"
       },
       "system": "aarch64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "beads",
-      "broken": false,
-      "derivation": "/nix/store/aampm62j0sy7qjklzprd4b03xswg9wdz-beads-1.0.3.drv",
-      "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
-      "install_id": "beads",
-      "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "beads-1.0.3",
-      "pname": "beads",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T04:14:36.414517Z",
-      "stabilities": [
-        "staging",
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "1.0.3",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/4ncq17cm1vbckmsh6wn7qpwahp67z3ls-beads-1.0.3"
-      },
-      "system": "x86_64-darwin",
       "group": "toplevel",
       "priority": 5
     },
@@ -205,36 +178,6 @@
     {
       "attr_path": "nushell",
       "broken": false,
-      "derivation": "/nix/store/4pj0mk1idwk9cacrqxhj6rznv13vp209-nushell-0.113.1.drv",
-      "description": "Modern shell written in Rust",
-      "install_id": "nushell",
-      "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "nushell-0.113.1",
-      "pname": "nushell",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T04:15:02.928285Z",
-      "stabilities": [
-        "staging",
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "0.113.1",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/dj97hcqb0lq5j07mrx8bhnw225y3hang-nushell-0.113.1"
-      },
-      "system": "x86_64-darwin",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "nushell",
-      "broken": false,
       "derivation": "/nix/store/fw8i5lrnvanc9iix2gb07l273y37vsfl-nushell-0.113.1.drv",
       "description": "Modern shell written in Rust",
       "install_id": "nushell",
@@ -257,6 +200,96 @@
       ],
       "outputs": {
         "out": "/nix/store/6rf5daj415jnir6218pjk6b78phhx6pf-nushell-0.113.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "prek",
+      "broken": false,
+      "derivation": "/nix/store/v3ycws2zdanwcqlkj0azhw2c3vp6iwqd-prek-0.3.11.drv",
+      "description": "Better `pre-commit`, re-engineered in Rust ",
+      "install_id": "prek",
+      "license": "[ MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "prek-0.3.11",
+      "pname": "prek",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:14:26.981008Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.3.11",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/2zw3fhay0dwfh8hg1dz94ffq0kmdpsyy-prek-0.3.11"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "prek",
+      "broken": false,
+      "derivation": "/nix/store/66b3gp3jq7cp82mx9bk7jly4cfs7n2bb-prek-0.3.11.drv",
+      "description": "Better `pre-commit`, re-engineered in Rust ",
+      "install_id": "prek",
+      "license": "[ MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "prek-0.3.11",
+      "pname": "prek",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T03:45:37.337998Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.3.11",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/xkn4x7fg8cj78vf5i924gjgz5rx7kf8h-prek-0.3.11"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "prek",
+      "broken": false,
+      "derivation": "/nix/store/wlrzj3lapwggxlr33bnr74x2agks5c69-prek-0.3.11.drv",
+      "description": "Better `pre-commit`, re-engineered in Rust ",
+      "install_id": "prek",
+      "license": "[ MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "name": "prek-0.3.11",
+      "pname": "prek",
+      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "rev_count": 1014179,
+      "rev_date": "2026-06-10T06:56:03Z",
+      "scrape_date": "2026-06-12T04:48:39.669170Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.3.11",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/py2m9vglskggcyyarm0nha16siw346af-prek-0.3.11"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -319,36 +352,6 @@
         "out": "/nix/store/rz94a9zrj0571y7lsy0yysx0vk175r3z-repomix-1.14.0"
       },
       "system": "aarch64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "repomix",
-      "broken": false,
-      "derivation": "/nix/store/aicw8xkp0zxjxh7g1qykr9szkkr0cbxj-repomix-1.14.0.drv",
-      "description": "Tool to pack repository contents to single file for AI consumption",
-      "install_id": "repomix",
-      "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "repomix-1.14.0",
-      "pname": "repomix",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T04:16:12.853643Z",
-      "stabilities": [
-        "staging",
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "1.14.0",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/vnxxmgv30f1z9ma56kq42l6bify57p8v-repomix-1.14.0"
-      },
-      "system": "x86_64-darwin",
       "group": "toplevel",
       "priority": 5
     },
@@ -445,36 +448,6 @@
     {
       "attr_path": "tektoncd-cli",
       "broken": false,
-      "derivation": "/nix/store/8gmc3hmmcnigi6zhifpdbva0ywr3bygf-tektoncd-cli-0.45.0.drv",
-      "description": "Provides a CLI for interacting with Tekton - tkn",
-      "install_id": "tektoncd-cli",
-      "license": "Apache-2.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "tektoncd-cli-0.45.0",
-      "pname": "tektoncd-cli",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T04:16:39.614347Z",
-      "stabilities": [
-        "staging",
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "0.45.0",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/bnaxyr0c69hx50592xwm0civjymc69sc-tektoncd-cli-0.45.0"
-      },
-      "system": "x86_64-darwin",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "tektoncd-cli",
-      "broken": false,
       "derivation": "/nix/store/8dn1d3pxpsq7qvb9zcna0ckmczgkzyk8-tektoncd-cli-0.45.0.drv",
       "description": "Provides a CLI for interacting with Tekton - tkn",
       "install_id": "tektoncd-cli",
@@ -507,6 +480,9 @@
     "composer": {
       "schema-version": "1.12.0",
       "install": {
+        "prek": {
+          "pkg-path": "prek"
+        },
         "tektoncd-cli": {
           "pkg-path": "tektoncd-cli"
         }
