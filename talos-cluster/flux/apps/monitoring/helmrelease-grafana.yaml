@@ -52,6 +52,11 @@ spec:
     datasources:
       datasources.yaml:
         apiVersion: 1
+        # One-off: the existing Loki datasource has an auto-generated UID, and
+        # provisioning can't change a UID in place. Remove once Grafana is healthy.
+        deleteDatasources:
+          - name: Loki
+            orgId: 1
         datasources:
           - name: Prometheus
             type: prometheus
