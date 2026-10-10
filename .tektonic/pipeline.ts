@@ -17,7 +17,8 @@ import {
     TRIGGER_EVENTS,
     withConcurrency,
     sh,
-} from "@pfenerty/tektonic";
+    DEFAULT_BASE_IMAGE,
+} from "@tektonic-ci/core";
 
 // ─── Images ──────────────────────────────────────────────────────────────────
 // alpine/k8s carries every tool these checks need — kustomize, kubeconform, yq, jq,
@@ -206,6 +207,10 @@ new TektonicProject({
     serviceAccountName: "default",
     workspaceStorageSize: "2Gi",
     workspaceStorageClass: "local-path",
+    // Image for the steps tektonic injects (git clone). Left unset, core falls back to
+    // docker.io/alpine/git:latest — a mutable tag from outside the apko-cicd images the
+    // cluster already pulls.
+    injectedStepImage: DEFAULT_BASE_IMAGE,
     // The PAC Repository CR is NOT emitted here. Nothing applies `.tekton/`, so a
     // copy in this output would be decoration that drifts; Flux owns the real one
     // at talos-cluster/flux/apps/homelab-ci/pac-repository.yaml.

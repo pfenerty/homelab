@@ -16,6 +16,7 @@ set -eu
 # manifest : version variable : update script
 SPECS="
 talos-cluster/flux/apps/pipelines-as-code/release.yaml:PAC_VERSION:talos-cluster/flux/apps/pipelines-as-code/update-manifests.sh
+talos-cluster/flux/apps/pipelines-as-code/tektonic-ci-controller.yaml:PAC_VERSION:talos-cluster/flux/apps/pipelines-as-code/update-manifests.sh
 talos-cluster/flux/apps/tekton/pipelines.yaml:PIPELINES_VERSION:talos-cluster/flux/apps/tekton/update-manifests.sh
 talos-cluster/flux/apps/tekton/triggers.yaml:TRIGGERS_VERSION:talos-cluster/flux/apps/tekton/update-manifests.sh
 talos-cluster/flux/apps/tekton/interceptors.yaml:TRIGGERS_VERSION:talos-cluster/flux/apps/tekton/update-manifests.sh
@@ -30,10 +31,8 @@ talos-cluster/flux/apps/tekton-chains/chains.yaml:CHAINS_VERSION:talos-cluster/f
 # This list is a ratchet: it reports the drift without failing the build. Shrink it,
 # never grow it. Anything not listed here is enforced.
 #
-# chains is what is left: pinned at v0.27.1 with v0.29.5 images. Note that its update
-# script would *downgrade* the running images if run as-is — bump CHAINS_VERSION to
-# match what is deployed before re-vendoring, the way tekton/ was.
-KNOWN_DRIFT="talos-cluster/flux/apps/tekton-chains/chains.yaml"
+# Empty: chains, the last entry, was re-vendored at v0.29.7.
+KNOWN_DRIFT=""
 
 rc=0
 

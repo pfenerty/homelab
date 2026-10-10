@@ -40,6 +40,10 @@ metadata:
 #   artifacts.oci.signer: x509
 #   transparency.enabled: false
 #   transparency.url: https://rekor.sigstore.dev
+# storage.oci.encoding-format controls the on-disk format used by the OCI storage backend.
+#   "dsse"            – (default) DSSE envelope stored as .sig/.att tags (backward-compatible)
+#   "sigstore-bundle" – Sigstore protobuf bundle (v0.3) stored via OCI 1.1 Referrers API
+#   storage.oci.encoding-format: "dsse"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -51,8 +55,8 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: default
     app.kubernetes.io/part-of: tekton-chains
-    pipeline.tekton.dev/release: "v0.27.1"
-    version: "v0.27.1"
+    pipeline.tekton.dev/release: "v0.29.7"
+    version: "v0.29.7"
 spec:
   replicas: 1
   selector:
@@ -72,8 +76,8 @@ spec:
         app.kubernetes.io/instance: default
         app.kubernetes.io/part-of: tekton-chains
         # # tekton.dev/release value replaced with inputs.params.versionTag in pipeline/tekton/publish.yaml
-        pipeline.tekton.dev/release: "v0.27.1"
-        version: "v0.27.1"
+        pipeline.tekton.dev/release: "v0.29.7"
+        version: "v0.29.7"
     spec:
       affinity:
         nodeAffinity:
@@ -98,13 +102,17 @@ spec:
       serviceAccountName: tekton-chains-controller
       containers:
         - name: tekton-chains-controller
-          image: ghcr.io/tektoncd/chains/github.com/tektoncd/chains/cmd/controller:v0.29.5@sha256:37dbbc4d3219b03a4f70b542e7e58b38e63ba860620241d682754d739fdad7e4
+          image: ghcr.io/tektoncd/chains/github.com/tektoncd/chains/cmd/controller:v0.29.7@sha256:8957dcedc364a4534d800f7319c84c492767dd8868a18e346adf3435d1818e54
           volumeMounts:
             - name: signing-secrets
               mountPath: /etc/signing-secrets
             - name: oidc-info
               mountPath: /var/run/sigstore/cosign
+            - name: sigstore-cache
+              mountPath: /home/nonroot/.sigstore
           env:
+            - name: TUF_ROOT
+              value: /home/nonroot/.sigstore/root
             - name: SYSTEM_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -130,6 +138,10 @@ spec:
         - name: signing-secrets
           secret:
             secretName: signing-secrets
+        - name: sigstore-cache
+          emptyDir:
+            medium: Memory
+            sizeLimit: 50Mi
         - name: oidc-info
           projected:
             sources:
@@ -191,13 +203,15 @@ rules:
     # Controller needs cluster access to all of the CRDs that it is responsible for
     # managing.
   - apiGroups: ["tekton.dev"]
-    resources: ["tasks", "clustertasks", "taskruns", "pipelines", "pipelineruns", "pipelineresources", "conditions", "runs"]
+    resources: ["tasks", "clustertasks", "taskruns", "pipelines", "pipelineruns",
+      "pipelineresources", "conditions", "runs"]
     verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
   - apiGroups: ["tekton.dev"]
     resources: ["taskruns/finalizers", "pipelineruns/finalizers", "runs/finalizers"]
     verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
   - apiGroups: ["tekton.dev"]
-    resources: ["tasks/status", "clustertasks/status", "taskruns/status", "pipelines/status", "pipelineruns/status", "pipelineresources/status", "runs/status"]
+    resources: ["tasks/status", "clustertasks/status", "taskruns/status", "pipelines/status",
+      "pipelineruns/status", "pipelineresources/status", "runs/status"]
     verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
 ---
 kind: ClusterRole
@@ -352,7 +366,7 @@ data:
   # this ConfigMap such that even if we don't have access to
   # other resources in the namespace, we can still access
   # this ConfigMap.
-  version: "v0.27.1"
+  version: "v0.29.7"
 
 ---
 # Copyright 2023 Tekton Authors LLC

@@ -12,6 +12,6 @@
     "lint": "tektonic lint scripts"
   },
   "dependencies": {
-    "@pfenerty/tektonic": "github:pfenerty/tektonic#ddac5dcbc716395a3f10710ba22ef3c537da7c7a"
+    "@tektonic-ci/core": "^2.1.0"
   }
 }

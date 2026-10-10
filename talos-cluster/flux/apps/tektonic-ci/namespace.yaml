@@ -1,0 +1,11 @@
+# CI for the tektonic-ci GitHub org. Its webhooks arrive at the second PAC controller
+# (apps/pipelines-as-code/tektonic-ci-controller.yaml), not the default one.
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: tektonic-ci
+    labels:
+        pod-security.kubernetes.io/enforce: privileged
+        # Opts the namespace out of Tekton's validating and defaulting webhooks, as in
+        # ocidex-ci.
+        webhooks.knative.dev/exclude: "true"
