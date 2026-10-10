@@ -15,6 +15,12 @@ Personal infrastructure managed as code. Two sub-projects:
 
 All secrets are SOPS-encrypted with an age key at `age.key` (repo root, gitignored). Encryption rules are in `.sops.yaml`. Never commit decrypted secrets.
 
+Secret guards run before every commit: `.beads/hooks/pre-commit` calls `prek` (from the flox env), which runs `.pre-commit-config.yaml`:
+- **betterleaks** scans staged changes with `.betterleaks.toml`. CI runs the same version and config, so bump them together.
+- **sops-encrypted** (`.tektonic/scripts/check-sops-encryption.sh`) fails on any staged `*.secret.yaml`, `*.enc.yaml` or `secrets.yaml` that is not encrypted. betterleaks skips those paths, so this check is the only thing that catches them.
+
+Commit from inside `flox activate`, or the hook fails closed. Full sweep: `prek run --all-files`.
+
 ## Talos Cluster
 
 Three RPi4 control-plane nodes (192.168.1.101-103) with a floating VIP at 192.168.1.100. Stack: Talos Linux, Cilium CNI, Flux CD GitOps, Tailscale, Tekton CI.

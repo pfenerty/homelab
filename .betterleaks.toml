@@ -1,0 +1,45 @@
+# betterleaks configuration for homelab.
+#
+# The repo deliberately commits encrypted material and vendored upstream release
+# manifests. Both are dense with high-entropy strings that are not secrets, and a
+# scanner that cries wolf on them gets ignored — which is how a real leak gets through.
+#
+# betterleaks v2 does not discover config files on its own: every invocation passes
+# `--config .betterleaks.toml` (the pre-commit hook and the CI secret-scan task).
+
+minVersion = "2.0.0-rc.2"
+
+# Whole files to skip, before any rule runs:
+#
+# - SOPS ciphertext and age recipients are meant to be committed. Plaintext in these
+#   paths is caught by .tektonic/scripts/check-sops-encryption.sh instead.
+# - .ci/ is build output: build-manifests.sh concatenates the vendored manifests
+#   below into it, where their own paths no longer match. It is a build artifact in
+#   the Tekton workspace, never committed.
+# - Vendored upstream release manifests, refreshed by update-manifests.sh, not
+#   authored here.
+# - The public half of the Tekton Chains signing key; publishing it is the point.
+prefilter = '''
+matchesAny(attributes["path"], [
+    `\.enc\.yaml$`,
+    `\.secret\.yaml$`,
+    `(^|/)talos-cluster/talos/secrets\.yaml$`,
+    `(^|/)\.sops\.yaml$`,
+    `(^|/)\.ci/`,
+    `(^|/)talos-cluster/flux/flux-system/gotk-components\.yaml$`,
+    `(^|/)talos-cluster/flux/apps/tekton/(pipelines|triggers|interceptors|dashboard)\.yaml$`,
+    `(^|/)talos-cluster/flux/apps/tekton-chains/chains\.yaml$`,
+    `(^|/)talos-cluster/flux/apps/pipelines-as-code/release\.yaml$`,
+    `(^|/)talos-cluster/flux/apps/cloudflare-gateway/install\.yaml$`,
+    `(^|/)talos-cluster/flux/apps/tekton-chains/cosign\.pub$`,
+])
+'''
+
+# Placeholder bodies in *.secret.template.yaml. Matched on content, not path, so a
+# template that ever gets a real key pasted into it still trips the scanner.
+filter = '''
+matchesAny(finding["match"], [`REPLACE_WITH_[A-Z_]+`])
+'''
+
+[extend]
+useDefault = true

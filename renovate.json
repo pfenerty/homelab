@@ -105,6 +105,18 @@
       ],
       "depNameTemplate": "tektoncd/chains",
       "datasourceTemplate": "github-releases"
+    },
+    {
+      "description": "Betterleaks image for the CI secret-scan task. Kept in lockstep with the betterleaks rev in .pre-commit-config.yaml by the betterleaks group below; the .tektonic/** postUpgradeTasks re-synthesize .tekton/.",
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/)\\.tektonic/pipeline\\.ts$"
+      ],
+      "matchStrings": [
+        "BETTERLEAKS = \"ghcr\\.io/betterleaks/betterleaks:(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "ghcr.io/betterleaks/betterleaks",
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
@@ -193,6 +205,18 @@
         ],
         "executionMode": "branch"
       }
+    },
+    {
+      "description": "The local pre-commit hook and the CI secret-scan task must run the same scanner version, or a commit that passes locally can fail CI (or worse, the reverse).",
+      "matchPackageNames": [
+        "betterleaks/betterleaks",
+        "https://github.com/betterleaks/betterleaks",
+        "ghcr.io/betterleaks/betterleaks"
+      ],
+      "groupName": "betterleaks"
     }
-  ]
+  ],
+  "pre-commit": {
+    "enabled": true
+  }
 }

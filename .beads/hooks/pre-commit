@@ -22,3 +22,12 @@ if command -v bd >/dev/null 2>&1; then
   if [ $_bd_exit -ne 0 ]; then exit $_bd_exit; fi
 fi
 # --- END BEADS INTEGRATION v1.0.3 ---
+
+# --- secret guards (prek) ---
+# Runs .pre-commit-config.yaml. Fails closed: a secret guard that silently skips
+# itself is worse than none.
+if ! command -v prek >/dev/null 2>&1; then
+  echo >&2 "prek not found — commit from inside 'flox activate' (bypass: git commit --no-verify)"
+  exit 1
+fi
+prek run --hook-stage pre-commit
