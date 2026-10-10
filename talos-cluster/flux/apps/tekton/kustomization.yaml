@@ -18,3 +18,15 @@ patches:
             set-security-context: "true"
             disable-affinity-assistant: "true"
             coschedule: "disabled"
+    # Send PipelineRun/TaskRun traces to the alloy-otel gateway (-> Tempo). The
+    # http:// scheme matters: knative treats a bare host:port as https.
+    - patch: |-
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: config-observability
+            namespace: tekton-pipelines
+          data:
+            tracing-protocol: grpc
+            tracing-endpoint: http://monitoring-alloy-otel.monitoring.svc.cluster.local:4317
+            tracing-sampling-rate: "1.0"

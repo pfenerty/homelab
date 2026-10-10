@@ -8,10 +8,12 @@ spec:
   chart:
     spec:
       chart: grafana
-      version: "10.5.15"
+      # grafana/helm-charts froze this chart at 10.5.15 (deprecated); it continues
+      # in grafana-community. 13.x runs the distroless image with a read-only root.
+      version: "13.2.5"
       sourceRef:
         kind: HelmRepository
-        name: grafana
+        name: grafana-community
         namespace: flux-system
       interval: 12h
   targetNamespace: monitoring
@@ -57,9 +59,37 @@ spec:
             isDefault: true
             access: proxy
           - name: Loki
+            uid: loki
             type: loki
             url: http://monitoring-loki.monitoring.svc.cluster.local:3100
             access: proxy
+          - name: Tempo
+            uid: tempo
+            type: tempo
+            url: http://monitoring-tempo.monitoring.svc.cluster.local:3200
+            access: proxy
+            jsonData:
+              # Span -> the pod's logs around the span's time window.
+              tracesToLogsV2:
+                datasourceUid: loki
+                spanStartTimeShift: -5m
+                spanEndTimeShift: 5m
+                filterByTraceID: false
+                tags:
+                  - key: k8s.namespace.name
+                    value: namespace
+                  - key: k8s.pod.name
+                    value: pod
+              nodeGraph:
+                enabled: true
+          - name: Alertmanager
+            uid: alertmanager
+            type: alertmanager
+            url: http://kps-alertmanager.monitoring.svc.cluster.local:9093
+            access: proxy
+            jsonData:
+              implementation: prometheus
+              handleGrafanaManagedAlerts: false
     # download-dashboards init container fetches these from grafana.com and writes
     # them to /var/lib/grafana/dashboards/default/ on the PVC. dashboardProviders
     # below tells Grafana to load from that path (separate from the sidecar's

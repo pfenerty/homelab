@@ -1,0 +1,148 @@
+# OTLP gateway. Separate from the log-collecting `alloy` DaemonSet, which runs as
+# root with hostPath mounts; this one needs neither. Send OTLP to
+#   monitoring-alloy-otel.monitoring.svc.cluster.local:4317 (gRPC) / :4318 (HTTP)
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy-otel
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: alloy
+      version: "1.12.1"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+      interval: 12h
+  targetNamespace: monitoring
+  values:
+    # The `alloy` release already owns the PodLogs CRD.
+    crds:
+      create: false
+    # Only what otelcol.processor.k8sattributes needs; the chart default also
+    # grants cluster-wide read on secrets and configmaps. Both lists end up in the
+    # same ClusterRole; the chart renders invalid YAML if either is empty.
+    rbac:
+      rules:
+        - apiGroups: [""]
+          resources: ["pods", "namespaces"]
+          verbs: ["get", "list", "watch"]
+      clusterRules:
+        - apiGroups: ["apps"]
+          resources: ["replicasets"]
+          verbs: ["get", "list", "watch"]
+        - apiGroups: ["batch"]
+          resources: ["jobs"]
+          verbs: ["get", "list", "watch"]
+    alloy:
+      enableReporting: false
+      extraPorts:
+        - name: otlp-grpc
+          port: 4317
+          targetPort: 4317
+          appProtocol: grpc
+        - name: otlp-http
+          port: 4318
+          targetPort: 4318
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+      configMap:
+        content: |
+          // Apps and in-cluster controllers push OTLP here; each signal goes to
+          // the store that already holds that kind of data, traces to Tempo.
+          otelcol.receiver.otlp "default" {
+            grpc {
+              endpoint = "0.0.0.0:4317"
+            }
+
+            http {
+              endpoint = "0.0.0.0:4318"
+            }
+
+            output {
+              metrics = [otelcol.processor.memory_limiter.default.input]
+              logs    = [otelcol.processor.memory_limiter.default.input]
+              traces  = [otelcol.processor.memory_limiter.default.input]
+            }
+          }
+
+          // Percentages of the container memory limit above.
+          otelcol.processor.memory_limiter "default" {
+            check_interval         = "1s"
+            limit_percentage       = 80
+            spike_limit_percentage = 20
+
+            output {
+              metrics = [otelcol.processor.k8sattributes.default.input]
+              logs    = [otelcol.processor.k8sattributes.default.input]
+              traces  = [otelcol.processor.k8sattributes.default.input]
+            }
+          }
+
+          // Attach namespace/pod/workload, looked up from the sender's pod IP.
+          otelcol.processor.k8sattributes "default" {
+            extract {
+              metadata = [
+                "k8s.namespace.name",
+                "k8s.pod.name",
+                "k8s.node.name",
+                "k8s.deployment.name",
+                "k8s.statefulset.name",
+                "k8s.daemonset.name",
+                "k8s.cronjob.name",
+                "k8s.job.name",
+              ]
+            }
+
+            output {
+              metrics = [otelcol.processor.batch.default.input]
+              logs    = [otelcol.processor.batch.default.input]
+              traces  = [otelcol.processor.batch.default.input]
+            }
+          }
+
+          otelcol.processor.batch "default" {
+            output {
+              metrics = [otelcol.exporter.otlphttp.prometheus.input]
+              logs    = [otelcol.exporter.otlphttp.loki.input]
+              traces  = [otelcol.exporter.otlp.tempo.input]
+            }
+          }
+
+          // Prometheus native OTLP receiver (appends /v1/metrics).
+          otelcol.exporter.otlphttp "prometheus" {
+            client {
+              endpoint = "http://kps-prometheus.monitoring.svc.cluster.local:9090/api/v1/otlp"
+            }
+          }
+
+          // Loki native OTLP endpoint (appends /v1/logs).
+          otelcol.exporter.otlphttp "loki" {
+            client {
+              endpoint = "http://monitoring-loki.monitoring.svc.cluster.local:3100/otlp"
+            }
+          }
+
+          otelcol.exporter.otlp "tempo" {
+            client {
+              endpoint = "monitoring-tempo.monitoring.svc.cluster.local:4317"
+
+              tls {
+                insecure = true
+              }
+            }
+          }
+    controller:
+      type: deployment
+      replicas: 1
+      # Keep the extra work off the RPi control-plane nodes.
+      nodeSelector:
+        kubernetes.io/arch: amd64
