@@ -260,8 +260,10 @@ upgrade-k8s-dry-run:
 	talosctl upgrade-k8s $(K8S_UPGRADE_FLAGS) --to $(K8S_TO) --dry-run
 
 # Usage: make upgrade-k8s  (upgrades to $(KUBERNETES_VERSION))
+# Wrapped in a watchdog: talosctl can hang at "waiting for kubelet restart"
+# after missing the restart event; the script kills and re-runs it (idempotent).
 upgrade-k8s:
-	talosctl upgrade-k8s $(K8S_UPGRADE_FLAGS) --to $(K8S_TO)
+	scripts/upgrade-k8s.sh $(K8S_TO) $(K8S_UPGRADE_FLAGS)
 	@echo "✓ Kubernetes upgraded to v$(K8S_TO)"
 
 # Kubelet + control-plane versions per node. Skew here (e.g. after a `repatch-%`
