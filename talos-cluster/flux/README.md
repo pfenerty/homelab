@@ -1,63 +1,113 @@
 # flux/
 
-Flux CD GitOps manifests for the cluster. Flux reconciles this directory from the `main` branch continuously.
+Flux CD GitOps manifests for the cluster. The root Kustomization in `flux-system/gotk-sync.yaml` continuously reconciles `./talos-cluster/flux` from `main`.
 
 ## Structure
 
 ```
 flux/
 ├── flux-system/              # Flux bootstrap components (managed by flux bootstrap)
-│   ├── gotk-components.yaml  # Flux controllers
-│   ├── gotk-sync.yaml        # GitRepository + root Kustomization
-│   └── kustomization.yaml
-├── kustomization.yaml        # Root: references cilium + apps kustomizations
-├── cilium.kustomization.yaml # Flux Kustomization for Cilium (early bootstrap)
-├── apps.kustomization.yaml   # Flux Kustomization for all apps
+├── kustomization.yaml        # Root: lists every *.kustomization.yaml below
+├── <name>.kustomization.yaml # One Flux Kustomization per component
 ├── cilium/                   # Cilium CNI HelmRelease
-│   ├── helmrepository.yaml
-│   ├── helmrelease.yaml
-│   └── kustomization.yaml
-└── apps/
-    ├── kustomization.yaml    # References all app subdirectories
-    ├── metrics-server/
-    ├── tailscale/            # Tailscale operator
-    └── tekton/               # Tekton Pipelines + Dashboard
+├── gateway-api/              # Gateway API CRDs
+└── apps/<name>/              # Manifests for each component
 ```
+
+Every component has its own Flux `Kustomization` (`<name>.kustomization.yaml`). That file sets the component's `path`, its `dependsOn` ordering, health checks, and SOPS decryption. There is no single "apps" Kustomization, so one broken component doesn't block the others.
+
+### Adding a component
+
+1. Create `apps/<name>/` with a `kustomization.yaml`
+2. Create `<name>.kustomization.yaml` pointing `spec.path` at it, with `dependsOn` and (if it contains SOPS files) `spec.decryption`
+3. List it in `kustomization.yaml`
+
+CI's `check-flux-wiring.sh` fails if a Kustomization is not referenced from the root, if a `spec.path` doesn't exist, or if a `dependsOn` names something that is gone.
 
 ## Reconciliation Order
 
-Cilium is bootstrapped in its own `Kustomization` (`cilium.kustomization.yaml`) separate from `apps.kustomization.yaml`. This ensures the CNI is ready before workloads are scheduled.
+Arrows point from a dependency to the components that depend on it.
 
 ```
-flux-system  ──► cilium  ──► (CNI ready)
-                                  │
-                                  ▼
-             apps ──► metrics-server
-                  ──► tailscale
-                  ──► tekton
+cilium ─┬─► tekton ─┬─► pipelines-as-code ─┬─► homelab-ci
+        │           │   (also tailscale)   ├─► ocidex-ci
+        │           │                      ├─► tektonic-ci
+        │           │                      └─► apko-cicd-ci ──► apko-cicd-update
+        │           └─► tekton-chains
+        ├─► tailscale
+        ├─► hubble
+        ├─► metrics-server
+        ├─► dev-spaces
+        └─► cloudflare-gateway (also gateway-api)
+
+cnpg ──► ocidex-dev-infra ──► ocidex-dev-main ──► ocidex-dev-operator ──► ocidex-dev-registries
+                              (also cilium,       └─► ocidex-dev-k8s-agent
+                               cloudflare-gateway,
+                               keda)
+
+tailscale, nfs-subdir-provisioner, local-path-provisioner ──► monitoring ──► monitoring-extras
+
+no dependencies: gateway-api, cnpg, keda, local-path-provisioner, nfs-subdir-provisioner, renovate, trek
 ```
 
-## Apps
+## Components
 
-### Cilium (`cilium/`)
-CNI with full kube-proxy replacement, WireGuard node-to-node encryption, VXLAN cross-node routing, and Hubble observability. Installed before any workloads.
+### Platform
 
-### Tailscale (`apps/tailscale/`)
-Tailscale Kubernetes operator for exposing in-cluster services on the Tailscale network. OAuth credentials are SOPS-encrypted in `credentials.secret.yaml`.
+| Kustomization | Path | What |
+|---|---|---|
+| `cilium` | `cilium/` | CNI: kube-proxy replacement, WireGuard node-to-node encryption, VXLAN, Hubble |
+| `hubble` | `apps/hubble/` | Tailnet Ingress for the Hubble UI |
+| `gateway-api` | `gateway-api/` | Gateway API CRDs (`prune: false`) |
+| `cloudflare-gateway` | `apps/cloudflare-gateway/` | Cloudflare Gateway API controller + `cloudflare-gateway` Gateway for public HTTPRoutes |
+| `tailscale` | `apps/tailscale/` | Tailscale operator. Tailnet services are exposed through `Ingress` with `ingressClassName: tailscale` |
+| `metrics-server` | `apps/metrics-server/` | `kubectl top` / HPA metrics |
+| `keda` | `apps/keda/` | Event-driven autoscaling (used by ocidex workers) |
+| `local-path-provisioner` | `apps/local-path-provisioner/` | Node-local PVs |
+| `nfs-subdir-provisioner` | `apps/nfs-subdir-provisioner/` | NFS-backed PVs |
+| `cnpg` | `apps/cnpg/` | CloudNativePG operator |
 
-The `namespace.yaml` sets `pod-security.kubernetes.io/enforce: privileged` on the `tailscale-operator` namespace. This is required because proxy pods use privileged containers for nftables/WireGuard setup.
+[`../docs/tailscale-cilium.md`](../docs/tailscale-cilium.md) explains why services use `Ingress` instead of the `tailscale.com/expose` Service annotation. The `tailscale-operator` namespace is `privileged` under Pod Security, because proxy pods need privileged containers for nftables/WireGuard.
 
-See [`../docs/tailscale-cilium.md`](../docs/tailscale-cilium.md) for why services are exposed via Kubernetes `Ingress` rather than the simpler `tailscale.com/expose: "true"` Service annotation.
+### CI
 
-### Tekton (`apps/tekton/`)
-Tekton Pipelines, Triggers, and Dashboard. The dashboard is exposed on the Tailscale network via a Kubernetes `Ingress` with `ingressClassName: tailscale` (`tailscale-ingress.yaml`).
+| Kustomization | Path | What |
+|---|---|---|
+| `tekton` | `apps/tekton/` | Vendored Tekton Pipelines, Triggers, Interceptors, Dashboard, plus a PipelineRun pruner CronJob |
+| `tekton-chains` | `apps/tekton-chains/` | Signed SLSA provenance for runs ([README](apps/tekton-chains/README.md)) |
+| `pipelines-as-code` | `apps/pipelines-as-code/` | Vendored PAC (GitHub App mode) and a second controller for the `tektonic-ci` org. Webhooks arrive over Tailscale funnel |
+| `homelab-ci` | `apps/homelab-ci/` | PAC `Repository` for this repo ([README](apps/homelab-ci/README.md)) |
+| `ocidex-ci` | `apps/ocidex-ci/` | PAC `Repository`, registry and API credentials, cache PVCs for ocidex |
+| `tektonic-ci` | `apps/tektonic-ci/` | PAC `Repository` and cache PVCs for the tektonic packages |
+| `apko-cicd-ci` | `apps/apko-cicd/` | PAC `Repository`, ghcr credentials for apko-cicd |
+| `apko-cicd-update` | `.tekton/update` in the `apko-cicd` GitRepository | Scheduled package-update pipeline sourced from the apko-cicd repo |
+| `renovate` | `apps/renovate/` | Self-hosted Renovate CronJobs |
 
-### Metrics Server (`apps/metrics-server/`)
-Standard metrics-server for `kubectl top` and HPA support.
+The vendored manifests (`tekton/`, `tekton-chains/`, `pipelines-as-code/`) are refreshed with each directory's `update-manifests.sh`. Renovate bumps the version pinned in those scripts.
+
+### Workloads
+
+| Kustomization | Path | What |
+|---|---|---|
+| `ocidex-dev-*` | `apps/ocidex/dev/*` | OCIDex: Postgres, app, operator, registries, k8s agent ([README](apps/ocidex/README.md)) |
+| `monitoring` | `apps/monitoring/` | kube-prometheus-stack, Loki, Tempo, Alloy, Grafana, Alertmanager → Discord |
+| `monitoring-extras` | `apps/monitoring-extras/` | ServiceMonitors/PodMonitors and dashboards that need the monitoring CRDs first |
+| `dev-spaces` | `apps/dev-spaces/` | `devbox` dev-workspace chart from `ghcr.io/pfenerty/charts` |
+| `trek` | `apps/trek/` | TREK, exposed on the tailnet |
 
 ## Secrets
 
-Secrets encrypted with SOPS are decrypted by Flux automatically. The SOPS age private key must be present in the cluster as a Kubernetes secret:
+Flux decrypts SOPS-encrypted files at apply time. Each Kustomization that contains them sets:
+
+```yaml
+spec:
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+```
+
+The age private key must be in the cluster:
 
 ```bash
 kubectl create secret generic sops-age \
@@ -65,21 +115,20 @@ kubectl create secret generic sops-age \
   --from-file=age.agekey=age.key
 ```
 
-The `apps` Flux Kustomization references this via `spec.decryption.provider: sops`.
+Encrypted files are named `*.secret.yaml` or `*.enc.yaml`. Most have a plaintext `*.template.yaml` beside them that shows the expected keys.
 
 ## Making Changes
 
-Push to `main` — Flux reconciles every 10 minutes, or force it immediately:
+Push to `main`. Most Kustomizations reconcile every 10 minutes (ocidex every 5). To force one immediately:
 
 ```bash
-flux reconcile kustomization apps --with-source
-flux reconcile kustomization cilium --with-source
+flux reconcile kustomization <name> --with-source
 ```
 
-To temporarily prevent Flux from overwriting a manual change:
+To temporarily stop Flux from overwriting a manual change:
 
 ```bash
-flux suspend kustomization apps
+flux suspend kustomization <name>
 # ... make manual changes ...
-flux resume kustomization apps
+flux resume kustomization <name>
 ```

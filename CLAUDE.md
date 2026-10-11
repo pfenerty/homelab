@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal infrastructure managed as code. Two sub-projects:
+Personal infrastructure managed as code.
 
 | Directory | What |
 |-----------|------|
-| `talos-cluster/` | Three-node Kubernetes cluster on Raspberry Pi 4s (Talos Linux + Flux CD) |
-| `nix-dev-server/` | NixOS remote development server (GPU workstation) |
+| `talos-cluster/` | Kubernetes cluster: 3× RPi4 control planes + 1 amd64 worker (Talos Linux + Flux CD) |
+| `.tektonic/` | This repo's CI definition (tektonic); `npm run synth` writes `.tekton/` |
+| `.tekton/` | Generated PipelineRuns for Pipelines as Code. Never hand-edit |
 
 ## Secrets
 
@@ -23,7 +24,9 @@ Commit from inside `flox activate`, or the hook fails closed. Full sweep: `prek 
 
 ## Talos Cluster
 
-Three RPi4 control-plane nodes (192.168.1.101-103) with a floating VIP at 192.168.1.100. Stack: Talos Linux, Cilium CNI, Flux CD GitOps, Tailscale, Tekton CI.
+Three RPi4 control-plane nodes (192.168.1.101-103) with a floating VIP at 192.168.1.100, plus the amd64 worker `x86-01` (192.168.1.104, separate factory schematic with the binfmt-misc extension). Stack: Talos Linux, Cilium CNI, Flux CD GitOps, Tailscale, Tekton + Pipelines as Code CI, CloudNativePG, kube-prometheus-stack/Loki/Grafana.
+
+Always pass `--talosconfig talos-cluster/talos/clusterconfig/talosconfig` to `talosctl`. The default `~/.talos/config` context points somewhere else.
 
 All operations run from `talos-cluster/`:
 
@@ -34,32 +37,41 @@ make apply-all       # Apply configs to all running nodes
 make repatch-all     # Re-apply patches without touching secrets
 make repatch-rpi-01  # Re-apply patches to single node
 make health          # Check cluster health
-make upgrade-all     # Upgrade all nodes (103 → 102 → 101)
+make validate-patches  # Validate patches against throwaway PKI (same as CI)
+make upgrade-all     # Upgrade all nodes (103 → 102 → 101 → x86-01)
 make upgrade-101     # Upgrade single node by last IP octet
+make upgrade-x86-01  # Worker upgrade; opens a CNPG maintenance window around the drain
+make upgrade-k8s     # Kubernetes upgrade to $(KUBERNETES_VERSION)
 make bootstrap       # First-time etcd bootstrap
 make kubeconfig      # Fetch kubeconfig to ~/.kube/config
 ```
+
+`TALOS_VERSION` / `KUBERNETES_VERSION` in `talos-cluster/Makefile` are the source of truth. Patches are multi-document (Talos 1.14 split config into per-component documents). After `make repatch-all`, check `talosctl services` for `cri`. A no-reboot apply that restarts cri can leave containerd waiting on sandboxd, and that needs a rolling reboot to clear.
 
 ### Flux GitOps Layout
 
 ```
 talos-cluster/flux/
-├── flux-system/     # Flux bootstrap components
-├── apps/            # Application workloads
-└── *.kustomization.yaml  # Top-level kustomizations (cilium, apps)
+├── flux-system/            # Flux bootstrap; root Kustomization syncs ./talos-cluster/flux
+├── kustomization.yaml      # Lists every *.kustomization.yaml below
+├── *.kustomization.yaml    # One Flux Kustomization per component (dependsOn ordering)
+├── cilium/, gateway-api/   # Infra outside apps/
+└── apps/<name>/            # Workload manifests, one directory per component
 ```
 
-## NixOS Dev Server
+A new component needs its own `<name>.kustomization.yaml` that is listed in `flux/kustomization.yaml`. CI's `check-flux-wiring.sh` fails on orphans. Kustomizations that hold SOPS files set `spec.decryption` (secret `sops-age`).
 
-Flake-based NixOS configuration. Modules live in `nix-dev-server/modules/`, host configs in `nix-dev-server/hosts/`.
+### CI
+
+`cd .tektonic && npm run synth` regenerates `.tekton/`. Commit the result. `npm run check` fails if `.tekton/` is stale. The check scripts live in `.tektonic/scripts/` and run locally too.
 
 ## Dependency Updates
 
-Automated via [Renovate](https://docs.renovatebot.com/) — covers Nix flake inputs, Helm chart versions, and container image tags.
+Automated via [Renovate](https://docs.renovatebot.com/), which runs in-cluster as a CronJob. It covers Helm chart versions, container image tags, vendored Tekton manifests, and the Talos/Kubernetes versions in the Makefile.
 
 ## Prerequisites
 
-talosctl, kubectl, sops, helm, flux CLI, Tailscale
+talosctl, kubectl, sops, helm, flux CLI, Tailscale (the flox env provides talosctl, kubectl, tkn and prek)
 
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->

@@ -1,43 +1,61 @@
 # talos-cluster
 
-A three-node Kubernetes cluster running on Raspberry Pi 4s, managed with [Talos Linux](https://www.talos.dev/) and [Flux CD](https://fluxcd.io/).
+A four-node Kubernetes cluster managed with [Talos Linux](https://www.talos.dev/) and [Flux CD](https://fluxcd.io/). Three Raspberry Pi 4s form the control plane and an amd64 box runs as a worker.
 
 ## Hardware
 
-| Node | IP | Role |
-|------|----|------|
-| rpi-01 | 192.168.1.101 | Control plane |
-| rpi-02 | 192.168.1.102 | Control plane |
-| rpi-03 | 192.168.1.103 | Control plane |
-| VIP | 192.168.1.100 | Kubernetes API (floating) |
+| Config name | Kubernetes node | IP | Arch | Role |
+|------|------|----|------|------|
+| rpi-01 | talos-byt-k6n | 192.168.1.101 | arm64 | Control plane |
+| rpi-02 | talos-fd9-twg | 192.168.1.102 | arm64 | Control plane |
+| rpi-03 | talos-1q6-aue | 192.168.1.103 | arm64 | Control plane |
+| x86-01 | talos-jlf-6ro | 192.168.1.104 | amd64 | Worker |
+| VIP | | 192.168.1.100 | | Kubernetes API (floating across the RPis) |
 
-All nodes run as control planes with `allowSchedulingOnControlPlanes: true`.
+Kubernetes names the nodes with Talos's generated hostnames. The Makefile and
+patches use the config names. The control planes keep the default
+`node-role.kubernetes.io/control-plane:NoSchedule` taint, so most workloads run on
+`x86-01`. The RPis carry the control plane, DaemonSets (Cilium, Alloy, …) and the
+few pods that tolerate the taint.
+Each RPi has about 3.2 Gi allocatable RAM, shared by etcd and the control-plane
+components. `x86-01` also hosts the `ocidex-pg` CloudNativePG instance on
+`local-path` storage. Its Talos
+image comes from a separate factory schematic (`WORKER_SCHEMATIC`) that adds the
+`siderolabs/binfmt-misc` extension. Nothing registers qemu handlers yet, so
+cross-arch builds are off.
 
 ## Stack
 
 | Component | Details |
 |-----------|---------|
-| OS | Talos Linux v1.14.0 (`TALOS_VERSION` in the `Makefile`) |
-| Kubernetes | v1.37.0 (`KUBERNETES_VERSION` in the `Makefile`) |
-| CNI | Cilium 1.19.1 (kube-proxy replacement, WireGuard encryption, VXLAN routing) |
-| GitOps | Flux CD |
+| OS | Talos Linux v1.14.2 (`TALOS_VERSION` in the `Makefile`) |
+| Kubernetes | v1.37.1 (`KUBERNETES_VERSION` in the `Makefile`) |
+| CNI | Cilium 1.20.2 (kube-proxy replacement, WireGuard encryption, VXLAN routing, Hubble) |
+| GitOps | Flux CD, one Kustomization per component |
 | Secrets | SOPS + age |
-| VPN | Tailscale operator |
-| CI | Tekton Pipelines + Dashboard |
+| Ingress | Tailscale operator (tailnet), Cloudflare Gateway API controller (public) |
+| CI | Tekton Pipelines, Triggers, Chains, Dashboard + Pipelines as Code |
+| Storage | local-path-provisioner, NFS subdir provisioner |
+| Database | CloudNativePG |
+| Observability | kube-prometheus-stack, Loki, Tempo, Alloy, Grafana |
+
+[`flux/README.md`](flux/README.md) lists every component.
 
 ## Repository Layout
 
 ```
 talos-cluster/
 ├── Makefile                  # All cluster operations
+├── scripts/upgrade-k8s.sh    # Watchdog wrapper behind `make upgrade-k8s`
+├── docs/                     # Write-ups on non-obvious decisions
 ├── talos/                    # Talos machine configs
 │   ├── patches/              # Config patches (applied at generate time)
-│   ├── clusterconfig/        # Generated node configs (gitignored secrets baked in)
+│   ├── clusterconfig/        # Generated node configs + talosconfig (gitignored)
 │   └── secrets.yaml          # SOPS-encrypted cluster PKI + bootstrap tokens
 └── flux/                     # Flux GitOps manifests
     ├── flux-system/          # Flux bootstrap components
-    ├── cilium.kustomization.yaml
-    ├── apps.kustomization.yaml
+    ├── kustomization.yaml    # Root: lists every *.kustomization.yaml
+    ├── *.kustomization.yaml  # One Flux Kustomization per component
     └── apps/                 # Application workloads
 ```
 
@@ -89,10 +107,20 @@ make generate
 # Apply configs to all running nodes
 make apply-all
 
-# Re-apply only the patches to existing configs (no secrets needed)
+# Regenerate a node's config from patches + existing PKI and apply it
 make repatch-all
 make repatch-rpi-01   # single node
 ```
+
+After any no-reboot apply, run `talosctl services` and check that `cri` is
+`Running`. On Talos 1.14.0, an apply that restarted cri left containerd stuck at
+"Waiting for service sandboxd to be registered" on every node, because sandboxd
+only registers at boot. Every node went NotReady. A rolling reboot, one node at a
+time, clears it.
+
+Always pass `--talosconfig talos/clusterconfig/talosconfig` to `talosctl` (the
+Makefile does this for you). The default `~/.talos/config` context may point
+at a different cluster.
 
 ### Cluster lifecycle
 
@@ -118,7 +146,7 @@ Talos and Kubernetes upgrade independently. `TALOS_VERSION` and
 
 ```bash
 # Talos (reboots each node — one at a time)
-make upgrade-all          # upgrade all nodes (103 → 102 → 101)
+make upgrade-all          # upgrade all nodes (103 → 102 → 101 → x86-01)
 make upgrade-101          # upgrade single node by last octet
 make upgrade-x86-01       # amd64 worker (different schematic)
 ```
@@ -147,7 +175,6 @@ Every upgrade target uncordons its node on the way out, so an interrupted run
 doesn't leave the cluster short a node.
 
 ```bash
-
 # Kubernetes (one run covers every node, control plane and workers)
 make k8s-versions         # kubelet + apiserver versions per node
 make upgrade-k8s-dry-run  # show the plan, change nothing
