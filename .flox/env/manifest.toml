@@ -12,6 +12,8 @@ prek.pkg-path = "prek"
 k9s.pkg-path = "k9s"
 talosctl.pkg-path = "talosctl"
 kubectl.pkg-path = "kubectl"
+fluxcd.pkg-path = "fluxcd"
+sops.pkg-path = "sops"
 # gum.pkg-path = "gum"
 # gum.version = "^0.14.5"
 

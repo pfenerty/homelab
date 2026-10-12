@@ -7,6 +7,9 @@
         "pkg-path": "beads",
         "version": "1.0.3"
       },
+      "fluxcd": {
+        "pkg-path": "fluxcd"
+      },
       "k9s": {
         "pkg-path": "k9s"
       },
@@ -21,6 +24,9 @@
       },
       "repomix": {
         "pkg-path": "repomix"
+      },
+      "sops": {
+        "pkg-path": "sops"
       },
       "talosctl": {
         "pkg-path": "talosctl"
@@ -116,6 +122,93 @@
       ],
       "outputs": {
         "out": "/nix/store/9c3daxb78cz1axq5vwizr87nx8l1vwn8-beads-1.0.3"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "fluxcd",
+      "broken": false,
+      "derivation": "/nix/store/fyj9wdzzisl4icn6fb42p20aqgfih88b-fluxcd-2.9.4.drv",
+      "description": "Open and extensible continuous delivery solution for Kubernetes",
+      "install_id": "fluxcd",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "fluxcd-2.9.4",
+      "pname": "fluxcd",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:29.802223Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.9.4",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/z794fv8ah0big8icb5mzlawjz5x1m920-fluxcd-2.9.4"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "fluxcd",
+      "broken": false,
+      "derivation": "/nix/store/41dcxh36czhay95l39ys3asqz80511wp-fluxcd-2.9.4.drv",
+      "description": "Open and extensible continuous delivery solution for Kubernetes",
+      "install_id": "fluxcd",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "fluxcd-2.9.4",
+      "pname": "fluxcd",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:28:38.394678Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.9.4",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/f15035db8j3rxpm8ccv2ndcyj4rq2a4y-fluxcd-2.9.4"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "fluxcd",
+      "broken": false,
+      "derivation": "/nix/store/k470hcz8fyb6y5byhbzhq6ip714badi2-fluxcd-2.9.4.drv",
+      "description": "Open and extensible continuous delivery solution for Kubernetes",
+      "install_id": "fluxcd",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "fluxcd-2.9.4",
+      "pname": "fluxcd",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:13.015058Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.9.4",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/pl4bhvkmlin9rq607yy7n401sbs48vgd-fluxcd-2.9.4"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -566,6 +659,93 @@
       "priority": 5
     },
     {
+      "attr_path": "sops",
+      "broken": false,
+      "derivation": "/nix/store/jfm5ycii7pz4mn1s9cm6b14prlhfjfik-sops-3.13.3.drv",
+      "description": "Simple and flexible tool for managing secrets",
+      "install_id": "sops",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "sops-3.13.3",
+      "pname": "sops",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:59:25.920942Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.13.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/6a208hbv8padw8731r88c9hr3cyda6pq-sops-3.13.3"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "sops",
+      "broken": false,
+      "derivation": "/nix/store/qyci95vfhhj55z15qkcb2raxiqh297y3-sops-3.13.3.drv",
+      "description": "Simple and flexible tool for managing secrets",
+      "install_id": "sops",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "sops-3.13.3",
+      "pname": "sops",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:31:12.933167Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.13.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/p41fwvk4zxq3fpgmncggp8zq7ihd96mm-sops-3.13.3"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "sops",
+      "broken": false,
+      "derivation": "/nix/store/gkrlsfb01xpr2z0mh8s9jk0w4d6mg1dv-sops-3.13.3.drv",
+      "description": "Simple and flexible tool for managing secrets",
+      "install_id": "sops",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "sops-3.13.3",
+      "pname": "sops",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:07:52.657239Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.13.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/9vlk37b1fgklzwl5bl9xb2dk8sn947ih-sops-3.13.3"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
       "attr_path": "talosctl",
       "broken": false,
       "derivation": "/nix/store/pysivw6p2px781mx0l9qx9m4cr4z45xd-talosctl-1.13.9.drv",
@@ -744,6 +924,9 @@
     "composer": {
       "schema-version": "1.12.0",
       "install": {
+        "fluxcd": {
+          "pkg-path": "fluxcd"
+        },
         "k9s": {
           "pkg-path": "k9s"
         },
@@ -752,6 +935,9 @@
         },
         "prek": {
           "pkg-path": "prek"
+        },
+        "sops": {
+          "pkg-path": "sops"
         },
         "talosctl": {
           "pkg-path": "talosctl"
