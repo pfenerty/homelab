@@ -16,6 +16,11 @@ spec:
   targetNamespace: synology-csi
   values:
     fullnameOverride: synology-csi
+    images:
+      plugin:
+        # v1.4.0 is tagged upstream but was never pushed to Docker Hub; drop this
+        # override once synology/synology-csi:v1.4.0 exists.
+        tag: v1.3.1
     clientInfoSecret:
       create: false
       name: client-info-secret
