@@ -28,8 +28,11 @@ SCHEMATIC          := ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb63
 IMAGE_URL          := factory.talos.dev/installer/$(SCHEMATIC):$(TALOS_VERSION)
 # amd64 worker schematic: siderolabs/binfmt-misc extension (ships binfmt_misc.ko,
 # which the stock image strips) so the worker can emulate arm64 for melange builds.
-# Source: customization.systemExtensions.officialExtensions: [siderolabs/binfmt-misc]
-WORKER_SCHEMATIC   := 14e9b0100f05654bedf19b92313cdc224cbff52879193d24f3741f1da4a3cbb1
+# siderolabs/iscsi-tools + util-linux-tools: iscsid/iscsiadm for synology-csi, whose
+# node plugin runs only here.
+# Source: customization.systemExtensions.officialExtensions:
+#   [siderolabs/binfmt-misc, siderolabs/iscsi-tools, siderolabs/util-linux-tools]
+WORKER_SCHEMATIC   := 1da3394e6229e507d4e3d166b718cacff86435a61c4765feedd66b43ac237558
 WORKER_IMAGE_URL   := factory.talos.dev/installer/$(WORKER_SCHEMATIC):$(TALOS_VERSION)
 
 # ── Config generation ──────────────────────────────────────────

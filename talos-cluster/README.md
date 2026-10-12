@@ -22,7 +22,9 @@ components. `x86-01` also hosts the `ocidex-pg` CloudNativePG instance on
 `local-path` storage. Its Talos
 image comes from a separate factory schematic (`WORKER_SCHEMATIC`) that adds the
 `siderolabs/binfmt-misc` extension. Nothing registers qemu handlers yet, so
-cross-arch builds are off.
+cross-arch builds are off. The same schematic adds `siderolabs/iscsi-tools`, so
+`x86-01` is the only node that can mount `synology-csi-iscsi` volumes (iSCSI LUNs
+on the Synology).
 
 ## Stack
 
