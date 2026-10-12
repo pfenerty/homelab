@@ -77,6 +77,11 @@ spec:
       replicas: 0
     bloomGateway:
       replicas: 0
+    # Chart default is required pod anti-affinity; with RollingUpdate and the
+    # amd64-only node, the replacement pod can never schedule. null (not {})
+    # drops the default; Helm merges maps.
+    gateway:
+      affinity: null
     # SingleBinary + filesystem doesn't need external memcached caches;
     # defaults (8192Mi chunks, 1024Mi results) saturate node memory requests.
     chunksCache:
