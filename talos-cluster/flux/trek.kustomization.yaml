@@ -4,6 +4,8 @@ metadata:
   name: trek
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: synology-csi
   interval: 10m0s
   path: ./talos-cluster/flux/apps/trek
   prune: true

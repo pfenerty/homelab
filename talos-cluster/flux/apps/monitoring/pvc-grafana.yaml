@@ -1,0 +1,13 @@
+# Owned here rather than by the chart (persistence.existingClaim), so a chart
+# upgrade or uninstall can never delete dashboards/users.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-iscsi
+  namespace: monitoring
+spec:
+  storageClassName: synology-csi-iscsi
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 2Gi

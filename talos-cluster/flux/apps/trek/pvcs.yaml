@@ -1,0 +1,25 @@
+# Owned here rather than by the chart (persistence.*.existingClaim), so a chart
+# upgrade or uninstall can never delete the data.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: trek-data-iscsi
+  namespace: trek
+spec:
+  storageClassName: synology-csi-iscsi
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: trek-uploads-iscsi
+  namespace: trek
+spec:
+  storageClassName: synology-csi-iscsi
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
