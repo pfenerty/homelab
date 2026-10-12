@@ -9,6 +9,9 @@ schema-version = "1.12.0"
 [install]
 tektoncd-cli.pkg-path = "tektoncd-cli"
 prek.pkg-path = "prek"
+k9s.pkg-path = "k9s"
+talosctl.pkg-path = "talosctl"
+kubectl.pkg-path = "kubectl"
 # gum.pkg-path = "gum"
 # gum.version = "^0.14.5"
 

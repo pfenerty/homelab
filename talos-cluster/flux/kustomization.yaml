@@ -26,7 +26,6 @@ resources:
   - ocidex-dev-operator.kustomization.yaml
   - ocidex-dev-registries.kustomization.yaml
   - ocidex-dev-k8s-agent.kustomization.yaml
-  - dev-spaces.kustomization.yaml
   - monitoring.kustomization.yaml
   - monitoring-extras.kustomization.yaml
   - trek.kustomization.yaml

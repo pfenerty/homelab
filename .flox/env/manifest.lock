@@ -7,6 +7,12 @@
         "pkg-path": "beads",
         "version": "1.0.3"
       },
+      "k9s": {
+        "pkg-path": "k9s"
+      },
+      "kubectl": {
+        "pkg-path": "kubectl"
+      },
       "nushell": {
         "pkg-path": "nushell"
       },
@@ -15,6 +21,9 @@
       },
       "repomix": {
         "pkg-path": "repomix"
+      },
+      "talosctl": {
+        "pkg-path": "talosctl"
       },
       "tektoncd-cli": {
         "pkg-path": "tektoncd-cli"
@@ -28,19 +37,18 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/0bij7n94ryg7rwzckma0s8zbkhifxz5x-beads-1.0.3.drv",
+      "derivation": "/nix/store/d0rd9805b45wiz4mv4bmhhi0gy4nf4fh-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:13:43.716907Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:28.769905Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
@@ -49,7 +57,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/m0964ylgmhhv0pb8pf1zpjl704l9lplv-beads-1.0.3"
+        "out": "/nix/store/ilkq2ihrf17z1fm522map9302ixbcvnx-beads-1.0.3"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -58,19 +66,18 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/7mh3rwjvfa38vzvw0vrbjlsvigfkgm8v-beads-1.0.3.drv",
+      "derivation": "/nix/store/91il64y9aa89v6hwadjikyvmpjbbfa84-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:44:32.339465Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:28:37.013762Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
@@ -79,7 +86,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/6akl9hhdlhffsj09rpmaqb5f000ialll-beads-1.0.3"
+        "out": "/nix/store/0m0cpwjz33bhqqj6cnvfiiziqd833wdc-beads-1.0.3"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -88,19 +95,18 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/lp900w30n2dl97bbfkcfbxjnr59ncz6q-beads-1.0.3.drv",
+      "derivation": "/nix/store/dr5hxr7hp7bpc0130vgazv63qzja6m12-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T04:47:35.366213Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:11.462292Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
@@ -109,7 +115,190 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/b28s0b883v7n69mz4i250bbwbryisgqh-beads-1.0.3"
+        "out": "/nix/store/9c3daxb78cz1axq5vwizr87nx8l1vwn8-beads-1.0.3"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "k9s",
+      "broken": false,
+      "derivation": "/nix/store/dzghnq0a16lpqbzrz0mzh5mr5ciiixh1-k9s-0.51.0.drv",
+      "description": "Kubernetes CLI To Manage Your Clusters In Style",
+      "install_id": "k9s",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "k9s-0.51.0",
+      "pname": "k9s",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:46.214179Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.51.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/r07q1aqybcsk9x2j8zwj0827x1b0ipqq-k9s-0.51.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "k9s",
+      "broken": false,
+      "derivation": "/nix/store/7kz1yhh4g8hjhdnamngkmj7y5zwxxa9h-k9s-0.51.0.drv",
+      "description": "Kubernetes CLI To Manage Your Clusters In Style",
+      "install_id": "k9s",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "k9s-0.51.0",
+      "pname": "k9s",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:28:59.373924Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.51.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/wkb5chyhpq8fssb0ck8ifd2jhj9p63q4-k9s-0.51.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "k9s",
+      "broken": false,
+      "derivation": "/nix/store/7g5al07bhnlk6i233bfjk89lrqr545s0-k9s-0.51.0.drv",
+      "description": "Kubernetes CLI To Manage Your Clusters In Style",
+      "install_id": "k9s",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "k9s-0.51.0",
+      "pname": "k9s",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:35.458963Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.51.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/w14xnfi3yvnkijrlj83pzqkwz5k8gi98-k9s-0.51.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "kubectl",
+      "broken": false,
+      "derivation": "/nix/store/1js6yrb914s3jk5wf1bs9cgxkw0sryha-kubectl-1.37.0.drv",
+      "description": "Kubernetes CLI",
+      "install_id": "kubectl",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "kubectl-1.37.0",
+      "pname": "kubectl",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:46.814937Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.37.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "convert": "/nix/store/kpk68b9lws41a2cyw3r42kv1mj0iqhdz-kubectl-1.37.0-convert",
+        "man": "/nix/store/blcq2n4b8kggfl8qcypy0lgircsimsz8-kubectl-1.37.0-man",
+        "out": "/nix/store/v7czk6bi21kp8qyqpnpp9j8wmr79ph18-kubectl-1.37.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "kubectl",
+      "broken": false,
+      "derivation": "/nix/store/9j9qk99r64vssp5lbdxy6vkqg7cp6ccl-kubectl-1.37.0.drv",
+      "description": "Kubernetes CLI",
+      "install_id": "kubectl",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "kubectl-1.37.0",
+      "pname": "kubectl",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:29:00.938103Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.37.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "convert": "/nix/store/vpnac7iskmbmgg130175kjk6wb1zkhk2-kubectl-1.37.0-convert",
+        "man": "/nix/store/5994w79h4gwxvfsnxyh327sxwbzgbhdg-kubectl-1.37.0-man",
+        "out": "/nix/store/qx95gq4biarb1f2m25mx95hq1pk2v302-kubectl-1.37.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "kubectl",
+      "broken": false,
+      "derivation": "/nix/store/hgq7ki4hlcnfpyrgdwx65hrlhmdx4ljb-kubectl-1.37.0.drv",
+      "description": "Kubernetes CLI",
+      "install_id": "kubectl",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "kubectl-1.37.0",
+      "pname": "kubectl",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:37.135472Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.37.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "convert": "/nix/store/ava5f209y5p5j33dzmqpgshcgc52mh8h-kubectl-1.37.0-convert",
+        "man": "/nix/store/fkywbf9sa8y11vf5ixr442zzcz77802b-kubectl-1.37.0-man",
+        "out": "/nix/store/k6834rykv2q3vc5869l15jw7xf6f9v0f-kubectl-1.37.0"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -118,28 +307,27 @@
     {
       "attr_path": "nushell",
       "broken": false,
-      "derivation": "/nix/store/7szx9zazs2zqvrvbkbig0zy1qhqxdmxs-nushell-0.113.1.drv",
+      "derivation": "/nix/store/2pzb6jhvlkkiijdayq2wx9n2mw0xpaz1-nushell-0.115.1.drv",
       "description": "Modern shell written in Rust",
       "install_id": "nushell",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "nushell-0.113.1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "nushell-0.115.1",
       "pname": "nushell",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:14:11.024345Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:54.421672Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.113.1",
+      "version": "0.115.1",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/0zcmb3zs2lm2r3cg7i3qdl5x3w7dfxrf-nushell-0.113.1"
+        "out": "/nix/store/4wgp25hm6h6j3axk068ab5zjabcqjmrh-nushell-0.115.1"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -148,28 +336,27 @@
     {
       "attr_path": "nushell",
       "broken": false,
-      "derivation": "/nix/store/l8bih2027c4dhfpm870f6y2mx4i4kskr-nushell-0.113.1.drv",
+      "derivation": "/nix/store/9x7zbxf92yh0vmnz4aavx2bnk8s8ymm0-nushell-0.115.1.drv",
       "description": "Modern shell written in Rust",
       "install_id": "nushell",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "nushell-0.113.1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "nushell-0.115.1",
       "pname": "nushell",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:45:14.366375Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:29:15.746926Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.113.1",
+      "version": "0.115.1",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/ra7vampb11z1cq9wdxhanpmn7aan0jpv-nushell-0.113.1"
+        "out": "/nix/store/zwzgkzkzjny50rkvnwyq5lf19d34mkr5-nushell-0.115.1"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -178,28 +365,27 @@
     {
       "attr_path": "nushell",
       "broken": false,
-      "derivation": "/nix/store/fw8i5lrnvanc9iix2gb07l273y37vsfl-nushell-0.113.1.drv",
+      "derivation": "/nix/store/fk1adk9fwg1007pws5lmv9k6r0qav8fc-nushell-0.115.1.drv",
       "description": "Modern shell written in Rust",
       "install_id": "nushell",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "nushell-0.113.1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "nushell-0.115.1",
       "pname": "nushell",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T04:48:18.428835Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:54.275237Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.113.1",
+      "version": "0.115.1",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/6rf5daj415jnir6218pjk6b78phhx6pf-nushell-0.113.1"
+        "out": "/nix/store/3nggi9yb3pgi89h6z1hw11v6if0vmqia-nushell-0.115.1"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -208,28 +394,27 @@
     {
       "attr_path": "prek",
       "broken": false,
-      "derivation": "/nix/store/v3ycws2zdanwcqlkj0azhw2c3vp6iwqd-prek-0.3.11.drv",
+      "derivation": "/nix/store/5jqn0vjz5nqppps3y8xrlj9mhhcgivwa-prek-0.5.2.drv",
       "description": "Better `pre-commit`, re-engineered in Rust ",
       "install_id": "prek",
-      "license": "[ MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "prek-0.3.11",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "prek-0.5.2",
       "pname": "prek",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:14:26.981008Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:58:10.147973Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.3.11",
+      "version": "0.5.2",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/2zw3fhay0dwfh8hg1dz94ffq0kmdpsyy-prek-0.3.11"
+        "out": "/nix/store/myvp74zvzw7bhm40p8f7qrivssj888ad-prek-0.5.2"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -238,28 +423,27 @@
     {
       "attr_path": "prek",
       "broken": false,
-      "derivation": "/nix/store/66b3gp3jq7cp82mx9bk7jly4cfs7n2bb-prek-0.3.11.drv",
+      "derivation": "/nix/store/55vbns1ks243xckya4m3qxm8pzc6x3is-prek-0.5.2.drv",
       "description": "Better `pre-commit`, re-engineered in Rust ",
       "install_id": "prek",
-      "license": "[ MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "prek-0.3.11",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "prek-0.5.2",
       "pname": "prek",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:45:37.337998Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:29:35.881096Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.3.11",
+      "version": "0.5.2",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/xkn4x7fg8cj78vf5i924gjgz5rx7kf8h-prek-0.3.11"
+        "out": "/nix/store/9ml4ari24brnvl12mdkcrbxcjzlnx4qm-prek-0.5.2"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -268,28 +452,27 @@
     {
       "attr_path": "prek",
       "broken": false,
-      "derivation": "/nix/store/wlrzj3lapwggxlr33bnr74x2agks5c69-prek-0.3.11.drv",
+      "derivation": "/nix/store/h3ybcvlag2mg42vvg3ixhxrglz2r6rh9-prek-0.5.2.drv",
       "description": "Better `pre-commit`, re-engineered in Rust ",
       "install_id": "prek",
-      "license": "[ MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "prek-0.3.11",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "prek-0.5.2",
       "pname": "prek",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T04:48:39.669170Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:06:16.297540Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.3.11",
+      "version": "0.5.2",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/py2m9vglskggcyyarm0nha16siw346af-prek-0.3.11"
+        "out": "/nix/store/9qami79aaan9bwxjsc09z8ygjcj3ywwi-prek-0.5.2"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -298,28 +481,27 @@
     {
       "attr_path": "repomix",
       "broken": false,
-      "derivation": "/nix/store/hgvc1ihafw3sb0hyiqg7xa31shnb093l-repomix-1.14.0.drv",
+      "derivation": "/nix/store/z2gjll1jahmr94crbpwza4anwbr0cci5-repomix-1.18.0.drv",
       "description": "Tool to pack repository contents to single file for AI consumption",
       "install_id": "repomix",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "repomix-1.14.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "repomix-1.18.0",
       "pname": "repomix",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:15:21.496548Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:59:03.161916Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "1.14.0",
+      "version": "1.18.0",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/bq6vk7xn3a8znzjs0ajvmy432cncpah3-repomix-1.14.0"
+        "out": "/nix/store/qishhi08z8ndvykk7d8y7l68ypn45ak4-repomix-1.18.0"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -328,28 +510,27 @@
     {
       "attr_path": "repomix",
       "broken": false,
-      "derivation": "/nix/store/0j3z7xmr8zv5cbmpwkqabrbl392xh0rb-repomix-1.14.0.drv",
+      "derivation": "/nix/store/4867y51nwysa157jsk3qimhbc2wzdw5a-repomix-1.18.0.drv",
       "description": "Tool to pack repository contents to single file for AI consumption",
       "install_id": "repomix",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "repomix-1.14.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "repomix-1.18.0",
       "pname": "repomix",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:46:41.721079Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:30:43.631077Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "1.14.0",
+      "version": "1.18.0",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/rz94a9zrj0571y7lsy0yysx0vk175r3z-repomix-1.14.0"
+        "out": "/nix/store/1i8hqhm2pgqkf808nbs56lsi8948l208-repomix-1.18.0"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -358,28 +539,114 @@
     {
       "attr_path": "repomix",
       "broken": false,
-      "derivation": "/nix/store/y0p0s6m0g6bvm205nr4572jkv408dabi-repomix-1.14.0.drv",
+      "derivation": "/nix/store/nai2dq4hms1parm3aizq8wairw7y6gss-repomix-1.18.0.drv",
       "description": "Tool to pack repository contents to single file for AI consumption",
       "install_id": "repomix",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "repomix-1.14.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "repomix-1.18.0",
       "pname": "repomix",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T04:49:42.726816Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:07:24.139276Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "1.14.0",
+      "version": "1.18.0",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/lwi1k403d1yi21zrq6xfhpxr0jbhn1g7-repomix-1.14.0"
+        "out": "/nix/store/4qma7ja139fxissrvpsy32qa70hxfmxx-repomix-1.18.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "talosctl",
+      "broken": false,
+      "derivation": "/nix/store/pysivw6p2px781mx0l9qx9m4cr4z45xd-talosctl-1.13.9.drv",
+      "description": "CLI for out-of-band management of Kubernetes nodes created by Talos",
+      "install_id": "talosctl",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "talosctl-1.13.9",
+      "pname": "talosctl",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:59:28.148618Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.13.9",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/p0cvwxi3z5sqkx9vf2cz5l9msb4j0f1y-talosctl-1.13.9"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "talosctl",
+      "broken": false,
+      "derivation": "/nix/store/2jpjys085c8c1iga1qmzwi1n1k2nm9fd-talosctl-1.13.9.drv",
+      "description": "CLI for out-of-band management of Kubernetes nodes created by Talos",
+      "install_id": "talosctl",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "talosctl-1.13.9",
+      "pname": "talosctl",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:31:16.471394Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.13.9",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/7kkgi0c5g7ci3splq1a6cfmgbp9n6p35-talosctl-1.13.9"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "talosctl",
+      "broken": false,
+      "derivation": "/nix/store/m3niwxsj28hik7zi61mnsj2pk79mahiq-talosctl-1.13.9.drv",
+      "description": "CLI for out-of-band management of Kubernetes nodes created by Talos",
+      "install_id": "talosctl",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "talosctl-1.13.9",
+      "pname": "talosctl",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:07:56.496710Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.13.9",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/jx8l9638ffnc74zg53akylpxv7xnjl4j-talosctl-1.13.9"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -388,28 +655,27 @@
     {
       "attr_path": "tektoncd-cli",
       "broken": false,
-      "derivation": "/nix/store/0162p8mf7il6l07pggbg0njqdask5939-tektoncd-cli-0.45.0.drv",
+      "derivation": "/nix/store/fcn6fxx8d3fc4b1ygymcchldprbzwdsh-tektoncd-cli-0.46.0.drv",
       "description": "Provides a CLI for interacting with Tekton - tkn",
       "install_id": "tektoncd-cli",
       "license": "Apache-2.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "tektoncd-cli-0.45.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "tektoncd-cli-0.46.0",
       "pname": "tektoncd-cli",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:15:53.010948Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:59:28.688236Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.45.0",
+      "version": "0.46.0",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/l5sbw333dym4w0mqdgisrlp15jr3rp97-tektoncd-cli-0.45.0"
+        "out": "/nix/store/0sig7zs14v49kxdqmh3dbjj6wiflvac5-tektoncd-cli-0.46.0"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -418,28 +684,27 @@
     {
       "attr_path": "tektoncd-cli",
       "broken": false,
-      "derivation": "/nix/store/ps3z54gqgiy6snabch7mw6hdg2dzqg7w-tektoncd-cli-0.45.0.drv",
+      "derivation": "/nix/store/mh8b1wk400sww28cfvgbn6kixwhr8jrf-tektoncd-cli-0.46.0.drv",
       "description": "Provides a CLI for interacting with Tekton - tkn",
       "install_id": "tektoncd-cli",
       "license": "Apache-2.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "tektoncd-cli-0.45.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "tektoncd-cli-0.46.0",
       "pname": "tektoncd-cli",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T03:47:15.638404Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:31:17.235384Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.45.0",
+      "version": "0.46.0",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/cka45jr3s2vybakrbmik3gxq05p2mj8s-tektoncd-cli-0.45.0"
+        "out": "/nix/store/c4xcj6pfjyfc1waf4fs1cz5kvzzljyxg-tektoncd-cli-0.46.0"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -448,28 +713,27 @@
     {
       "attr_path": "tektoncd-cli",
       "broken": false,
-      "derivation": "/nix/store/8dn1d3pxpsq7qvb9zcna0ckmczgkzyk8-tektoncd-cli-0.45.0.drv",
+      "derivation": "/nix/store/pdbm4y1922q2a8wh7rv7rwgxawsz1s74-tektoncd-cli-0.46.0.drv",
       "description": "Provides a CLI for interacting with Tekton - tkn",
       "install_id": "tektoncd-cli",
       "license": "Apache-2.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "name": "tektoncd-cli-0.45.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "tektoncd-cli-0.46.0",
       "pname": "tektoncd-cli",
-      "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
-      "rev_count": 1014179,
-      "rev_date": "2026-06-10T06:56:03Z",
-      "scrape_date": "2026-06-12T04:50:17.610298Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:07:57.303282Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.45.0",
+      "version": "0.46.0",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/1xzn9irzcwlcsg3b149d11cg156ccn79-tektoncd-cli-0.45.0"
+        "out": "/nix/store/lnnswas3kxlyksrwdzyv6mgcl9asp0j1-tektoncd-cli-0.46.0"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -480,8 +744,17 @@
     "composer": {
       "schema-version": "1.12.0",
       "install": {
+        "k9s": {
+          "pkg-path": "k9s"
+        },
+        "kubectl": {
+          "pkg-path": "kubectl"
+        },
         "prek": {
           "pkg-path": "prek"
+        },
+        "talosctl": {
+          "pkg-path": "talosctl"
         },
         "tektoncd-cli": {
           "pkg-path": "tektoncd-cli"
