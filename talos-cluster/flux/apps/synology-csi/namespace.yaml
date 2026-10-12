@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: synology-csi
+  labels:
+    # The node plugin is privileged, uses hostNetwork, and chroots into the host for iscsiadm.
+    pod-security.kubernetes.io/enforce: privileged

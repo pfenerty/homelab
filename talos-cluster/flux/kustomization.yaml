@@ -21,6 +21,7 @@ resources:
   - apko-cicd.kustomization.yaml
   - apko-cicd-update.kustomization.yaml
   - nfs.kustomization.yaml
+  - synology-csi.kustomization.yaml
   - ocidex-dev-infra.kustomization.yaml
   - ocidex-dev-main.kustomization.yaml
   - ocidex-dev-operator.kustomization.yaml
