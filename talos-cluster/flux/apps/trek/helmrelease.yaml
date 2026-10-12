@@ -12,7 +12,25 @@ spec:
         kind: HelmRepository
         name: trek
       version: 3.3.0
+  # The chart has no nodeSelector value; synology-csi iSCSI volumes only attach on x86-01.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: trek
+            patch: |
+              - op: add
+                path: /spec/template/spec/nodeSelector
+                value:
+                  kubernetes.io/arch: amd64
   values:
+    # iSCSI LUNs declared in pvcs.yaml (data copied from the old NFS claims).
+    persistence:
+      data:
+        existingClaim: trek-data-iscsi
+      uploads:
+        existingClaim: trek-uploads-iscsi
     ingress:
       enabled: true
       className: tailscale

@@ -36,6 +36,9 @@ spec:
               period: 24h
     singleBinary:
       replicas: 1
+      # synology-csi iSCSI volumes only attach on x86-01.
+      nodeSelector:
+        kubernetes.io/arch: amd64
       resources:
         requests:
           cpu: 100m
@@ -45,7 +48,7 @@ spec:
           memory: 512Mi
       persistence:
         enabled: true
-        storageClass: nfs-client
+        storageClass: synology-csi-iscsi
         size: 15Gi
     # Disable all distributed-mode components
     backend:

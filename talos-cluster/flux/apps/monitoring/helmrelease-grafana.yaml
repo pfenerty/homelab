@@ -25,12 +25,14 @@ spec:
       limits:
         cpu: 500m
         memory: 512Mi
+    # synology-csi iSCSI volumes only attach on x86-01.
+    nodeSelector:
+      kubernetes.io/arch: amd64
     persistence:
       enabled: true
-      storageClassName: nfs-client
-      size: 2Gi
-      accessModes: [ReadWriteOnce]
-    # NFS root_squash prevents the init container from running chown
+      # iSCSI LUN declared in pvc-grafana.yaml (data copied from the old NFS claim).
+      existingClaim: grafana-iscsi
+    # Not needed: kubelet applies fsGroup 472 to the block volume on mount.
     initChownData:
       enabled: false
     admin:

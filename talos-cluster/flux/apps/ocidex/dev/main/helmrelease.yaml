@@ -8,6 +8,19 @@ spec:
     interval: 5m
     releaseName: ocidex-dev
     targetNamespace: ocidex-dev
+    # synology-csi iSCSI volumes only attach on x86-01; the chart has no
+    # vulnWorker nodeSelector value.
+    postRenderers:
+        - kustomize:
+              patches:
+                  - target:
+                        kind: Deployment
+                        name: ocidex-dev-vuln-worker
+                    patch: |
+                        - op: add
+                          path: /spec/template/spec/nodeSelector
+                          value:
+                              kubernetes.io/arch: amd64
     install:
         timeout: 10m
         remediation:
@@ -48,3 +61,7 @@ spec:
                 corsAllowedOrigins: "https://ocidex.app"
         enricherWorkerDefaults:
             replicas: 1
+        vulnWorker:
+            db:
+                persistence:
+                    storageClass: synology-csi-iscsi

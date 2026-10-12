@@ -65,6 +65,9 @@ spec:
         templates:
           - /etc/alertmanager/config/*.tmpl
       alertmanagerSpec:
+        # synology-csi iSCSI volumes only attach on x86-01.
+        nodeSelector:
+          kubernetes.io/arch: amd64
         resources:
           requests:
             cpu: 10m
@@ -72,12 +75,15 @@ spec:
           limits:
             cpu: 100m
             memory: 128Mi
-        # Silences and notification log; small, and fine on NFS (periodic snapshots,
-        # not a database).
+        # Silences and notification log. The claim name differs from the old NFS one
+        # (alertmanager-kps-alertmanager-db-...) so the operator makes a fresh iSCSI
+        # PVC; silences are not migrated.
         storage:
           volumeClaimTemplate:
+            metadata:
+              name: alertmanager-iscsi
             spec:
-              storageClassName: nfs-client
+              storageClassName: synology-csi-iscsi
               accessModes: [ReadWriteOnce]
               resources:
                 requests:
