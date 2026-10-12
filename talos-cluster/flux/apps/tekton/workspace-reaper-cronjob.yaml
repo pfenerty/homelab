@@ -1,0 +1,151 @@
+# Deletes the workspace PVC of every finished PipelineRun.
+#
+# Tekton creates one PVC per PipelineRun from the volumeClaimTemplate and owns it by
+# that run, so the PVC lives exactly as long as the PipelineRun object. PAC keeps the
+# last 5 runs *per pipeline* (max-keep-runs) for their logs and status, which pinned
+# 50+ dead workspaces to x86-01: local-path does not enforce the requested size, so a
+# "5Gi" ocidex-ci workspace holding build output can be far larger. Nothing reads a
+# workspace after its run finishes, so it is reaped here and the run object is left to
+# PAC and tekton-pruner.
+#
+# Only PVCs owned by a PipelineRun are candidates, so the long-lived cache PVCs
+# (ocidex-go-cache, tektonic-cache, ...) are never touched.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tekton-workspace-reaper
+  namespace: tekton-pipelines
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tekton-workspace-reaper
+rules:
+  - apiGroups: ["tekton.dev"]
+    resources: ["pipelineruns"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tekton-workspace-reaper
+  namespace: ocidex-ci
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-workspace-reaper
+subjects:
+  - kind: ServiceAccount
+    name: tekton-workspace-reaper
+    namespace: tekton-pipelines
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tekton-workspace-reaper
+  namespace: apko-cicd-ci
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-workspace-reaper
+subjects:
+  - kind: ServiceAccount
+    name: tekton-workspace-reaper
+    namespace: tekton-pipelines
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tekton-workspace-reaper
+  namespace: homelab-ci
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-workspace-reaper
+subjects:
+  - kind: ServiceAccount
+    name: tekton-workspace-reaper
+    namespace: tekton-pipelines
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tekton-workspace-reaper
+  namespace: tektonic-ci
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-workspace-reaper
+subjects:
+  - kind: ServiceAccount
+    name: tekton-workspace-reaper
+    namespace: tekton-pipelines
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tekton-workspace-reaper
+  namespace: tekton-pipelines
+spec:
+  schedule: "*/10 * * * *"
+  suspend: false
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      # See tekton-pruner: a Job whose pod is never admitted otherwise stays Active forever.
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          serviceAccountName: tekton-workspace-reaper
+          restartPolicy: Never
+          # The tekton-pipelines namespace enforces pod-security "restricted".
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: reap
+              image: alpine/kubectl:1.37.1
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              env:
+                - name: HOME
+                  value: /tmp
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  for ns in ocidex-ci apko-cicd-ci homelab-ci tektonic-ci; do
+                    done_runs=/tmp/done-$ns
+                    # Finished = status.completionTime set; that covers succeeded,
+                    # failed and cancelled runs, and never an in-flight one.
+                    kubectl get pipelinerun -n "$ns" \
+                        -o jsonpath='{range .items[?(@.status.completionTime)]}{.metadata.name}{"\n"}{end}' \
+                      > "$done_runs"
+                    # PVC name and its owning PipelineRun (empty for unowned caches),
+                    # kept only when that owner has finished. Keyed on FILENAME rather
+                    # than NR==FNR, which misreads stdin when no run has finished.
+                    kubectl get pvc -n "$ns" \
+                        -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.ownerReferences[?(@.kind=="PipelineRun")].name}{"\n"}{end}' \
+                      | awk -F'\t' 'FILENAME != "-" { done[$1] = 1; next } $2 != "" && done[$2] { print $1 }' "$done_runs" - \
+                      | xargs -r kubectl delete pvc -n "$ns" --wait=false
+                  done
+          volumes:
+            - name: tmp
+              emptyDir: {}
