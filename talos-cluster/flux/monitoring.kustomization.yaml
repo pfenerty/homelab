@@ -7,7 +7,6 @@ spec:
   dependsOn:
     - name: tailscale
     - name: synology-csi
-    - name: nfs-subdir-provisioner
     - name: local-path-provisioner
   interval: 10m0s
   path: ./talos-cluster/flux/apps/monitoring

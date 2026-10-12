@@ -45,9 +45,10 @@ cnpg ──► ocidex-dev-infra ──► ocidex-dev-main ──► ocidex-dev-o
                                cloudflare-gateway,
                                keda)
 
-tailscale, nfs-subdir-provisioner, local-path-provisioner ──► monitoring ──► monitoring-extras
+tailscale, synology-csi, local-path-provisioner ──► monitoring ──► monitoring-extras
+synology-csi ──► trek
 
-no dependencies: gateway-api, cnpg, keda, local-path-provisioner, nfs-subdir-provisioner, renovate, trek
+no dependencies: gateway-api, cnpg, keda, local-path-provisioner, synology-csi, renovate
 ```
 
 ## Components
@@ -64,7 +65,7 @@ no dependencies: gateway-api, cnpg, keda, local-path-provisioner, nfs-subdir-pro
 | `metrics-server` | `apps/metrics-server/` | `kubectl top` / HPA metrics |
 | `keda` | `apps/keda/` | Event-driven autoscaling (used by ocidex workers) |
 | `local-path-provisioner` | `apps/local-path-provisioner/` | Node-local PVs |
-| `nfs-subdir-provisioner` | `apps/nfs-subdir-provisioner/` | NFS-backed PVs |
+| `synology-csi` | `apps/synology-csi/` | Default StorageClass `synology-csi-iscsi`: one iSCSI LUN per PVC on the Synology. Attaches on `x86-01` only, so consumers pin `kubernetes.io/arch: amd64` |
 | `cnpg` | `apps/cnpg/` | CloudNativePG operator |
 
 [`../docs/tailscale-cilium.md`](../docs/tailscale-cilium.md) explains why services use `Ingress` instead of the `tailscale.com/expose` Service annotation. The `tailscale-operator` namespace is `privileged` under Pod Security, because proxy pods need privileged containers for nftables/WireGuard.

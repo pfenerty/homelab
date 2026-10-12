@@ -35,7 +35,7 @@ spec:
         limits:
           cpu: 1000m
           memory: 1Gi
-    # WAL + blocks on local disk next to Prometheus, off the RPis and off NFS.
+    # WAL + blocks on local disk next to Prometheus, off the RPis.
     nodeSelector:
       kubernetes.io/arch: amd64
     persistence:

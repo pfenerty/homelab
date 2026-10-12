@@ -20,7 +20,8 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
-    # Short name override to prevent NFS path-too-long errors on PVC provisioning
+    # Short name override (originally for NFS path-length limits). Changing it now
+    # would rename every kps resource and PVC.
     fullnameOverride: kps
     # Deploy standalone Grafana
     grafana:
@@ -149,11 +150,7 @@ spec:
         serviceMonitorNamespaceSelector: {}
         serviceMonitorSelector: {}
         serviceMonitorSelectorNilUsesHelmValues: false
-        # Local disk on the x86 node, not NFS: Prometheus does not support NFS for
-        # its TSDB (locking/mmap/fsync semantics). The new claim name makes the
-        # operator create a fresh PVC instead of reusing the old nfs-client one
-        # (prometheus-kps-prometheus-db-prometheus-kps-prometheus-0), which can be deleted
-        # once this is running. Existing history is not migrated.
+        # Local disk on the x86 node: keeps TSDB I/O off the network entirely.
         storageSpec:
           # local-path volumes are plain host dirs, so fsGroup is never applied; the
           # kubelet-created subPath dir would be root 0755 and unwritable by UID 1000.

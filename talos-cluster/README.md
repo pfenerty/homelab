@@ -37,7 +37,7 @@ on the Synology).
 | Secrets | SOPS + age |
 | Ingress | Tailscale operator (tailnet), Cloudflare Gateway API controller (public) |
 | CI | Tekton Pipelines, Triggers, Chains, Dashboard + Pipelines as Code |
-| Storage | local-path-provisioner, NFS subdir provisioner |
+| Storage | local-path-provisioner, Synology CSI (iSCSI) |
 | Database | CloudNativePG |
 | Observability | kube-prometheus-stack, Loki, Tempo, Alloy, Grafana |
 
