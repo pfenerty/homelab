@@ -1,10 +1,13 @@
 # Grafana moved several OSS charts (tempo, grafana, loki, ...) here and deprecated
-# them in grafana/helm-charts.
+# them in grafana/helm-charts. OCI is the upstream-preferred distribution; the
+# HTTP index is "legacy".
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: grafana-community
   namespace: flux-system
 spec:
+  type: oci
   interval: 1h
-  url: https://grafana-community.github.io/helm-charts
+  # Namespace only; Flux appends the chart name at pull time.
+  url: oci://ghcr.io/grafana-community/helm-charts

@@ -1,3 +1,4 @@
+# Only alloy still comes from here; it isn't published in grafana-community.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:

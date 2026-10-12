@@ -8,15 +8,17 @@ spec:
   chart:
     spec:
       chart: loki
-      version: "7.3.0"
+      # grafana/helm-charts froze loki at 7.3.0; continues in grafana-community.
+      version: "18.15.1"
       sourceRef:
         kind: HelmRepository
-        name: grafana
+        name: grafana-community
         namespace: flux-system
       interval: 12h
   targetNamespace: monitoring
   values:
-    deploymentMode: SingleBinary
+    # Chart 12.0 renamed SingleBinary to Monolithic (values key stays singleBinary).
+    deploymentMode: Monolithic
     loki:
       auth_enabled: false
       commonConfig:
