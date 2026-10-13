@@ -4,30 +4,39 @@
     "config:recommended"
   ],
   "timezone": "America/Los_Angeles",
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**",
+    "**/examples/**",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/__fixtures__/**",
+    ".tekton/**"
+  ],
+  "prHourlyLimit": 0,
   "flux": {
-    "fileMatch": [
-      "(^|/)talos-cluster/flux/.+\\.ya?ml$",
-      "(^|/)gke-cluster/flux/.+\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)talos-cluster/flux/.+\\.ya?ml$/"
     ]
   },
   "helm-values": {
-    "fileMatch": [
-      "(^|/)talos-cluster/flux/.+\\.ya?ml$",
-      "(^|/)gke-cluster/flux/.+\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)talos-cluster/flux/.+\\.ya?ml$/"
     ]
   },
   "kubernetes": {
-    "fileMatch": [
-      "(^|/)talos-cluster/flux/apps/.+\\.ya?ml$",
-      "(^|/)gke-cluster/flux/apps/.+\\.ya?ml$",
-      "(^|/)flux-system/gotk-components\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)talos-cluster/flux/apps/.+\\.ya?ml$/",
+      "/(^|/)flux-system/gotk-components\\.ya?ml$/"
     ]
   },
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)talos-cluster/Makefile$"
+      "managerFilePatterns": [
+        "/(^|/)talos-cluster/Makefile$/"
       ],
       "matchStrings": [
         "TALOS_VERSION\\s*:=\\s*(?<currentValue>v[0-9.]+)"
@@ -37,8 +46,8 @@
     },
     {
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)talos-cluster/Makefile$"
+      "managerFilePatterns": [
+        "/(^|/)talos-cluster/Makefile$/"
       ],
       "matchStrings": [
         "KUBERNETES_VERSION\\s*:=\\s*(?<currentValue>v[0-9.]+)"
@@ -49,8 +58,8 @@
     {
       "description": "tektoncd/pipelines-as-code version vendored by talos-cluster/flux/apps/pipelines-as-code/update-manifests.sh. Bumping this opens a PR on the script; re-running it re-vendors the whole manifest. The manifests themselves are excluded from the kubernetes manager below.",
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)talos-cluster/flux/apps/pipelines-as-code/update-manifests.sh$"
+      "managerFilePatterns": [
+        "/(^|/)talos-cluster/flux/apps/pipelines-as-code/update-manifests.sh$/"
       ],
       "matchStrings": [
         "PAC_VERSION=(?<currentValue>v[0-9.]+)"
@@ -61,8 +70,8 @@
     {
       "description": "tektoncd/pipeline version vendored by talos-cluster/flux/apps/tekton/update-manifests.sh. Bumping this opens a PR on the script; re-running it re-vendors the whole manifest. The manifests themselves are excluded from the kubernetes manager below.",
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)talos-cluster/flux/apps/tekton/update-manifests.sh$"
+      "managerFilePatterns": [
+        "/(^|/)talos-cluster/flux/apps/tekton/update-manifests.sh$/"
       ],
       "matchStrings": [
         "PIPELINES_VERSION=(?<currentValue>v[0-9.]+)"
@@ -73,8 +82,8 @@
     {
       "description": "tektoncd/triggers version vendored by talos-cluster/flux/apps/tekton/update-manifests.sh. Bumping this opens a PR on the script; re-running it re-vendors the whole manifest. The manifests themselves are excluded from the kubernetes manager below.",
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)talos-cluster/flux/apps/tekton/update-manifests.sh$"
+      "managerFilePatterns": [
+        "/(^|/)talos-cluster/flux/apps/tekton/update-manifests.sh$/"
       ],
       "matchStrings": [
         "TRIGGERS_VERSION=(?<currentValue>v[0-9.]+)"
@@ -85,8 +94,8 @@
     {
       "description": "tektoncd/dashboard version vendored by talos-cluster/flux/apps/tekton/update-manifests.sh. Bumping this opens a PR on the script; re-running it re-vendors the whole manifest. The manifests themselves are excluded from the kubernetes manager below.",
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)talos-cluster/flux/apps/tekton/update-manifests.sh$"
+      "managerFilePatterns": [
+        "/(^|/)talos-cluster/flux/apps/tekton/update-manifests.sh$/"
       ],
       "matchStrings": [
         "DASHBOARD_VERSION=(?<currentValue>v[0-9.]+)"
@@ -97,8 +106,8 @@
     {
       "description": "tektoncd/chains version vendored by talos-cluster/flux/apps/tekton-chains/update-manifests.sh. Bumping this opens a PR on the script; re-running it re-vendors the whole manifest. The manifests themselves are excluded from the kubernetes manager below.",
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)talos-cluster/flux/apps/tekton-chains/update-manifests.sh$"
+      "managerFilePatterns": [
+        "/(^|/)talos-cluster/flux/apps/tekton-chains/update-manifests.sh$/"
       ],
       "matchStrings": [
         "CHAINS_VERSION=(?<currentValue>v[0-9.]+)"
@@ -109,8 +118,8 @@
     {
       "description": "Betterleaks image for the CI secret-scan task. Kept in lockstep with the betterleaks rev in .pre-commit-config.yaml by the betterleaks group below; the .tektonic/** postUpgradeTasks re-synthesize .tekton/.",
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)\\.tektonic/pipeline\\.ts$"
+      "managerFilePatterns": [
+        "/(^|/)\\.tektonic/pipeline\\.ts$/"
       ],
       "matchStrings": [
         "BETTERLEAKS = \"ghcr\\.io/betterleaks/betterleaks:(?<currentValue>[^\"]+)\""
@@ -119,10 +128,22 @@
       "datasourceTemplate": "docker"
     },
     {
+      "description": "alpine/k8s image for the CI check tasks. Lives in .tektonic/pipeline.ts so the bump happens at the source; the .tektonic/** postUpgradeTasks re-synthesize .tekton/. Grouped with alpine/kubectl as k8s-tools.",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)\\.tektonic/pipeline\\.ts$/"
+      ],
+      "matchStrings": [
+        "K8S_TOOLS = \"alpine/k8s:(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "alpine/k8s",
+      "datasourceTemplate": "docker"
+    },
+    {
       "description": "CloudNativePG Cluster images. The kubernetes manager only reads image:, so spec.imageName needs its own matcher. The docker tag suffix (e.g. -standard-trixie) keeps the image flavour and OS fixed across updates.",
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)talos-cluster/flux/apps/.+\\.ya?ml$"
+      "managerFilePatterns": [
+        "/(^|/)talos-cluster/flux/apps/.+\\.ya?ml$/"
       ],
       "matchStrings": [
         "imageName:\\s*(?<depName>ghcr\\.io/cloudnative-pg/postgresql):(?<currentValue>\\S+)"
@@ -132,9 +153,10 @@
   ],
   "packageRules": [
     {
-      "description": "Vendored upstream release manifests. Each is one file carrying the CRDs, RBAC and ConfigMaps for a single version alongside its image tags, so bumping the tags in place leaves new binaries on old CRDs — which is exactly what happened to pipelines-as-code (v0.51.0 images, v0.48.0 CRDs) and to tekton pipelines, whose injected entrypoint image the manager cannot even see. Renovate tracks the *_VERSION pins in the update-manifests.sh scripts instead (see customManagers), and CI enforces that the manifest matches.",
+      "description": "Vendored upstream release manifests. Each is one file carrying the CRDs, RBAC and ConfigMaps for a single version alongside its image tags, so bumping the tags in place leaves new binaries on old CRDs \u2014 which is exactly what happened to pipelines-as-code (v0.51.0 images, v0.48.0 CRDs) and to tekton pipelines, whose injected entrypoint image the manager cannot even see. Renovate tracks the *_VERSION pins in the update-manifests.sh scripts instead (see customManagers), and CI enforces that the manifest matches.",
       "matchFileNames": [
         "talos-cluster/flux/apps/pipelines-as-code/release.yaml",
+        "talos-cluster/flux/apps/pipelines-as-code/tektonic-ci-controller.yaml",
         "talos-cluster/flux/apps/tekton/pipelines.yaml",
         "talos-cluster/flux/apps/tekton/triggers.yaml",
         "talos-cluster/flux/apps/tekton/interceptors.yaml",
@@ -235,6 +257,105 @@
         "major"
       ],
       "enabled": false
+    },
+    {
+      "description": "Majors only get a PR once approved on the Dependency Dashboard.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Grafana/Prometheus charts move together and break together. Weekly so the near-daily chart releases land as one PR. The window holds two renovate-homelab runs (01:00 and 05:00 Monday, see cronjob.yaml) in case one is missed.",
+      "matchDepNames": [
+        "kube-prometheus-stack",
+        "grafana",
+        "loki",
+        "tempo",
+        "alloy"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "monitoring",
+      "schedule": [
+        "* 0-5 * * 1"
+      ]
+    },
+    {
+      "description": "Renovate ships almost daily; one bump a week is enough.",
+      "matchDepNames": [
+        "renovate/renovate"
+      ],
+      "schedule": [
+        "* 0-5 * * 1"
+      ]
+    },
+    {
+      "description": "Both track the Kubernetes release (see K8S_TOOLS in .tektonic/pipeline.ts).",
+      "matchDepNames": [
+        "alpine/k8s",
+        "alpine/kubectl"
+      ],
+      "groupName": "k8s-tools"
+    },
+    {
+      "description": "CI-only tooling.",
+      "matchDepNames": [
+        "@tektonic-ci/core"
+      ],
+      "groupName": "ci-tooling"
+    },
+    {
+      "description": "Automerge low-risk minor/patch updates once the PAC check passes (GitHub native auto-merge, so they merge without waiting for the next Renovate run). The release must be 3 days old first; timestamp-optional so OCI artifacts without a publish time are not held back forever. Not here on purpose: cilium, fluxcd, talos/kubernetes (can take down the cluster or GitOps), tekton/pipelines-as-code (they run the CI that gates the merge), postgres images (restart the database), and all majors.",
+      "matchDepNames": [
+        "renovate/renovate",
+        "kube-prometheus-stack",
+        "grafana",
+        "loki",
+        "tempo",
+        "alloy",
+        "metrics-server",
+        "keda",
+        "local-path-provisioner",
+        "trek",
+        "tailscale-operator",
+        "synology-csi",
+        "@tektonic-ci/core",
+        "betterleaks/betterleaks",
+        "ghcr.io/betterleaks/betterleaks",
+        "https://github.com/betterleaks/betterleaks"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": true,
+      "minimumReleaseAge": "3 days",
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
+      "description": "Patch-only automerge: cloudnative-pg operator chart and the CI tool images.",
+      "matchDepNames": [
+        "cloudnative-pg",
+        "alpine/k8s",
+        "alpine/kubectl"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "automerge": true,
+      "minimumReleaseAge": "3 days",
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
+      "description": "Under 0.x a minor bump is allowed to break things (synology-csi, local-path-provisioner), so those stay manual.",
+      "matchCurrentVersion": "/^v?0\\./",
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "automerge": false
     }
   ],
   "pre-commit": {

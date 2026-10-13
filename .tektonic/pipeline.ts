@@ -26,7 +26,7 @@ import {
 // happily as on the amd64 worker, and the nodes pull one image instead of five.
 // The tag tracks the Kubernetes release: keep it aligned with KUBERNETES_VERSION in
 // talos-cluster/Makefile, which is what validate-manifests.sh validates against.
-const K8S_TOOLS = "alpine/k8s:1.37.0";
+const K8S_TOOLS = "alpine/k8s:1.37.1";
 
 // Scratch image — no shell — so this step runs the binary via command/args.
 // Keep in lockstep with the betterleaks rev in .pre-commit-config.yaml (Renovate groups them).

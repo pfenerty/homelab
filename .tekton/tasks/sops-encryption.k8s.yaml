@@ -19,7 +19,7 @@ spec:
           - ALL
     workingDir: $(workspaces.workspace.path)
   steps:
-    - image: alpine/k8s:1.37.0
+    - image: alpine/k8s:1.37.1
       name: check-encryption
       script: |-
         #!/bin/sh
