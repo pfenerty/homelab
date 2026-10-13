@@ -16,6 +16,9 @@
       "kubectl": {
         "pkg-path": "kubectl"
       },
+      "nodejs": {
+        "pkg-path": "nodejs"
+      },
       "nushell": {
         "pkg-path": "nushell"
       },
@@ -33,6 +36,9 @@
       },
       "tektoncd-cli": {
         "pkg-path": "tektoncd-cli"
+      },
+      "yq": {
+        "pkg-path": "yq"
       }
     },
     "hook": {},
@@ -392,6 +398,98 @@
         "convert": "/nix/store/ava5f209y5p5j33dzmqpgshcgc52mh8h-kubectl-1.37.0-convert",
         "man": "/nix/store/fkywbf9sa8y11vf5ixr442zzcz77802b-kubectl-1.37.0-man",
         "out": "/nix/store/k6834rykv2q3vc5869l15jw7xf6f9v0f-kubectl-1.37.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/6nas5hpjqib23qbkzmzjbsj1iyc0z750-nodejs-24.19.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "nodejs-24.19.0",
+      "pname": "nodejs",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:54.143356Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.19.0",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/0n6wnabi4grafrkvnla0ip529rqp6yxp-nodejs-24.19.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/im10wm681x2d2clzpbmw9y52mv928672-nodejs-24.19.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "nodejs-24.19.0",
+      "pname": "nodejs",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:29:15.337892Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.19.0",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/41xl9pj3ka0wa63fp759wjs9idlksac5-nodejs-24.19.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/azflkcvc103gq1ddlc5if1r8qpd1xk6c-nodejs-24.19.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "nodejs-24.19.0",
+      "pname": "nodejs",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:53.802249Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.19.0",
+      "outputs_to_install": [
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/lfaydgacdyngci7p60s8wwvgdm74fjkx-nodejs-24.19.0"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -918,6 +1016,96 @@
       "system": "x86_64-linux",
       "group": "toplevel",
       "priority": 5
+    },
+    {
+      "attr_path": "yq",
+      "broken": false,
+      "derivation": "/nix/store/aj168kaxpqpq9x33gkgg0mprfqmcxffy-python3.14-yq-3.4.3.drv",
+      "description": "Command-line YAML/XML/TOML processor - jq wrapper for YAML, XML, TOML documents",
+      "install_id": "yq",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "yq-3.4.3",
+      "pname": "yq",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:00:33.271876Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.4.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dist": "/nix/store/8md590as0ng5wh6qhyg35p3wrdfiqwhs-python3.14-yq-3.4.3-dist",
+        "out": "/nix/store/jdw3sxddvvl22qc23fan66w52d9m1756-python3.14-yq-3.4.3"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "yq",
+      "broken": false,
+      "derivation": "/nix/store/n17zhd6aig6qsl10xc5z3r80jwg45s5z-python3.14-yq-3.4.3.drv",
+      "description": "Command-line YAML/XML/TOML processor - jq wrapper for YAML, XML, TOML documents",
+      "install_id": "yq",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "yq-3.4.3",
+      "pname": "yq",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:32:36.495782Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.4.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dist": "/nix/store/nr4kknybhf4iwiy3f6d941nc20d57k8z-python3.14-yq-3.4.3-dist",
+        "out": "/nix/store/zwsf7blzcplwvq9sv8r4vx5sg13x8iqh-python3.14-yq-3.4.3"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "yq",
+      "broken": false,
+      "derivation": "/nix/store/h1riar8y2fbs7acsp681ks30fyaqnai0-python3.14-yq-3.4.3.drv",
+      "description": "Command-line YAML/XML/TOML processor - jq wrapper for YAML, XML, TOML documents",
+      "install_id": "yq",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "yq-3.4.3",
+      "pname": "yq",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:09:18.901885Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.4.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dist": "/nix/store/cs65rj1ryb7jy6nlc8dppshnbpmbdv0d-python3.14-yq-3.4.3-dist",
+        "out": "/nix/store/grp75rg6i620ca2b1p2xc868wadd4ziz-python3.14-yq-3.4.3"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
     }
   ],
   "compose": {
@@ -933,6 +1121,9 @@
         "kubectl": {
           "pkg-path": "kubectl"
         },
+        "nodejs": {
+          "pkg-path": "nodejs"
+        },
         "prek": {
           "pkg-path": "prek"
         },
@@ -944,6 +1135,9 @@
         },
         "tektoncd-cli": {
           "pkg-path": "tektoncd-cli"
+        },
+        "yq": {
+          "pkg-path": "yq"
         }
       },
       "hook": {},

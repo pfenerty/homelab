@@ -14,6 +14,8 @@ talosctl.pkg-path = "talosctl"
 kubectl.pkg-path = "kubectl"
 fluxcd.pkg-path = "fluxcd"
 sops.pkg-path = "sops"
+yq.pkg-path = "yq"
+nodejs.pkg-path = "nodejs"
 # gum.pkg-path = "gum"
 # gum.version = "^0.14.5"
 
