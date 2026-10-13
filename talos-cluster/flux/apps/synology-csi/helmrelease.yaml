@@ -44,6 +44,13 @@ spec:
           dsm: 192.168.1.236
           location: /volume1
           fsType: ext4
+          # mkfs.ext4 discards the whole LUN by default. The NAS UNMAPs at ~4 MB/s,
+          # so a first format ran for hours and starved the other LUNs' iSCSI
+          # sessions until ocidex-pg's data volume went read-only (homelab-qlv).
+          # A freshly provisioned thin LUN has nothing to discard. Applies only to
+          # PVs provisioned after the change; StorageClass parameters are
+          # immutable, so changing them means deleting the class and re-reconciling.
+          formatOptions: "-E nodiscard"
       iscsi-delete:
         disabled: true
       iscsi-retain:
