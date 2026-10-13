@@ -42,6 +42,14 @@ spec:
     ipam:
       mode: kubernetes
     kubeProxyReplacement: true
+    # Network policies are logged, not enforced: a would-be drop shows up as an
+    # AUDIT verdict in `hubble observe --verdict AUDIT` and the packet passes.
+    # Flip to false once a few days of audit output come back clean.
+    policyAuditMode: true
+    # The agents only read their config at startup. Without this, a values change
+    # such as policyAuditMode above sits in the ConfigMap until something else
+    # restarts the DaemonSet.
+    rollOutCiliumPods: true
     encryption:
       enabled: true
       type: wireguard
