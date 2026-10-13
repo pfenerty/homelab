@@ -1,0 +1,27 @@
+# The platform's boundary for the ocidex namespaces, whose allow-rules come from the
+# ocidex charts (networkPolicy.*) rather than this repo. Cilium unions allow-rules, so a
+# chart rule could only widen a homelab allow-list; a deny wins whoever wrote the
+# allow. Nothing here may reach the LAN (NAS, router), the tailnet or link-local.
+#
+# CIDR rules never match in-cluster pods or nodes, so DNS, Postgres and the
+# kube-apiserver (on the node IPs) are unaffected.
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+    name: ocidex-egress-guardrail
+spec:
+    endpointSelector:
+        matchExpressions:
+            - key: k8s:io.kubernetes.pod.namespace
+              operator: In
+              values:
+                  - ocidex-dev
+                  - ocidex-operator-dev
+                  - ocidex-k8s-agent-dev
+    egressDeny:
+        - toCIDRSet:
+              - cidr: 10.0.0.0/8
+              - cidr: 100.64.0.0/10
+              - cidr: 169.254.0.0/16
+              - cidr: 172.16.0.0/12
+              - cidr: 192.168.0.0/16
