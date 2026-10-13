@@ -1,0 +1,52 @@
+# Default-deny ingress for monitoring: pods here take traffic from each other,
+# from Prometheus, and from the nodes (probes) and the apiserver (admission
+# webhooks, aggregated APIs). Anything else needs its own policy below.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: baseline-ingress
+    namespace: monitoring
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEndpoints:
+              - {}
+        - fromEntities:
+              - host
+              - remote-node
+              - kube-apiserver
+---
+# Grafana is published through a Tailscale Ingress; the proxy pods run in
+# tailscale-operator.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: grafana-ingress
+    namespace: monitoring
+spec:
+    endpointSelector:
+        matchLabels:
+            app.kubernetes.io/name: grafana
+    ingress:
+        - fromEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: tailscale-operator
+---
+# The OTLP gateway (monitoring-alloy-otel) takes traces and metrics from
+# anywhere in the cluster: the Tekton controller today, apps later.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: otlp-ingress
+    namespace: monitoring
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEntities:
+              - cluster
+          toPorts:
+              - ports:
+                    - port: "4317"
+                      protocol: TCP
+                    - port: "4318"
+                      protocol: TCP

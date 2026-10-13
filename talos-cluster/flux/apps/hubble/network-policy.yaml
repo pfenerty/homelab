@@ -1,0 +1,15 @@
+# Hubble UI is published through a Tailscale Ingress; nothing else needs it.
+# kube-system gets no namespace baseline: too much of the cluster runs there.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: hubble-ui-ingress
+    namespace: kube-system
+spec:
+    endpointSelector:
+        matchLabels:
+            k8s-app: hubble-ui
+    ingress:
+        - fromEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: tailscale-operator

@@ -4,6 +4,8 @@ metadata:
   name: synology-csi
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: cilium
   interval: 10m0s
   path: ./talos-cluster/flux/apps/synology-csi
   prune: true

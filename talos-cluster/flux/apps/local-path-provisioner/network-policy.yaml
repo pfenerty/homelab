@@ -1,0 +1,20 @@
+# Default-deny ingress for local-path-storage: pods here take traffic from each
+# other, from Prometheus, and from the nodes (probes) and the apiserver
+# (admission webhooks, aggregated APIs). Anything else needs its own policy
+# below.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: baseline-ingress
+    namespace: local-path-storage
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEndpoints:
+              - {}
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: monitoring
+        - fromEntities:
+              - host
+              - remote-node
+              - kube-apiserver

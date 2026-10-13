@@ -5,3 +5,4 @@ resources:
   - helmrepository.yaml
   - client-info.secret.enc.yaml
   - helmrelease.yaml
+  - network-policy.yaml

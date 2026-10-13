@@ -5,3 +5,4 @@ resources:
     - cronjob.yaml
     - credentials.secret.yaml
     - credentials-tektonic-ci.secret.enc.yaml
+    - network-policy.yaml

@@ -7,3 +7,4 @@ resources:
     - install.yaml
     - gateway-class.yaml
     - gateway.yaml
+    - network-policy.yaml

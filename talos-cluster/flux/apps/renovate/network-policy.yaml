@@ -1,0 +1,50 @@
+# Default-deny ingress for renovate: pods here take traffic from each other,
+# from Prometheus, and from the nodes (probes) and the apiserver (admission
+# webhooks, aggregated APIs). Anything else needs its own policy below.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: baseline-ingress
+    namespace: renovate
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEndpoints:
+              - {}
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: monitoring
+        - fromEntities:
+              - host
+              - remote-node
+              - kube-apiserver
+---
+# Renovate runs `npm ci` and `npm run synth` on repository content. It needs DNS
+# and the internet (GitHub, registries, chart repos), not the apiserver, the
+# rest of the cluster or the LAN.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: egress
+    namespace: renovate
+spec:
+    endpointSelector: {}
+    egress:
+        - toEndpoints:
+              - {}
+        - toEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: kube-system
+                    k8s-app: kube-dns
+          toPorts:
+              - ports:
+                    - port: "53"
+                      protocol: ANY
+        # `world` would also match the LAN, since Cilium only knows cluster IPs.
+        - toCIDRSet:
+              - cidr: 0.0.0.0/0
+                except:
+                    - 10.0.0.0/8
+                    - 100.64.0.0/10
+                    - 169.254.0.0/16
+                    - 172.16.0.0/12
+                    - 192.168.0.0/16

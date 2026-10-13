@@ -8,7 +8,7 @@ resources:
     - tailscale-ingress.yaml
     - pruner-cronjob.yaml
     - workspace-reaper-cronjob.yaml
-    - taskrun-network-policy.yaml
+    - network-policy.yaml
 patches:
     - patch: |-
           apiVersion: v1
