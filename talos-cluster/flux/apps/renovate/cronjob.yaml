@@ -1,12 +1,19 @@
+# Schedules are America/Los_Angeles (timeZone), the same zone renovate.json uses,
+# so Renovate `schedule` windows line up with actual runs. Each repo runs every 4h,
+# staggered so they rarely overlap; renovate-homelab's Monday 01:00 and
+# 05:00 runs both fall inside the weekly window in renovate.json, so a missed run
+# does not push the batch back a week. startingDeadlineSeconds is 1h so a busy
+# scheduler or a node drain delays a run instead of skipping it.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
     name: renovate-ocidex
     namespace: renovate
 spec:
-    schedule: "0 0 * * *"
+    schedule: "0 0-23/4 * * *"
+    timeZone: America/Los_Angeles
     concurrencyPolicy: Forbid
-    startingDeadlineSeconds: 60
+    startingDeadlineSeconds: 3600
     jobTemplate:
         spec:
             ttlSecondsAfterFinished: 3600
@@ -51,9 +58,10 @@ metadata:
     name: renovate-homelab
     namespace: renovate
 spec:
-    schedule: "0 2 * * *"
+    schedule: "0 1-23/4 * * *"
+    timeZone: America/Los_Angeles
     concurrencyPolicy: Forbid
-    startingDeadlineSeconds: 60
+    startingDeadlineSeconds: 3600
     jobTemplate:
         spec:
             ttlSecondsAfterFinished: 3600
@@ -99,9 +107,10 @@ metadata:
     name: renovate-tektonic
     namespace: renovate
 spec:
-    schedule: "0 4 * * *"
+    schedule: "0 2-23/4 * * *"
+    timeZone: America/Los_Angeles
     concurrencyPolicy: Forbid
-    startingDeadlineSeconds: 60
+    startingDeadlineSeconds: 3600
     jobTemplate:
         spec:
             ttlSecondsAfterFinished: 3600
@@ -148,9 +157,10 @@ metadata:
     name: renovate-apko-cicd
     namespace: renovate
 spec:
-    schedule: "0 6 * * *"
+    schedule: "0 3-23/4 * * *"
+    timeZone: America/Los_Angeles
     concurrencyPolicy: Forbid
-    startingDeadlineSeconds: 60
+    startingDeadlineSeconds: 3600
     jobTemplate:
         spec:
             ttlSecondsAfterFinished: 3600
@@ -191,9 +201,10 @@ metadata:
     name: renovate-dotfiles
     namespace: renovate
 spec:
-    schedule: "0 8 * * *"
+    schedule: "30 0-23/4 * * *"
+    timeZone: America/Los_Angeles
     concurrencyPolicy: Forbid
-    startingDeadlineSeconds: 60
+    startingDeadlineSeconds: 3600
     jobTemplate:
         spec:
             ttlSecondsAfterFinished: 3600
