@@ -23,6 +23,9 @@ metadata:
     name: ocidex-pg-dump
     namespace: ocidex-dev
 spec:
+    # Suspended: a parallel pg_dump on top of app load starved ocidex-pg
+    # (1 CPU / 2Gi) and the API returned 504s.
+    suspend: true
     schedule: "0 3 * * *"
     timeZone: America/Los_Angeles
     concurrencyPolicy: Forbid
