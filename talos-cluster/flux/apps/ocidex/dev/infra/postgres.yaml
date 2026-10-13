@@ -6,7 +6,7 @@ metadata:
     namespace: ocidex-dev
 spec:
     imageName: ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie
-    instances: 2
+    instances: 1
     storage:
         size: 150Gi
         storageClass: synology-csi-iscsi
