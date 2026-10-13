@@ -5,3 +5,4 @@ resources:
     - postgres-app-secret.enc.yaml
     - postgres.yaml
     - postgres-backup.yaml
+    - network-policy.yaml
