@@ -6,7 +6,7 @@ metadata:
     namespace: ocidex-dev
 spec:
     imageName: ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie
-    instances: 2
+    instances: 1
     # Local SSD on x86-01. On synology-csi iSCSI the 44 GB component table
     # saturated the LUN (125 ms reads, 100% util) and the API timed out, so
     # the NAS's redundancy isn't worth it here. local-path doesn't enforce
