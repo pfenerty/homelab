@@ -23,6 +23,10 @@ metadata:
     name: ocidex-pg-dump
     namespace: ocidex-dev
 spec:
+    # Suspended: the first mkfs of the thick-provisioned dump LUN discards the
+    # whole volume, saturates the NAS, and took the ocidex-pg data LUN down
+    # with it (2026-10-13). Re-enable once synology-csi LUNs are thin.
+    suspend: true
     schedule: "0 3 * * *"
     timeZone: America/Los_Angeles
     concurrencyPolicy: Forbid
