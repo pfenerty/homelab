@@ -117,6 +117,17 @@
       ],
       "depNameTemplate": "ghcr.io/betterleaks/betterleaks",
       "datasourceTemplate": "docker"
+    },
+    {
+      "description": "CloudNativePG Cluster images. The kubernetes manager only reads image:, so spec.imageName needs its own matcher. The docker tag suffix (e.g. -standard-trixie) keeps the image flavour and OS fixed across updates.",
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/)talos-cluster/flux/apps/.+\\.ya?ml$"
+      ],
+      "matchStrings": [
+        "imageName:\\s*(?<depName>ghcr\\.io/cloudnative-pg/postgresql):(?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
@@ -214,6 +225,16 @@
         "ghcr.io/betterleaks/betterleaks"
       ],
       "groupName": "betterleaks"
+    },
+    {
+      "description": "A Postgres major needs a backup, CNPG's pg_upgrade path and matching ocidex test images, so it is done by hand rather than by a Renovate PR.",
+      "matchPackageNames": [
+        "ghcr.io/cloudnative-pg/postgresql"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
     }
   ],
   "pre-commit": {
