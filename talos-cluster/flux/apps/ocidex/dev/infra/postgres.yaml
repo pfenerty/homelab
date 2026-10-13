@@ -10,9 +10,9 @@ spec:
     # Local SSD on x86-01. On synology-csi iSCSI the 44 GB component table
     # saturated the LUN (125 ms reads, 100% util) and the API timed out, so
     # the NAS's redundancy isn't worth it here. local-path doesn't enforce
-    # size; this is an honest estimate.
+    # size, and CNPG refuses to shrink the claim below the existing 150Gi.
     storage:
-        size: 100Gi
+        size: 150Gi
         storageClass: local-path
     # x86-01 is the only amd64 node and has the SSD.
     affinity:
