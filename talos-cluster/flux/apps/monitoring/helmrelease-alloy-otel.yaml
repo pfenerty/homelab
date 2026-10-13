@@ -18,6 +18,10 @@ spec:
         namespace: flux-system
       interval: 12h
   targetNamespace: monitoring
+  upgrade:
+    remediation:
+      retries: 3
+      strategy: rollback
   values:
     # The `alloy` release already owns the PodLogs CRD.
     crds:

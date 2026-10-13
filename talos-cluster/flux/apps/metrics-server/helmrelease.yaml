@@ -15,6 +15,10 @@ spec:
                 namespace: flux-system
             interval: 12h
     targetNamespace: kube-system
+    upgrade:
+        remediation:
+            retries: 3
+            strategy: rollback
     values:
         # Kubelet serves a self-signed cert without IP SANs (Talos default
         # now that rotate-server-certificates is off). Skip verification —

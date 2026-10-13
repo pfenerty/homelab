@@ -16,6 +16,10 @@ spec:
         kind: HelmRepository
         name: ocidex
         namespace: flux-system
+  upgrade:
+    remediation:
+      retries: 3
+      strategy: rollback
   values:
     image:
       repository: ghcr.io/pfenerty/ocidex-k8s-agent
