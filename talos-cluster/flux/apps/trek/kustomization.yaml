@@ -5,3 +5,4 @@ resources:
   - helmrelease.yaml
   - namespace.yaml
   - pvcs.yaml
+  - network-policy.yaml

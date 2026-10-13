@@ -4,6 +4,8 @@ metadata:
     name: local-path-provisioner
     namespace: flux-system
 spec:
+    dependsOn:
+        - name: cilium
     interval: 10m0s
     path: ./talos-cluster/flux/apps/local-path-provisioner
     prune: true

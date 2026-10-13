@@ -4,6 +4,8 @@ metadata:
     name: renovate
     namespace: flux-system
 spec:
+    dependsOn:
+        - name: cilium
     interval: 10m
     path: ./talos-cluster/flux/apps/renovate
     prune: true

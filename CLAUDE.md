@@ -61,6 +61,8 @@ talos-cluster/flux/
 
 A new component needs its own `<name>.kustomization.yaml` that is listed in `flux/kustomization.yaml`. CI's `check-flux-wiring.sh` fails on orphans. Kustomizations that hold SOPS files set `spec.decryption` (secret `sops-age`).
 
+Each app directory carries a `network-policy.yaml` (CiliumNetworkPolicy): a `baseline-ingress` that admits only the namespace itself, monitoring, the nodes and the apiserver, plus explicit rules for Tailscale/Cloudflare entry points. Internet-facing namespaces (ocidex-dev, cloudflare-gateway, pipelines-as-code, renovate, trek) and every TaskRun pod (`apps/tekton/network-policy.yaml`) also lock down egress to DNS + internet minus RFC1918. New cross-namespace traffic, or a new HTTPRoute backend namespace, needs a rule on both ends. `policyAuditMode` in the Cilium HelmRelease decides whether policies enforce or only log (`hubble observe --verdict AUDIT`).
+
 ### CI
 
 `cd .tektonic && npm run synth` regenerates `.tekton/`. Commit the result. `npm run check` fails if `.tekton/` is stale. The check scripts live in `.tektonic/scripts/` and run locally too.

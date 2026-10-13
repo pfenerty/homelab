@@ -1,0 +1,45 @@
+# Default-deny ingress for ocidex-operator-dev: pods here take traffic from each
+# other, from Prometheus, and from the nodes (probes) and the apiserver
+# (admission webhooks, aggregated APIs). Anything else needs its own policy
+# below.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: baseline-ingress
+    namespace: ocidex-operator-dev
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEndpoints:
+              - {}
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: monitoring
+        - fromEntities:
+              - host
+              - remote-node
+              - kube-apiserver
+---
+# The operator watches its CRs and pushes them to the OCIDex API in-cluster. It
+# needs DNS, the apiserver and ocidex-dev.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: egress
+    namespace: ocidex-operator-dev
+spec:
+    endpointSelector: {}
+    egress:
+        - toEndpoints:
+              - {}
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: ocidex-dev
+        - toEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: kube-system
+                    k8s-app: kube-dns
+          toPorts:
+              - ports:
+                    - port: "53"
+                      protocol: ANY
+        - toEntities:
+              - kube-apiserver

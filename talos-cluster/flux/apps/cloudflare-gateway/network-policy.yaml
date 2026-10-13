@@ -1,0 +1,56 @@
+# Default-deny ingress for cloudflare-gateway: pods here take traffic from each
+# other, from Prometheus, and from the nodes (probes) and the apiserver
+# (admission webhooks, aggregated APIs). Anything else needs its own policy
+# below.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: baseline-ingress
+    namespace: cloudflare-gateway
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEndpoints:
+              - {}
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: monitoring
+        - fromEntities:
+              - host
+              - remote-node
+              - kube-apiserver
+---
+# cloudflared terminates the public tunnel, so it gets the internet
+# (Cloudflare's edge and API), DNS, the apiserver (the controller) and the
+# namespaces its HTTPRoutes point at. A route to a new namespace needs that
+# namespace added here.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: egress
+    namespace: cloudflare-gateway
+spec:
+    endpointSelector: {}
+    egress:
+        - toEndpoints:
+              - {}
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: ocidex-dev
+        - toEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: kube-system
+                    k8s-app: kube-dns
+          toPorts:
+              - ports:
+                    - port: "53"
+                      protocol: ANY
+        - toEntities:
+              - kube-apiserver
+        # `world` would also match the LAN, since Cilium only knows cluster IPs.
+        - toCIDRSet:
+              - cidr: 0.0.0.0/0
+                except:
+                    - 10.0.0.0/8
+                    - 100.64.0.0/10
+                    - 169.254.0.0/16
+                    - 172.16.0.0/12
+                    - 192.168.0.0/16

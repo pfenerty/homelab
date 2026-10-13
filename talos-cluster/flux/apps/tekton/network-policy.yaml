@@ -1,0 +1,95 @@
+# Every TaskRun pod, in any namespace. Pipelines as Code runs pipelines from pull
+# requests, so these pods run code nobody has reviewed yet: they get the internet
+# (git, registries, GitHub) and DNS, but not the rest of the cluster, the
+# kube-apiserver, the node IPs, the LAN (NAS, router) or the tailnet.
+#
+# Selecting on the label Tekton puts on TaskRun pods, not on namespaces, covers
+# new CI namespaces without touching this file.
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+    name: tekton-taskrun
+spec:
+    endpointSelector:
+        matchExpressions:
+            - key: tekton.dev/taskRun
+              operator: Exists
+    # An empty rule turns on default-deny without allowing anything in.
+    ingress:
+        - {}
+    egress:
+        - toEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: kube-system
+                    k8s-app: kube-dns
+          toPorts:
+              - ports:
+                    - port: "53"
+                      protocol: ANY
+        # `world` would also match the LAN, since Cilium only knows cluster IPs.
+        - toCIDRSet:
+              - cidr: 0.0.0.0/0
+                except:
+                    - 10.0.0.0/8
+                    - 100.64.0.0/10
+                    - 169.254.0.0/16
+                    - 172.16.0.0/12
+                    - 192.168.0.0/16
+---
+# Default-deny ingress for tekton-pipelines: pods here take traffic from each
+# other, from Prometheus, and from the nodes (probes) and the apiserver
+# (admission webhooks, aggregated APIs). Anything else needs its own policy
+# below.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: baseline-ingress
+    namespace: tekton-pipelines
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEndpoints:
+              - {}
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: monitoring
+        - fromEntities:
+              - host
+              - remote-node
+              - kube-apiserver
+---
+# Default-deny ingress for tekton-pipelines-resolvers: pods here take traffic
+# from each other, from Prometheus, and from the nodes (probes) and the
+# apiserver (admission webhooks, aggregated APIs). Anything else needs its own
+# policy below.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: baseline-ingress
+    namespace: tekton-pipelines-resolvers
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEndpoints:
+              - {}
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: monitoring
+        - fromEntities:
+              - host
+              - remote-node
+              - kube-apiserver
+---
+# The (read-only) dashboard is published through a Tailscale Ingress; the proxy
+# pods run in tailscale-operator.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: dashboard-ingress
+    namespace: tekton-pipelines
+spec:
+    endpointSelector:
+        matchLabels:
+            app.kubernetes.io/part-of: tekton-dashboard
+    ingress:
+        - fromEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: tailscale-operator

@@ -7,3 +7,4 @@ resources:
     - tektonic-ci-controller.yaml
     - tektonic-ci-ingress.yaml
     - tektonic-ci-secret.enc.yaml
+    - network-policy.yaml

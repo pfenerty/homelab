@@ -6,6 +6,7 @@ metadata:
 spec:
     dependsOn:
         - name: cnpg
+        - name: cilium
     interval: 5m0s
     path: ./talos-cluster/flux/apps/ocidex/dev/infra
     prune: true

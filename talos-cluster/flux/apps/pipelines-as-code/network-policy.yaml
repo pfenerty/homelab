@@ -1,0 +1,73 @@
+# Default-deny ingress for pipelines-as-code: pods here take traffic from each
+# other, from Prometheus, and from the nodes (probes) and the apiserver
+# (admission webhooks, aggregated APIs). Anything else needs its own policy
+# below.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: baseline-ingress
+    namespace: pipelines-as-code
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEndpoints:
+              - {}
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: monitoring
+        - fromEntities:
+              - host
+              - remote-node
+              - kube-apiserver
+---
+# The PaC controllers take GitHub webhooks from the internet via Tailscale
+# Funnel (Service port 8080, pod port 8082). Their webhook endpoint is published
+# through a Tailscale Ingress; the proxy pods run in tailscale-operator.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: webhook-ingress
+    namespace: pipelines-as-code
+spec:
+    endpointSelector:
+        matchLabels:
+            app.kubernetes.io/component: controller
+    ingress:
+        - fromEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: tailscale-operator
+          toPorts:
+              - ports:
+                    - port: "8082"
+                      protocol: TCP
+---
+# The controllers face the internet (Funnel) and hold the GitHub App keys. They
+# need GitHub, DNS and the apiserver, and nothing else in the cluster or LAN.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: egress
+    namespace: pipelines-as-code
+spec:
+    endpointSelector: {}
+    egress:
+        - toEndpoints:
+              - {}
+        - toEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: kube-system
+                    k8s-app: kube-dns
+          toPorts:
+              - ports:
+                    - port: "53"
+                      protocol: ANY
+        - toEntities:
+              - kube-apiserver
+        # `world` would also match the LAN, since Cilium only knows cluster IPs.
+        - toCIDRSet:
+              - cidr: 0.0.0.0/0
+                except:
+                    - 10.0.0.0/8
+                    - 100.64.0.0/10
+                    - 169.254.0.0/16
+                    - 172.16.0.0/12
+                    - 192.168.0.0/16
