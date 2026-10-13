@@ -35,3 +35,12 @@ spec:
             secretName: ocidex-operator-dev-secrets
             secretKey: OCIDEX_API_KEY
         leaderElect: true
+        # The chart's NetworkPolicy; the apiserver allow is ./network-policy.yaml
+        # because Cilium never matches the apiserver by ipBlock.
+        networkPolicy:
+            enabled: true
+            egress:
+                server:
+                    - namespaceSelector:
+                          matchLabels:
+                              kubernetes.io/metadata.name: ocidex-dev

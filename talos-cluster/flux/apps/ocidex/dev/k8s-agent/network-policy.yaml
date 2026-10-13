@@ -1,45 +1,13 @@
-# Default-deny ingress for ocidex-k8s-agent-dev: pods here take traffic from
-# each other, from Prometheus, and from the nodes (probes) and the apiserver
-# (admission webhooks, aggregated APIs). Anything else needs its own policy
-# below.
+# The chart's networkPolicy (./helmrelease.yaml) makes the inventory agent default-deny and
+# allows DNS and the OCIDex API. It can't allow the apiserver: Cilium never matches
+# the apiserver by ipBlock, only by the kube-apiserver entity.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-    name: baseline-ingress
-    namespace: ocidex-k8s-agent-dev
-spec:
-    endpointSelector: {}
-    ingress:
-        - fromEndpoints:
-              - {}
-              - matchLabels:
-                    k8s:io.kubernetes.pod.namespace: monitoring
-        - fromEntities:
-              - host
-              - remote-node
-              - kube-apiserver
----
-# The inventory agent reads the apiserver and pushes to the OCIDex API in-
-# cluster. It needs DNS, the apiserver and ocidex-dev.
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-    name: egress
+    name: apiserver-egress
     namespace: ocidex-k8s-agent-dev
 spec:
     endpointSelector: {}
     egress:
-        - toEndpoints:
-              - {}
-              - matchLabels:
-                    k8s:io.kubernetes.pod.namespace: ocidex-dev
-        - toEndpoints:
-              - matchLabels:
-                    k8s:io.kubernetes.pod.namespace: kube-system
-                    k8s-app: kube-dns
-          toPorts:
-              - ports:
-                    - port: "53"
-                      protocol: ANY
         - toEntities:
               - kube-apiserver
