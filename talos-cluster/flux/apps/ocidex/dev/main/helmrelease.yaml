@@ -65,3 +65,25 @@ spec:
             db:
                 persistence:
                     storageClass: synology-csi-iscsi
+        # The chart owns ocidex's network policy (ocidex docs/DEPLOYMENT.md § Network
+        # policy); this repo supplies the peers only the cluster knows. The platform's
+        # bound is ../infra/egress-guardrail.yaml.
+        networkPolicy:
+            enabled: true
+            ingress:
+                from:
+                    - namespaceSelector:
+                          matchLabels:
+                              kubernetes.io/metadata.name: cloudflare-gateway
+                apiFrom:
+                    - namespaceSelector:
+                          matchLabels:
+                              kubernetes.io/metadata.name: ocidex-operator-dev
+                    - namespaceSelector:
+                          matchLabels:
+                              kubernetes.io/metadata.name: ocidex-k8s-agent-dev
+            egress:
+                database:
+                    - podSelector:
+                          matchLabels:
+                              cnpg.io/cluster: ocidex-pg

@@ -1,65 +1,11 @@
-# ocidex-dev is the one workload the internet reaches (Cloudflare tunnel ->
-# cloudflared in cloudflare-gateway -> HTTPRoute). These keep a compromise of it
-# inside the namespace: it can reach its own pods, DNS, the kube-apiserver (CNPG's
-# instance manager and the workers need it) and the internet (registry scans,
-# GitHub OAuth, vuln feeds), but not other namespaces, the nodes or the LAN.
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-    name: egress
-    namespace: ocidex-dev
-spec:
-    endpointSelector: {}
-    egress:
-        - toEndpoints:
-              - {}
-        - toEndpoints:
-              - matchLabels:
-                    k8s:io.kubernetes.pod.namespace: kube-system
-                    k8s-app: kube-dns
-          toPorts:
-              - ports:
-                    - port: "53"
-                      protocol: ANY
-        - toEntities:
-              - kube-apiserver
-        # `world` would also match the LAN, since Cilium only knows cluster IPs.
-        - toCIDRSet:
-              - cidr: 0.0.0.0/0
-                except:
-                    - 10.0.0.0/8
-                    - 100.64.0.0/10
-                    - 169.254.0.0/16
-                    - 172.16.0.0/12
-                    - 192.168.0.0/16
----
-# The API, web and workers: the tunnel, the operator and inventory agent (both
-# call the API in-cluster) and Prometheus.
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-    name: app-ingress
-    namespace: ocidex-dev
-spec:
-    endpointSelector:
-        matchExpressions:
-            - key: cnpg.io/cluster
-              operator: DoesNotExist
-    ingress:
-        - fromEndpoints:
-              - {}
-              - matchLabels:
-                    k8s:io.kubernetes.pod.namespace: cloudflare-gateway
-              - matchLabels:
-                    k8s:io.kubernetes.pod.namespace: ocidex-operator-dev
-              - matchLabels:
-                    k8s:io.kubernetes.pod.namespace: ocidex-k8s-agent-dev
-              - matchLabels:
-                    k8s:io.kubernetes.pod.namespace: monitoring
----
+# The ocidex chart's networkPolicy (../main/helmrelease.yaml) covers every pod it
+# deploys. What it can't cover is the database, which lives here (CNPG instance and
+# job pods), so its policies do too. The platform bound for the whole namespace is
+# egress-guardrail.yaml.
+#
 # Postgres takes connections from this namespace only, plus the CNPG operator
-# (status on 8000, and 5432) and Prometheus (9187). The tunnel can reach the
-# app pods above but not the database behind them.
+# (status on 8000, and 5432) and Prometheus (9187). The tunnel reaches the app,
+# not the database behind it.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -92,3 +38,28 @@ spec:
               - ports:
                     - port: "9187"
                       protocol: TCP
+---
+# CNPG's instance manager talks to the apiserver; instances replicate to each other.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: postgres-egress
+    namespace: ocidex-dev
+spec:
+    endpointSelector:
+        matchLabels:
+            cnpg.io/cluster: ocidex-pg
+    egress:
+        - toEndpoints:
+              - matchLabels:
+                    cnpg.io/cluster: ocidex-pg
+        - toEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: kube-system
+                    k8s-app: kube-dns
+          toPorts:
+              - ports:
+                    - port: "53"
+                      protocol: ANY
+        - toEntities:
+              - kube-apiserver
