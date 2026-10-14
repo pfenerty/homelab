@@ -36,6 +36,16 @@ spec:
             shared_buffers: "1536MB"
             effective_cache_size: "4GB"
             work_mem: "32MB"
+            # Query observability for ocidex's DB tuning (homelab-kfr,
+            # ocidex-kf1p.1). Setting these makes CNPG add both libraries to
+            # shared_preload_libraries, so changing them restarts PG.
+            pg_stat_statements.max: "5000"
+            pg_stat_statements.track: "top"
+            auto_explain.log_min_duration: "2s"
+            auto_explain.log_analyze: "on"
+            auto_explain.log_buffers: "on"
+            auto_explain.log_timing: "off"
+            auto_explain.log_nested_statements: "off"
     bootstrap:
         initdb:
             database: ocidex
