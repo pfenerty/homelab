@@ -53,8 +53,8 @@ bd close <id>         # Complete work
 
 `homelab` hosts the Tekton/PAC CI that runs pipelines defined with `tektonic` for `apko-cicd`, `ocidex`, the `tektonic-ci` repos and this repo. Cross-cutting initiatives are tracked in `~/code/common/` (issue prefix: `plan`).
 
-- `bd list` here shows only this repo's issues — cross-repo hydration is not yet implemented in beads
-- **Unified view:** `flox activate -d ~/code/ocidex -- nu ~/code/common/bd-all.nu`
-- To create a cross-repo parent epic: `cd ~/code/common && bd create --title="..." --type=epic`
-- When a local issue is part of a cross-repo initiative: `bd update <id> --notes "Parent epic: plan/<id>"`
+- `bd list` here shows only this repo's issues. For every repo at once, use the hub: `cd ~/code/common && bin/hub sync && bd ready` (or `bd blocked`, `bd list`)
+- Cross-repo epics (work spanning 2+ repos) live in the hub: `cd ~/code/common && bin/hub sync`, `bd create --type=epic ...`, then `bd dep add plan-xyz <issue-id-in-this-repo>`. See `~/code/common/CLAUDE.md`
+- When a local issue is part of a cross-repo initiative, also note it here: `bd update <id> --append-notes "Parent epic: plan-xyz"` (`--notes` would replace existing notes)
+- File issues in the repo where the change lands; don't add a tracking copy in a consumer repo
 - homelab issues in this chain typically involve: PAC Repository CRDs, namespace setup, SOPS-encrypted secrets for CI credentials
