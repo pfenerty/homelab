@@ -56,6 +56,10 @@ spec:
         api:
             env:
                 environment: development
+                # First admin, promoted at sign-in (ocidex BOOTSTRAP_ADMINS,
+                # ocidex-avsz.1). Replaces the account ocidex's migration 00008
+                # seeded, which 00079 demotes.
+                bootstrapAdmins: "github:16961380"
                 frontendUrl: "https://ocidex.app"
                 githubRedirectUrl: "https://ocidex.app/auth/callback"
                 corsAllowedOrigins: "https://ocidex.app"
