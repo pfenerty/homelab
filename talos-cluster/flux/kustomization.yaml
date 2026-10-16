@@ -30,3 +30,4 @@ resources:
   - monitoring-extras.kustomization.yaml
   - trek.kustomization.yaml
   - tsidp.kustomization.yaml
+  - headlamp.kustomization.yaml
