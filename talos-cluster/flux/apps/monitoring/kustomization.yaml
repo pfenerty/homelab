@@ -12,6 +12,7 @@ resources:
   - helmrelease-tempo.yaml
   - helmrelease-grafana.yaml
   - grafana-admin.secret.yaml
+  - grafana-oauth.secret.enc.yaml
   - pvc-grafana.yaml
   - tailscale-ingress-grafana.yaml
   - alertmanager-discord.secret.enc.yaml
