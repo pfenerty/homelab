@@ -20,7 +20,7 @@ VIP            := 192.168.1.100
 WORKER_NODES       := x86-01
 NODE_IP_x86-01     := 192.168.1.104
 
-TALOS_VERSION      := v1.14.2
+TALOS_VERSION      := v1.14.4
 KUBERNETES_VERSION := v1.37.1
 # RPi (arm64) control-plane nodes: unchanged (sbc-raspberrypi overlay, no extensions).
 # Multi-arch container builds are pinned to the amd64 worker, so binfmt lives only there.
