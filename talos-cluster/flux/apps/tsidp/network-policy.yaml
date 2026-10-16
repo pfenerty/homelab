@@ -1,0 +1,43 @@
+# tsidp is only reached over the tailnet (tsnet terminates inside the pod), so it
+# takes no cluster ingress beyond the baseline: the nodes for probes and the
+# apiserver.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: baseline-ingress
+    namespace: tsidp
+spec:
+    endpointSelector: {}
+    ingress:
+        - fromEntities:
+              - host
+              - remote-node
+              - kube-apiserver
+---
+# tsnet needs DNS, the Tailscale control plane and DERP relays. Peers inside the
+# cluster or on the LAN are reached through DERP rather than directly.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: egress
+    namespace: tsidp
+spec:
+    endpointSelector: {}
+    egress:
+        - toEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: kube-system
+                    k8s-app: kube-dns
+          toPorts:
+              - ports:
+                    - port: "53"
+                      protocol: ANY
+        # `world` would also match the LAN, since Cilium only knows cluster IPs.
+        - toCIDRSet:
+              - cidr: 0.0.0.0/0
+                except:
+                    - 10.0.0.0/8
+                    - 100.64.0.0/10
+                    - 169.254.0.0/16
+                    - 172.16.0.0/12
+                    - 192.168.0.0/16
