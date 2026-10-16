@@ -16,6 +16,10 @@
       "kubectl": {
         "pkg-path": "kubectl"
       },
+      "kubectl-oidc-login": {
+        "pkg-path": "kubectl-oidc-login",
+        "pkg-group": "oidc-login"
+      },
       "nodejs": {
         "pkg-path": "nodejs"
       },
@@ -32,7 +36,9 @@
         "pkg-path": "sops"
       },
       "talosctl": {
-        "pkg-path": "talosctl"
+        "pkg-path": "talosctl",
+        "pkg-group": "talos",
+        "version": "1.14.2"
       },
       "tektoncd-cli": {
         "pkg-path": "tektoncd-cli"
@@ -844,93 +850,6 @@
       "priority": 5
     },
     {
-      "attr_path": "talosctl",
-      "broken": false,
-      "derivation": "/nix/store/pysivw6p2px781mx0l9qx9m4cr4z45xd-talosctl-1.13.9.drv",
-      "description": "CLI for out-of-band management of Kubernetes nodes created by Talos",
-      "install_id": "talosctl",
-      "license": "MPL-2.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
-      "name": "talosctl-1.13.9",
-      "pname": "talosctl",
-      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
-      "rev_count": 1068089,
-      "rev_date": "2026-09-05T13:27:54Z",
-      "scrape_date": "2026-09-06T04:59:28.148618Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "1.13.9",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/p0cvwxi3z5sqkx9vf2cz5l9msb4j0f1y-talosctl-1.13.9"
-      },
-      "system": "aarch64-darwin",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "talosctl",
-      "broken": false,
-      "derivation": "/nix/store/2jpjys085c8c1iga1qmzwi1n1k2nm9fd-talosctl-1.13.9.drv",
-      "description": "CLI for out-of-band management of Kubernetes nodes created by Talos",
-      "install_id": "talosctl",
-      "license": "MPL-2.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
-      "name": "talosctl-1.13.9",
-      "pname": "talosctl",
-      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
-      "rev_count": 1068089,
-      "rev_date": "2026-09-05T13:27:54Z",
-      "scrape_date": "2026-09-06T05:31:16.471394Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "1.13.9",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/7kkgi0c5g7ci3splq1a6cfmgbp9n6p35-talosctl-1.13.9"
-      },
-      "system": "aarch64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "talosctl",
-      "broken": false,
-      "derivation": "/nix/store/m3niwxsj28hik7zi61mnsj2pk79mahiq-talosctl-1.13.9.drv",
-      "description": "CLI for out-of-band management of Kubernetes nodes created by Talos",
-      "install_id": "talosctl",
-      "license": "MPL-2.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
-      "name": "talosctl-1.13.9",
-      "pname": "talosctl",
-      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
-      "rev_count": 1068089,
-      "rev_date": "2026-09-05T13:27:54Z",
-      "scrape_date": "2026-09-06T06:07:56.496710Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "1.13.9",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/jx8l9638ffnc74zg53akylpxv7xnjl4j-talosctl-1.13.9"
-      },
-      "system": "x86_64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
       "attr_path": "tektoncd-cli",
       "broken": false,
       "derivation": "/nix/store/fcn6fxx8d3fc4b1ygymcchldprbzwdsh-tektoncd-cli-0.46.0.drv",
@@ -1106,6 +1025,186 @@
       "system": "x86_64-linux",
       "group": "toplevel",
       "priority": 5
+    },
+    {
+      "attr_path": "kubectl-oidc-login",
+      "broken": false,
+      "derivation": "/nix/store/7wwrpr5i6sg0jq0vzcjqf4vwfzcgmvj4-kubectl-oidc-login-1.36.0.drv",
+      "description": "Kubernetes kubelogin plugin to add OpenID Connect authentication to kubectl. Run \"kubectl oidc-login ...\"",
+      "install_id": "kubectl-oidc-login",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b12141ef619e0a9c1c84dc8c684040326f27cdcc",
+      "name": "kubectl-oidc-login-1.36.0",
+      "pname": "kubectl-oidc-login",
+      "rev": "b12141ef619e0a9c1c84dc8c684040326f27cdcc",
+      "rev_count": 982522,
+      "rev_date": "2026-04-18T21:33:21Z",
+      "scrape_date": "2026-04-21T06:03:36.998597Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.36.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/ck4h1r44705by28xf8a6my3ifay7ay6d-kubectl-oidc-login-1.36.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "oidc-login",
+      "priority": 5
+    },
+    {
+      "attr_path": "kubectl-oidc-login",
+      "broken": false,
+      "derivation": "/nix/store/8r9y5mnxwsqdp9h18n10xl7bxj3x5nzm-kubectl-oidc-login-1.36.0.drv",
+      "description": "Kubernetes kubelogin plugin to add OpenID Connect authentication to kubectl. Run \"kubectl oidc-login ...\"",
+      "install_id": "kubectl-oidc-login",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b12141ef619e0a9c1c84dc8c684040326f27cdcc",
+      "name": "kubectl-oidc-login-1.36.0",
+      "pname": "kubectl-oidc-login",
+      "rev": "b12141ef619e0a9c1c84dc8c684040326f27cdcc",
+      "rev_count": 982522,
+      "rev_date": "2026-04-18T21:33:21Z",
+      "scrape_date": "2026-04-21T06:37:00.387918Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.36.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/x4428hajbjqq2k1yh9ijq549b2xbm1km-kubectl-oidc-login-1.36.0"
+      },
+      "system": "aarch64-linux",
+      "group": "oidc-login",
+      "priority": 5
+    },
+    {
+      "attr_path": "kubectl-oidc-login",
+      "broken": false,
+      "derivation": "/nix/store/1q88b02agbd93zs9zbzad6cs3c8xcf4m-kubectl-oidc-login-1.36.0.drv",
+      "description": "Kubernetes kubelogin plugin to add OpenID Connect authentication to kubectl. Run \"kubectl oidc-login ...\"",
+      "install_id": "kubectl-oidc-login",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b12141ef619e0a9c1c84dc8c684040326f27cdcc",
+      "name": "kubectl-oidc-login-1.36.0",
+      "pname": "kubectl-oidc-login",
+      "rev": "b12141ef619e0a9c1c84dc8c684040326f27cdcc",
+      "rev_count": 982522,
+      "rev_date": "2026-04-18T21:33:21Z",
+      "scrape_date": "2026-04-21T07:45:04.427048Z",
+      "stabilities": [
+        "stable",
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.36.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/04cjcwpzls2xnwzv7iqjm55h9vp48xvl-kubectl-oidc-login-1.36.0"
+      },
+      "system": "x86_64-linux",
+      "group": "oidc-login",
+      "priority": 5
+    },
+    {
+      "attr_path": "talosctl",
+      "broken": false,
+      "derivation": "/nix/store/zqzl0f69wjgr790zvkkk9iva76jsa17g-talosctl-1.14.2.drv",
+      "description": "CLI for out-of-band management of Kubernetes nodes created by Talos",
+      "install_id": "talosctl",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7fd4004d0511991fff3a0524856a9be09e28c5f0",
+      "name": "talosctl-1.14.2",
+      "pname": "talosctl",
+      "rev": "7fd4004d0511991fff3a0524856a9be09e28c5f0",
+      "rev_count": 1090327,
+      "rev_date": "2026-10-11T15:54:36Z",
+      "scrape_date": "2026-10-13T05:02:29.094526Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/jii52mnl43v15h493mg7smz9issd1ga7-talosctl-1.14.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "talos",
+      "priority": 5
+    },
+    {
+      "attr_path": "talosctl",
+      "broken": false,
+      "derivation": "/nix/store/aj2qqfr2ibzdqa3qyyc41yjrsahfgyzv-talosctl-1.14.2.drv",
+      "description": "CLI for out-of-band management of Kubernetes nodes created by Talos",
+      "install_id": "talosctl",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7fd4004d0511991fff3a0524856a9be09e28c5f0",
+      "name": "talosctl-1.14.2",
+      "pname": "talosctl",
+      "rev": "7fd4004d0511991fff3a0524856a9be09e28c5f0",
+      "rev_count": 1090327,
+      "rev_date": "2026-10-11T15:54:36Z",
+      "scrape_date": "2026-10-13T05:35:52.782501Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/1bs4wdrdrgi1fkcrb7f8k8l26a1bj09j-talosctl-1.14.2"
+      },
+      "system": "aarch64-linux",
+      "group": "talos",
+      "priority": 5
+    },
+    {
+      "attr_path": "talosctl",
+      "broken": false,
+      "derivation": "/nix/store/ilappm36ccd9qk7g3p04xhfakb8pbib1-talosctl-1.14.2.drv",
+      "description": "CLI for out-of-band management of Kubernetes nodes created by Talos",
+      "install_id": "talosctl",
+      "license": "MPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7fd4004d0511991fff3a0524856a9be09e28c5f0",
+      "name": "talosctl-1.14.2",
+      "pname": "talosctl",
+      "rev": "7fd4004d0511991fff3a0524856a9be09e28c5f0",
+      "rev_count": 1090327,
+      "rev_date": "2026-10-11T15:54:36Z",
+      "scrape_date": "2026-10-13T06:12:39.261094Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.14.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/8ykf0xzzqx3y17lgig5qznpf1l42fxc9-talosctl-1.14.2"
+      },
+      "system": "x86_64-linux",
+      "group": "talos",
+      "priority": 5
     }
   ],
   "compose": {
@@ -1121,6 +1220,10 @@
         "kubectl": {
           "pkg-path": "kubectl"
         },
+        "kubectl-oidc-login": {
+          "pkg-path": "kubectl-oidc-login",
+          "pkg-group": "oidc-login"
+        },
         "nodejs": {
           "pkg-path": "nodejs"
         },
@@ -1131,7 +1234,9 @@
           "pkg-path": "sops"
         },
         "talosctl": {
-          "pkg-path": "talosctl"
+          "pkg-path": "talosctl",
+          "pkg-group": "talos",
+          "version": "1.14.2"
         },
         "tektoncd-cli": {
           "pkg-path": "tektoncd-cli"

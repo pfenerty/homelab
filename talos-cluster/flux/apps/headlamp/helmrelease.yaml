@@ -1,0 +1,79 @@
+# Headlamp signs users in through tsidp and forwards their id_token to the
+# apiserver, which trusts tsidp via KubeAuthenticationConfig
+# (talos/patches/controlplane.yaml). What a user can do is plain RBAC on the
+# oidc:-prefixed identity (rbac.yaml); Headlamp's own ServiceAccount gets nothing.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: headlamp
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: headlamp
+      version: 0.45.0
+      sourceRef:
+        kind: HelmRepository
+        name: headlamp
+  targetNamespace: headlamp
+  upgrade:
+    remediation:
+      retries: 3
+      strategy: rollback
+  values:
+    # Keep the Pis' memory for the control plane.
+    nodeSelector:
+      kubernetes.io/arch: amd64
+    # The chart binds its ServiceAccount to cluster-admin by default, which would
+    # hand every viewer the cluster. Users act as themselves.
+    clusterRoleBinding:
+      create: false
+    config:
+      oidc:
+        # The chart otherwise renders an empty `oidc` Secret alongside ours.
+        secret:
+          create: false
+        # OIDC_CLIENT_ID and OIDC_CLIENT_SECRET, envFrom'd (headlamp-oidc.secret.template.yaml).
+        externalSecret:
+          enabled: true
+          name: headlamp-oidc
+    # Not secret, so set here; the chart emits the matching -oidc-* flags.
+    # Scopes default to openid,profile,email.
+    env:
+      - name: OIDC_ISSUER_URL
+        value: https://idp.bear-velociraptor.ts.net
+      - name: OIDC_CALLBACK_URL
+        value: https://headlamp.bear-velociraptor.ts.net/oidc-callback
+      - name: OIDC_USE_PKCE
+        value: "true"
+    # The issuer only resolves on the tailnet; pin it to the in-cluster egress
+    # proxy (apps/tsidp/egress.yaml).
+    hostAliases:
+      - ip: 10.96.100.53
+        hostnames:
+          - idp.bear-velociraptor.ts.net
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 100
+      runAsGroup: 101
+      privileged: false
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    ingress:
+      enabled: true
+      ingressClassName: tailscale
+      hosts:
+        - host: headlamp
+          paths:
+            - path: /
+              type: Prefix
+      tls:
+        - hosts:
+            - headlamp

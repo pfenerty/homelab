@@ -96,3 +96,46 @@ extraArgs:
     leader-elect-retry-period: 10s
     # Same as the controller manager: /metrics on 10259 via the node IP.
     bind-address: 0.0.0.0
+---
+# tsidp's issuer (https://idp.bear-velociraptor.ts.net) only resolves on the
+# tailnet, and the control planes aren't on it. Point the name at the fixed
+# ClusterIP of the operator's egress proxy (flux/apps/tsidp/egress.yaml) so the
+# apiserver can fetch discovery and JWKS; Cilium's socket LB serves ClusterIPs to
+# host-network processes. TLS passes through, so the ts.net cert still matches.
+apiVersion: v1alpha1
+kind: StaticHostConfig
+name: 10.96.100.53
+hostnames:
+    - idp.bear-velociraptor.ts.net
+---
+# Trust tsidp tokens for Headlamp (and kubectl via kubelogin), homelab-p87.2.
+# Talos replaces the generated `configuration` wholesale rather than merging it,
+# so the anonymous health-check rules it generates are repeated here.
+#
+# tsidp emits no email_verified, which `claim: email` tolerates (the implicit
+# check is claims.?email_verified.orValue(true)). GitHub logins get a rewritten
+# email, user@github.idp.bear-velociraptor.ts.net. `groups` comes from the
+# tailnet policy grant's extraClaims; RBAC binds oidc:homelab-admins
+# (flux/apps/headlamp/rbac.yaml).
+apiVersion: v1alpha1
+kind: KubeAuthenticationConfig
+configuration:
+    anonymous:
+        enabled: true
+        conditions:
+            - path: /livez
+            - path: /readyz
+            - path: /healthz
+    jwt:
+        - issuer:
+              url: https://idp.bear-velociraptor.ts.net
+              # The tsidp `headlamp` client; kubelogin uses the same client.
+              audiences:
+                  - dfe47ba1a45235e77993c58faa21d330
+          claimMappings:
+              username:
+                  claim: email
+                  prefix: "oidc:"
+              groups:
+                  claim: groups
+                  prefix: "oidc:"
