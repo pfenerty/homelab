@@ -131,7 +131,7 @@ configuration:
               url: https://idp.bear-velociraptor.ts.net
               # The tsidp `headlamp` client; kubelogin uses the same client.
               audiences:
-                  - HEADLAMP_CLIENT_ID
+                  - dfe47ba1a45235e77993c58faa21d330
           claimMappings:
               username:
                   claim: email

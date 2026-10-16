@@ -5,4 +5,5 @@ resources:
   - helmrepository.yaml
   - helmrelease.yaml
   - rbac.yaml
+  - headlamp-oidc.secret.enc.yaml
   - network-policy.yaml
