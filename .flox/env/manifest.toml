@@ -10,12 +10,19 @@ schema-version = "1.12.0"
 tektoncd-cli.pkg-path = "tektoncd-cli"
 prek.pkg-path = "prek"
 k9s.pkg-path = "k9s"
+# Must match TALOS_VERSION in talos-cluster/Makefile: an older client can't parse
+# the 1.14 config documents in talos/patches, so `make generate` fails.
 talosctl.pkg-path = "talosctl"
+talosctl.version = "1.14.2"
+talosctl.pkg-group = "talos"
 kubectl.pkg-path = "kubectl"
 fluxcd.pkg-path = "fluxcd"
 sops.pkg-path = "sops"
 yq.pkg-path = "yq"
 nodejs.pkg-path = "nodejs"
+# `kubectl oidc-login`: kubectl sign-in through tsidp (homelab-p87).
+kubectl-oidc-login.pkg-path = "kubectl-oidc-login"
+kubectl-oidc-login.pkg-group = "oidc-login"
 # gum.pkg-path = "gum"
 # gum.version = "^0.14.5"
 
