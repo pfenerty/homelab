@@ -1,0 +1,16 @@
+# Groups the API server proxy impersonates, from the tailnet policy's
+# tailscale.com/cap/kubernetes grant on tag:k8s-operator. Kept separate from
+# Headlamp's oidc:homelab-admins (apps/headlamp/rbac.yaml) so kubectl access
+# doesn't depend on tsidp or Headlamp.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+    name: tailnet-homelab-admins
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+subjects:
+    - apiGroup: rbac.authorization.k8s.io
+      kind: Group
+      name: tailnet:homelab-admins

@@ -27,6 +27,15 @@ spec:
           name: tailscale-credentials
           targetPath: oauth.clientSecret
           valuesKey: clientSecret
+    values:
+        # kubectl over the tailnet (homelab-deq): the operator device
+        # (tailscale-operator, tag:k8s-operator) proxies the apiserver and
+        # impersonates the caller's tailnet login, plus groups from the policy's
+        # tailscale.com/cap/kubernetes grant (rbac.yaml binds them). Auth mode;
+        # the chart grants the operator ServiceAccount `impersonate`.
+        #   tailscale configure kubeconfig tailscale-operator
+        apiServerProxyConfig:
+            mode: "true"
     targetNamespace: tailscale-operator
     install:
         createNamespace: true
