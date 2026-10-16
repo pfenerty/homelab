@@ -39,6 +39,33 @@ spec:
     # Not needed: kubelet applies fsGroup 472 to the block volume on mount.
     initChownData:
       enabled: false
+    # SSO through tsidp (apps/tsidp). The secret carries the client ID/secret and
+    # GF_AUTH_GENERIC_OAUTH_ENABLED, so login stays local-only until it exists;
+    # see grafana-oauth.secret.template.yaml. The local admin stays as break-glass.
+    envFromSecrets:
+      - name: grafana-oauth
+        optional: true
+    # The issuer only resolves on the tailnet; pin it to the in-cluster egress
+    # proxy (apps/tsidp/egress.yaml).
+    hostAliases:
+      - ip: 10.96.100.53
+        hostnames:
+          - idp.bear-velociraptor.ts.net
+    grafana.ini:
+      server:
+        root_url: https://grafana.bear-velociraptor.ts.net
+      auth.generic_oauth:
+        name: Tailscale
+        allow_sign_up: true
+        scopes: openid email profile
+        auth_url: https://idp.bear-velociraptor.ts.net/authorize
+        token_url: https://idp.bear-velociraptor.ts.net/token
+        api_url: https://idp.bear-velociraptor.ts.net/userinfo
+        use_pkce: true
+        email_attribute_path: email
+        login_attribute_path: preferred_username
+        # `groups` comes from the tsidp grant's extraClaims.
+        role_attribute_path: contains(groups[*], 'homelab-admins') && 'Admin' || 'Viewer'
     admin:
       existingSecret: grafana-admin-secret
       userKey: admin-user
