@@ -1,0 +1,43 @@
+# In-cluster path to tsidp. The issuer is always https://idp.bear-velociraptor.ts.net
+# (tsidp has no override), but neither pods nor the control-plane nodes are on
+# the tailnet. The operator runs an egress proxy for the ExternalName Service;
+# the second Service gives that proxy a fixed ClusterIP, which pods pin with
+# hostAliases and the control planes with a static host entry (the apiserver
+# fetches JWKS from the issuer). TLS passes through, so the real ts.net cert
+# validates.
+#
+# If you change the IP, change it everywhere: grep -r 10.96.100.53 talos-cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: idp-egress
+  namespace: tsidp
+  annotations:
+    tailscale.com/tailnet-fqdn: idp.bear-velociraptor.ts.net
+spec:
+  type: ExternalName
+  # The operator rewrites this to its proxy Service.
+  externalName: placeholder
+  ports:
+    - name: https
+      port: 443
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: idp
+  namespace: tailscale-operator
+spec:
+  clusterIP: 10.96.100.53
+  # The operator's labels on the proxy pod it creates for idp-egress.
+  selector:
+    tailscale.com/managed: "true"
+    tailscale.com/parent-resource: idp-egress
+    tailscale.com/parent-resource-ns: tsidp
+    tailscale.com/parent-resource-type: svc
+  ports:
+    - name: https
+      port: 443
+      targetPort: 443
+      protocol: TCP

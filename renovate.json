@@ -350,6 +350,13 @@
       "minimumReleaseAgeBehaviour": "timestamp-optional"
     },
     {
+      "description": "tsidp is pre-1.0 and its grant schema and env names still change between patch releases; every bump needs a read of the release notes.",
+      "matchPackageNames": [
+        "ghcr.io/tailscale/tsidp"
+      ],
+      "automerge": false
+    },
+    {
       "description": "Under 0.x a minor bump is allowed to break things (synology-csi, local-path-provisioner), so those stay manual.",
       "matchCurrentVersion": "/^v?0\\./",
       "matchUpdateTypes": [

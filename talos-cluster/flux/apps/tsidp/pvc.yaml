@@ -1,0 +1,14 @@
+# tsnet node identity, the signing key, registered OIDC clients and sessions.
+# Losing it re-registers the node and invalidates every client secret.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tsidp-data
+  namespace: tsidp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: synology-csi-iscsi
+  resources:
+    requests:
+      storage: 1Gi

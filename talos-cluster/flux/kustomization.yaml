@@ -29,3 +29,4 @@ resources:
   - monitoring.kustomization.yaml
   - monitoring-extras.kustomization.yaml
   - trek.kustomization.yaml
+  - tsidp.kustomization.yaml

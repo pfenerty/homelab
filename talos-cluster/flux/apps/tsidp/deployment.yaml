@@ -1,0 +1,80 @@
+# tsidp: Tailscale's OIDC provider, served on the tailnet as
+# https://idp.bear-velociraptor.ts.net. Users are whoever they are logged into
+# Tailscale as; the tailnet policy's tailscale.com/cap/tsidp grant controls the
+# admin UI and adds the `groups` claim apps map roles from.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tsidp
+  namespace: tsidp
+spec:
+  replicas: 1
+  # One writer on the state dir, and one tailnet node per identity.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tsidp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tsidp
+    spec:
+      # synology-csi iSCSI volumes only attach on x86-01.
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: tsidp
+          # Pre-1.0 and changing weekly: bump by hand (see renovate.json).
+          image: ghcr.io/tailscale/tsidp:v0.0.17
+          env:
+            - name: TAILSCALE_USE_WIP_CODE
+              value: "1"
+            - name: TS_STATE_DIR
+              value: /data
+            - name: TS_HOSTNAME
+              value: idp
+            - name: TS_ADVERTISE_TAGS
+              value: tag:tsidp
+            # Only read on first login; after that the node key lives in /data.
+            - name: TS_AUTHKEY_FILE
+              value: /run/secrets/tsidp/authkey
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: authkey
+              mountPath: /run/secrets/tsidp
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: tsidp-data
+        # Optional so the pod still starts before the secret exists: tsidp then
+        # logs a login URL to authenticate the node by hand.
+        - name: authkey
+          secret:
+            secretName: tsidp-authkey
+            optional: true
+        - name: tmp
+          emptyDir: {}
