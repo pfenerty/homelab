@@ -6,6 +6,7 @@ resources:
     - triggers.yaml
     - interceptors.yaml
     - tailscale-ingress.yaml
+    - oauth2-proxy.yaml
     - pruner-cronjob.yaml
     - workspace-reaper-cronjob.yaml
     - network-policy.yaml

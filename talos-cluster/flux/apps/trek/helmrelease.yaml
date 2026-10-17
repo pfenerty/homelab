@@ -24,11 +24,43 @@ spec:
                 path: /spec/template/spec/nodeSelector
                 value:
                   kubernetes.io/arch: amd64
+              # Nor a hostAliases value. tsidp's issuer only resolves on the
+              # tailnet; pin it to the in-cluster egress proxy (apps/tsidp/egress.yaml).
+              - op: add
+                path: /spec/template/spec/hostAliases
+                value:
+                  - ip: 10.96.100.53
+                    hostnames:
+                      - idp.bear-velociraptor.ts.net
   upgrade:
     remediation:
       retries: 3
       strategy: rollback
+  # SSO through tsidp: the client ID and secret come from trek-oidc
+  # (trek-oidc.secret.template.yaml). Optional, so the release renders before it
+  # exists; TREK shows no SSO button until both are set.
+  valuesFrom:
+    - kind: Secret
+      name: trek-oidc
+      valuesKey: clientId
+      targetPath: env.OIDC_CLIENT_ID
+      optional: true
+    - kind: Secret
+      name: trek-oidc
+      valuesKey: clientSecret
+      targetPath: secretEnv.OIDC_CLIENT_SECRET
+      optional: true
   values:
+    env:
+      # Redirect URI is APP_URL + /api/auth/oidc/callback.
+      APP_URL: https://trek.bear-velociraptor.ts.net
+      OIDC_ISSUER: https://idp.bear-velociraptor.ts.net
+      OIDC_DISPLAY_NAME: Tailscale
+      # tsidp only supports these three; `groups` arrives through userinfo from
+      # the tailnet grant's extraClaims (includeInUserInfo).
+      OIDC_SCOPE: openid email profile
+      OIDC_ADMIN_CLAIM: groups
+      OIDC_ADMIN_VALUE: homelab-admins
     # iSCSI LUNs declared in pvcs.yaml (data copied from the old NFS claims).
     persistence:
       data:

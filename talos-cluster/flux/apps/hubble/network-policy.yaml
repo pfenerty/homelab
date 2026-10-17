@@ -1,5 +1,6 @@
-# Hubble UI is published through a Tailscale Ingress; nothing else needs it.
-# kube-system gets no namespace baseline: too much of the cluster runs there.
+# Hubble UI is published through a Tailscale Ingress whose backend is
+# oauth2-proxy (oauth2-proxy.yaml); nothing else needs it. kube-system gets no
+# namespace baseline: too much of the cluster runs there.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -9,6 +10,23 @@ spec:
     endpointSelector:
         matchLabels:
             k8s-app: hubble-ui
+    ingress:
+        - fromEndpoints:
+              - matchLabels:
+                    app.kubernetes.io/name: oauth2-proxy
+                    app.kubernetes.io/instance: hubble
+---
+# The Tailscale proxy pods run in tailscale-operator.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: oauth2-proxy-hubble-ingress
+    namespace: kube-system
+spec:
+    endpointSelector:
+        matchLabels:
+            app.kubernetes.io/name: oauth2-proxy
+            app.kubernetes.io/instance: hubble
     ingress:
         - fromEndpoints:
               - matchLabels:
