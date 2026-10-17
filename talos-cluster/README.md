@@ -133,12 +133,32 @@ make apply-rpi-01 NODE_DHCP_IP=192.168.1.x
 # Bootstrap etcd (first install only)
 make bootstrap
 
-# Fetch kubeconfig
+# Fetch the admin kubeconfig (client cert; break-glass, works without Tailscale)
 make kubeconfig
 
 # Check cluster health
 make health
 ```
+
+### Everyday kubectl access
+
+Day to day, use your Tailscale identity rather than the admin cert. The Tailscale
+operator proxies the API server on the tailnet and impersonates your tailnet
+login, with groups from the `tailscale.com/cap/kubernetes` grant in the tailnet
+policy (`flux/apps/tailscale/helmrelease.yaml`, `flux/apps/tailscale/rbac.yaml`).
+No OIDC client, secret or plugin is involved:
+
+```bash
+tailscale configure kubeconfig tailscale-operator   # adds the context and switches to it
+kubectl auth whoami                                  # <login>, groups tailnet:homelab-admins
+kubectl config use-context admin@rpi-cluster         # back to the admin cert
+```
+
+To give someone access, add a grant on `tag:k8s-operator` with
+`impersonate.groups` set to a group that has a binding (`tailnet:homelab-admins`
+is cluster-admin; bind another group to the `view` ClusterRole for read-only).
+The first request after the operator restarts can time out while it fetches its
+TLS certificate; retry. Headlamp signs in separately, through tsidp OIDC.
 
 ### Upgrades
 

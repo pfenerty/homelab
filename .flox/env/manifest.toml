@@ -20,9 +20,6 @@ fluxcd.pkg-path = "fluxcd"
 sops.pkg-path = "sops"
 yq.pkg-path = "yq"
 nodejs.pkg-path = "nodejs"
-# `kubectl oidc-login`: kubectl sign-in through tsidp (homelab-p87).
-kubectl-oidc-login.pkg-path = "kubectl-oidc-login"
-kubectl-oidc-login.pkg-group = "oidc-login"
 # gum.pkg-path = "gum"
 # gum.version = "^0.14.5"
 
