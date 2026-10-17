@@ -12,9 +12,9 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: tekton-dashboard
+                name: oauth2-proxy-tekton
                 port:
-                  number: 9097
+                  number: 80
   tls:
     - hosts:
         - tekton-dashboard

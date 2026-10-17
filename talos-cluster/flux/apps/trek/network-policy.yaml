@@ -32,8 +32,8 @@ spec:
               - matchLabels:
                     k8s:io.kubernetes.pod.namespace: tailscale-operator
 ---
-# trek needs DNS and the internet (maps, uploads stay on its own volumes), not
-# the apiserver, the rest of the cluster or the LAN.
+# trek needs DNS, the internet (maps, uploads stay on its own volumes) and tsidp
+# for SSO, not the apiserver, the rest of the cluster or the LAN.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -52,6 +52,17 @@ spec:
               - ports:
                     - port: "53"
                       protocol: ANY
+        # tsidp, through the operator's egress proxy (apps/tsidp/egress.yaml). Its
+        # ClusterIP is socket-LB'd to the proxy pod, which the CIDR rule's 10/8
+        # exception would otherwise drop.
+        - toEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: tailscale-operator
+                    tailscale.com/parent-resource: idp-egress
+          toPorts:
+              - ports:
+                    - port: "443"
+                      protocol: TCP
         # `world` would also match the LAN, since Cilium only knows cluster IPs.
         - toCIDRSet:
               - cidr: 0.0.0.0/0

@@ -1,0 +1,99 @@
+# oauth2-proxy in front of the Hubble UI, which has no auth of its own. It signs
+# users in through tsidp and only lets members of the homelab-admins group (from
+# the tailnet grant's extraClaims) through; the Tailscale Ingress points here
+# instead of at the Hubble UI (homelab-p87.4).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth2-proxy-hubble
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: oauth2-proxy
+      app.kubernetes.io/instance: hubble
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: oauth2-proxy
+        app.kubernetes.io/instance: hubble
+    spec:
+      # The issuer only resolves on the tailnet; pin it to the in-cluster egress
+      # proxy (apps/tsidp/egress.yaml).
+      hostAliases:
+        - ip: 10.96.100.53
+          hostnames:
+            - idp.bear-velociraptor.ts.net
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: oauth2-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.5
+          args:
+            - --http-address=0.0.0.0:4180
+            - --upstream=http://hubble-ui.kube-system.svc:80
+            - --provider=oidc
+            - --oidc-issuer-url=https://idp.bear-velociraptor.ts.net
+            - --redirect-url=https://hubble.bear-velociraptor.ts.net/oauth2/callback
+            - --scope=openid email profile
+            - --code-challenge-method=S256
+            - --oidc-groups-claim=groups
+            - --allowed-group=homelab-admins
+            # Access is decided by the group above, not the email; tsidp sends
+            # no email_verified and GitHub logins get a synthetic address.
+            - --email-domain=*
+            - --insecure-oidc-allow-unverified-email=true
+            - --skip-provider-button=true
+            - --reverse-proxy=true
+            - --cookie-secure=true
+            - --cookie-name=_oauth2_proxy_hubble
+            # Re-check with tsidp hourly, so dropping someone from the grant
+            # takes effect without waiting for the cookie to expire.
+            - --cookie-refresh=1h
+          envFrom:
+            # OAUTH2_PROXY_CLIENT_ID, OAUTH2_PROXY_CLIENT_SECRET,
+            # OAUTH2_PROXY_COOKIE_SECRET (oauth2-proxy-hubble.secret.template.yaml).
+            - secretRef:
+                name: oauth2-proxy-hubble
+          ports:
+            - name: http
+              containerPort: 4180
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          resources:
+            requests:
+              cpu: 5m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-proxy-hubble
+  namespace: kube-system
+spec:
+  selector:
+    app.kubernetes.io/name: oauth2-proxy
+    app.kubernetes.io/instance: hubble
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

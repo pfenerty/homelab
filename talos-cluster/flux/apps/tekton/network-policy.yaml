@@ -78,8 +78,10 @@ spec:
               - remote-node
               - kube-apiserver
 ---
-# The (read-only) dashboard is published through a Tailscale Ingress; the proxy
-# pods run in tailscale-operator.
+# The (read-only) dashboard is published through a Tailscale Ingress whose
+# backend is oauth2-proxy (oauth2-proxy.yaml); the Tailscale proxy pods run in
+# tailscale-operator. The dashboard itself is only reachable from this namespace
+# (baseline-ingress), so the tailnet can't skip the sign-in.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -88,7 +90,8 @@ metadata:
 spec:
     endpointSelector:
         matchLabels:
-            app.kubernetes.io/part-of: tekton-dashboard
+            app.kubernetes.io/name: oauth2-proxy
+            app.kubernetes.io/instance: tekton
     ingress:
         - fromEndpoints:
               - matchLabels:
