@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
     - tailscale-ingress.yaml
     - oauth2-proxy.yaml
+    - oauth2-proxy-hubble.secret.enc.yaml
     - network-policy.yaml

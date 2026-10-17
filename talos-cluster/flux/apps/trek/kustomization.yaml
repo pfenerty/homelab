@@ -5,4 +5,5 @@ resources:
   - helmrelease.yaml
   - namespace.yaml
   - pvcs.yaml
+  - trek-oidc.secret.enc.yaml
   - network-policy.yaml
