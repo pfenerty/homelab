@@ -10,7 +10,7 @@ spec:
       chart: grafana
       # grafana/helm-charts froze this chart at 10.5.15 (deprecated); it continues
       # in grafana-community. 13.x runs the distroless image with a read-only root.
-      version: "13.5.0"
+      version: "13.7.0"
       sourceRef:
         kind: HelmRepository
         name: grafana-community

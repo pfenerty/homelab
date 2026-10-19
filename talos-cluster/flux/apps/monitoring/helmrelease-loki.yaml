@@ -9,7 +9,7 @@ spec:
     spec:
       chart: loki
       # grafana/helm-charts froze loki at 7.3.0; continues in grafana-community.
-      version: "18.15.1"
+      version: "18.17.1"
       sourceRef:
         kind: HelmRepository
         name: grafana-community
