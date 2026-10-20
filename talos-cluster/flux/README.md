@@ -81,7 +81,7 @@ no dependencies: gateway-api, cnpg, keda, local-path-provisioner, synology-csi, 
 | `ocidex-ci` | `apps/ocidex-ci/` | PAC `Repository`, registry and API credentials, cache PVCs for ocidex |
 | `tektonic-ci` | `apps/tektonic-ci/` | PAC `Repository` and cache PVCs for the tektonic packages |
 | `apko-cicd-ci` | `apps/apko-cicd/` | PAC `Repository`, ghcr credentials for apko-cicd |
-| `apko-cicd-update` | `.tekton/update` in the `apko-cicd` GitRepository | Scheduled package-update pipeline sourced from the apko-cicd repo |
+| `apko-cicd-update` | `ci/update` in the `apko-cicd` GitRepository | Scheduled package-update pipeline sourced from the apko-cicd repo |
 | `renovate` | `apps/renovate/` | Self-hosted Renovate CronJobs |
 
 The vendored manifests (`tekton/`, `tekton-chains/`, `pipelines-as-code/`) are refreshed with each directory's `update-manifests.sh`. Renovate bumps the version pinned in those scripts.
