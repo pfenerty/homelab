@@ -1,6 +1,6 @@
 ---
 # Source for the daily package-update job's Tekton manifests, which live in the
-# apko-cicd repo under .tekton/update/. (The push/publish pipeline is delivered
+# apko-cicd repo under ci/update/. (The push/publish pipeline is delivered
 # separately via Pipelines-as-Code straight from the repo.)
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository

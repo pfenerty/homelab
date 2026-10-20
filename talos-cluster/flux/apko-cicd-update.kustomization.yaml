@@ -12,7 +12,7 @@ spec:
         - name: tekton
     interval: 10m0s
     # Path within the apko-cicd repo (its GitRepository source), not this one.
-    path: ./.tekton/update
+    path: ./ci/update
     prune: true
     sourceRef:
         kind: GitRepository
