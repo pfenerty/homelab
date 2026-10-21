@@ -33,7 +33,7 @@ spec:
       containers:
         - name: tsidp
           # Pre-1.0 and changing weekly: bump by hand (see renovate.json).
-          image: ghcr.io/tailscale/tsidp:v0.0.17
+          image: ghcr.io/tailscale/tsidp:v0.0.18
           env:
             - name: TAILSCALE_USE_WIP_CODE
               value: "1"
