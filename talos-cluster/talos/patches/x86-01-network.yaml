@@ -22,3 +22,25 @@ machine:
         routes:
           - network: 0.0.0.0/0
             gateway: 192.168.1.1
+---
+# This is the only schedulable node, so CI, ocidex-pg and the monitoring stack all
+# share its 16Gi. Talos only reserves 384Mi by default; on 2026-10-21 a TaskRun grew
+# past what the node had left and Talos's OOM controller fired while kubelet sat in
+# D state, failing its own health checks (homelab-ctd). Reserving memory caps the
+# kubepods cgroup below the node's total, so a pod that runs away is killed inside
+# that cgroup and kubelet, containerd and apid keep theirs. The eviction threshold
+# gives kubelet room to evict by priority before the kernel or Talos has to act.
+apiVersion: v1alpha1
+kind: KubeletConfig
+config:
+  systemReserved:
+    cpu: 50m
+    ephemeral-storage: 256Mi
+    memory: 1Gi
+    pid: "100"
+  kubeReserved:
+    memory: 1Gi
+  evictionHard:
+    memory.available: 500Mi
+    nodefs.available: 10%
+    imagefs.available: 15%

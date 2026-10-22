@@ -23,6 +23,8 @@ spec:
     # disk. x86-01 has the headroom, so no CPU limit. Keep the CPU request
     # small: unlimited, PG still bursts onto idle cores, and a 1-core request
     # left too little schedulable CPU for the CI pods that share x86-01.
+    # Preempts CI pods instead of waiting behind them (apps/scheduling).
+    priorityClassName: homelab-platform
     resources:
         requests:
             cpu: "250m"

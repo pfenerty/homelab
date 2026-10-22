@@ -7,6 +7,7 @@ spec:
     dependsOn:
         - name: cnpg
         - name: cilium
+        - name: scheduling
     interval: 5m0s
     path: ./talos-cluster/flux/apps/ocidex/dev/infra
     prune: true

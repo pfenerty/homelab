@@ -1,0 +1,14 @@
+# x86-01 is the only schedulable node, so CI and the services it runs compete for
+# the same CPU and memory. Everything defaults to priority 0, so after the node
+# rebooted on 2026-10-21 re-queued TaskRuns took the CPU and ocidex-pg sat Pending
+# with no preemption victims (homelab-ctd). Stateful platform services take this
+# class: the scheduler then preempts CI pods to place them, and kubelet evicts CI
+# first under memory pressure. TaskRuns keep the default (0). A preempted TaskRun
+# fails and PaC reports it; a re-run is cheap, a database outage is not.
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+    name: homelab-platform
+value: 1000000
+globalDefault: false
+description: Stateful platform services that CI pods must not starve (ocidex-pg).
