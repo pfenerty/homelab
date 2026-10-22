@@ -6,3 +6,4 @@ resources:
   - servicemonitor-keda.yaml
   - servicemonitor-pac.yaml
   - dashboard-keda.yaml
+  - prometheusrule-cilium-policy.yaml

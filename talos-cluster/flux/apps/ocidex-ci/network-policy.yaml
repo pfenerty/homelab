@@ -1,0 +1,28 @@
+# ocidex's push pipeline ends with sbom-push, which posts the SBOMs of the binaries it just
+# built to the ocidex-dev API over the cluster network. tekton-taskrun
+# (apps/tekton/network-policy.yaml) denies every TaskRun pod the cluster, so this opens the
+# one path: sbom-push TaskRuns of push events, to the API's pod port. The API's own ingress
+# admits them through the ocidex-dev HelmRelease (networkPolicy.ingress.apiFrom).
+#
+# event-type comes from Pipelines as Code, not from the repository's pipeline YAML, so a
+# pull request's TaskRuns don't get it even if they define a task named sbom-push.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+    name: sbom-push-egress
+    namespace: ocidex-ci
+spec:
+    endpointSelector:
+        matchLabels:
+            pipelinesascode.tekton.dev/event-type: push
+            tekton.dev/pipelineTask: sbom-push
+    egress:
+        - toEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: ocidex-dev
+                    app.kubernetes.io/instance: ocidex-dev
+                    app.kubernetes.io/component: api
+          toPorts:
+              - ports:
+                    - port: "8080"
+                      protocol: TCP

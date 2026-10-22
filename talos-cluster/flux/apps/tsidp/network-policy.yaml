@@ -13,6 +13,19 @@ spec:
               - host
               - remote-node
               - kube-apiserver
+        # The operator's egress proxy for tsidp (apps/tsidp/egress.yaml) is a tailnet node in
+        # this cluster, so it tries WireGuard straight to the pod (tsnet's port is random)
+        # before falling back to DERP. Admitting it keeps headlamp's and trek's SSO traffic
+        # off the relays.
+        - fromEndpoints:
+              - matchLabels:
+                    k8s:io.kubernetes.pod.namespace: tailscale-operator
+                    tailscale.com/parent-resource: idp-egress
+          toPorts:
+              - ports:
+                    - port: "1024"
+                      endPort: 65535
+                      protocol: UDP
 ---
 # tsnet needs DNS, the Tailscale control plane and DERP relays. Peers inside the
 # cluster or on the LAN are reached through DERP rather than directly.

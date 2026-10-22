@@ -1,0 +1,47 @@
+# Cilium enforces network policy (cilium/helmrelease.yaml, policyAuditMode: false). A drop
+# is either an attack being stopped or a legitimate path nobody opened, and the second kind
+# looks like a flaky app until someone checks Hubble. This alert names the namespaces
+# involved; `hubble observe --verdict DROPPED` on that node's agent shows the flows.
+#
+# It watches for broken paths, not for intrusion: the threshold lets through a one-off
+# connection, and drops that are expected on every run are left out:
+# - tsidp's NAT-PMP/UPnP probes to the node (UDP 5351, 1900) and direct WireGuard to
+#   tailnet peers on the LAN. tsnet falls back to DERP; destination_namespace is empty for
+#   the host and the LAN.
+# - Renovate probing the cloud metadata address (169.254.169.254) on each renovate-ocidex
+#   run: one flow, under the threshold.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+    name: cilium-policy
+    namespace: monitoring
+    labels:
+        release: monitoring-kube-prometheus-stack
+spec:
+    groups:
+        - name: cilium-policy
+          rules:
+              # hubble_policy_verdicts_total carries source_namespace and destination_namespace
+              # through labelsContext (hubble.metrics.enabled in the Cilium HelmRelease).
+              # Parenthesized because `unless` binds looser than `>`.
+              - alert: CiliumPolicyDrops
+                expr: |
+                    (
+                      sum by (source_namespace, destination_namespace, direction) (
+                        increase(hubble_policy_verdicts_total{action="dropped"}[1h])
+                      )
+                      unless
+                      sum by (source_namespace, destination_namespace, direction) (
+                        increase(hubble_policy_verdicts_total{action="dropped", source_namespace="tsidp", destination_namespace=""}[1h])
+                      )
+                    ) > 5
+                for: 5m
+                labels:
+                    severity: warning
+                annotations:
+                    summary: >-
+                        Cilium is dropping {{ $labels.direction }} traffic from
+                        {{ $labels.source_namespace }} to {{ $labels.destination_namespace }}
+                    description: >-
+                        {{ $value | humanize }} flows dropped by network policy in the last hour.
+                        If the path is legitimate, open it in that namespace's network-policy.yaml.

@@ -90,6 +90,15 @@ spec:
                     - namespaceSelector:
                           matchLabels:
                               kubernetes.io/metadata.name: ocidex-k8s-agent-dev
+                    # ocidex CI's sbom-push on push events (apps/ocidex-ci/network-policy.yaml
+                    # opens the egress side).
+                    - namespaceSelector:
+                          matchLabels:
+                              kubernetes.io/metadata.name: ocidex-ci
+                      podSelector:
+                          matchLabels:
+                              pipelinesascode.tekton.dev/event-type: push
+                              tekton.dev/pipelineTask: sbom-push
             egress:
                 database:
                     - podSelector:

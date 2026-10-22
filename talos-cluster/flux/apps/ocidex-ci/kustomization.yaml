@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
     - namespace.yaml
     - limit-range.yaml
+    - network-policy.yaml
     - service-account.yaml
     - pac-repository.yaml
     - cache-pvcs.yaml

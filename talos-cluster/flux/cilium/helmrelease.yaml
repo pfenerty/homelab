@@ -42,10 +42,14 @@ spec:
     ipam:
       mode: kubernetes
     kubeProxyReplacement: true
-    # Network policies are logged, not enforced: a would-be drop shows up as an
-    # AUDIT verdict in `hubble observe --verdict AUDIT` and the packet passes.
-    # Flip to false once a few days of audit output come back clean.
-    policyAuditMode: true
+    # Network policies are enforced. Nine days of audit mode (2026-10-13 to 10-22,
+    # homelab-eik) turned up one legitimate path, ocidex's sbom-push to the ocidex-dev
+    # API, now opened; everything else that would drop was meant to. Drops raise
+    # CiliumPolicyDrops (apps/monitoring-extras/prometheusrule-cilium-policy.yaml).
+    # Setting this back to true is the quick way out if enforcement breaks something:
+    # policies only log again, and `hubble observe --verdict AUDIT` shows what they
+    # would have dropped.
+    policyAuditMode: false
     # The agents only read their config at startup. Without this, a values change
     # such as policyAuditMode above sits in the ConfigMap until something else
     # restarts the DaemonSet.
@@ -81,6 +85,10 @@ spec:
           - flow
           - icmp
           - http
+          # Verdicts per namespace pair, for the CiliumPolicyDrops alert
+          # (apps/monitoring-extras/prometheusrule-cilium-policy.yaml). Namespaces, not pods,
+          # keep the series count bounded as TaskRun pods come and go.
+          - policy:labelsContext=source_namespace,destination_namespace
         serviceMonitor:
           enabled: true
   targetNamespace: kube-system
