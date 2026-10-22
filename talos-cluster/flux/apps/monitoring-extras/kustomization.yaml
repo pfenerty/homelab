@@ -5,5 +5,7 @@ resources:
   - podmonitor-flux.yaml
   - servicemonitor-keda.yaml
   - servicemonitor-pac.yaml
+  - servicemonitor-tekton.yaml
   - dashboard-keda.yaml
   - prometheusrule-cilium-policy.yaml
+  - prometheusrule-tekton.yaml

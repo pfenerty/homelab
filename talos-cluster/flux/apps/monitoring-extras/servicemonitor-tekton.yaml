@@ -1,0 +1,19 @@
+# Scrape target for the Tekton Pipelines controller, for the pipelinerun metrics behind
+# prometheusrule-tekton.yaml. Lives here rather than in apps/tekton for the same reason
+# as servicemonitor-pac.yaml: the CRD comes from kube-prometheus-stack, and CI should
+# not depend on the monitoring stack.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+    name: tekton-pipelines-controller
+    namespace: monitoring
+spec:
+    namespaceSelector:
+        matchNames: [tekton-pipelines]
+    selector:
+        matchLabels:
+            app: tekton-pipelines-controller
+    jobLabel: app
+    endpoints:
+        - port: http-metrics
+          interval: 30s

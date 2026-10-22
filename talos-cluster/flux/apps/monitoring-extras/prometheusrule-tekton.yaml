@@ -1,0 +1,33 @@
+# Pipelines as Code reports every run it starts as a GitHub check, so a failure there is
+# seen. A PipelineRun created by a CronJob has no commit or PR to report to, and its Job
+# succeeds as soon as the PipelineRun exists, so KubeJobFailed never fires either.
+# apko-cicd's update-packages failed for three days unseen this way (homelab-c0w).
+#
+# A new scheduled pipeline goes in the regex below.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+    name: tekton-scheduled-pipelines
+    namespace: monitoring
+    labels:
+        release: monitoring-kube-prometheus-stack
+spec:
+    groups:
+        - name: tekton-scheduled-pipelines
+          rules:
+              # The 6h window keeps the alert up long enough to be seen after a daily run
+              # fails; increase() absorbs the counter resetting when the controller restarts.
+              - alert: TektonScheduledPipelineFailed
+                expr: |
+                    sum by (namespace, pipeline) (
+                      increase(tekton_pipelines_controller_pipelinerun_duration_seconds_count{status="failed", pipeline=~"apko-cicd-update-update-packages"}[6h])
+                    ) > 0
+                labels:
+                    severity: warning
+                annotations:
+                    summary: Scheduled pipeline {{ $labels.pipeline }} failed in {{ $labels.namespace }}
+                    description: >-
+                        A PipelineRun of {{ $labels.pipeline }} failed in the last 6 hours. Nothing
+                        else reports these runs: check `kubectl -n {{ $labels.namespace }} get
+                        pipelinerun` and the failed step's logs (Loki keeps them after Tekton
+                        prunes the pod).
