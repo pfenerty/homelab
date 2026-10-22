@@ -1,0 +1,20 @@
+# TaskRun pods share x86-01, the only schedulable node, with ocidex-pg and the
+# monitoring stack (homelab-ctd). Steps that set no resources get a modest default
+# instead of running BestEffort, and no container may ask for more than 6Gi: past
+# that, one runaway step plus ocidex-pg's 6Gi exhausts the node before the cgroup
+# limit fires. A step that needs more must say so here, not in its pipeline.
+apiVersion: v1
+kind: LimitRange
+metadata:
+    name: taskrun-defaults
+    namespace: ocidex-ci
+spec:
+    limits:
+        - type: Container
+          defaultRequest:
+              cpu: 100m
+              memory: 128Mi
+          default:
+              memory: 512Mi
+          max:
+              memory: 6Gi
