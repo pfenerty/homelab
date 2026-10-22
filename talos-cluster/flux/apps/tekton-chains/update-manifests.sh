@@ -9,7 +9,7 @@
 # Usage: ./update-manifests.sh
 set -eu
 
-CHAINS_VERSION=v0.29.7
+CHAINS_VERSION=v0.29.9
 
 cd "$(dirname "$0")"
 
