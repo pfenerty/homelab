@@ -70,11 +70,6 @@ spec:
         enricherWorkerDefaults:
             replicas: 1
         vulnWorker:
-            # Trial for ocidex-cecc.2: is the vuln re-match bound by page cache for
-            # the grype SQLite DB (on iSCSI) at the chart's 512Mi?
-            resources:
-                limits:
-                    memory: 2Gi
             db:
                 persistence:
                     storageClass: synology-csi-iscsi
