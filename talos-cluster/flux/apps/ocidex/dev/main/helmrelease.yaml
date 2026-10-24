@@ -63,10 +63,12 @@ spec:
                 frontendUrl: "https://ocidex.app"
                 githubRedirectUrl: "https://ocidex.app/auth/callback"
                 corsAllowedOrigins: "https://ocidex.app"
-                # The direct peer is the cloudflare-gateway (cloudflared) pod. Trust
-                # the pod CIDR so the sign-in rate limit keys on the client IP that
-                # the Cloudflare edge appends to X-Forwarded-For (ocidex-mqav.5).
-                trustedProxyCidrs: "10.244.0.0/16"
+                # The direct peer is the cloudflare-gateway (cloudflared) pod, which
+                # forwards the X-Forwarded-For the Cloudflare edge wrote. The edge
+                # appends the client last, so the client is one entry from the right,
+                # whatever a visitor prepends. This replaces trustedProxyCidrs
+                # 10.244.0.0/16, the unpinned Talos pod CIDR (homelab-dji, ocidex-w6st).
+                trustedProxyHops: "1"
         enricherWorkerDefaults:
             replicas: 1
         vulnWorker:
