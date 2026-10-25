@@ -122,6 +122,12 @@ metadata:
     namespace: ocidex-dev
 spec:
     name: "GHCR — OCIDex"
+    # The homelab cluster resolves running images only against registries in
+    # its own OCIDex namespace, so this registry lives there: running ocidex
+    # images are then attributed to it and verified with the key below
+    # (ocidex-nps9.6). Takes effect once the operator moves registries on
+    # update (ocidex-nps9.33); older operators ignore it for an existing row.
+    namespace: ocidex
     type: ghcr
     url: ghcr.io
     visibility: public
