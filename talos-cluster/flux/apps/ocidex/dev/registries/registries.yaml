@@ -219,7 +219,10 @@ metadata:
     namespace: ocidex-dev
 spec:
     name: "Quay.io — Cilium Agent (signed)"
-    namespace: Cilium
+    # The OCIDex namespace this registry already lives in. The operator moves a
+    # registry whose spec.namespace names another existing namespace, and a
+    # move never creates one, so this must match a namespace that exists.
+    namespace: "Quay.io — Cilium Agent (signed)"
     type: generic
     url: quay.io
     visibility: public
@@ -282,7 +285,10 @@ metadata:
     namespace: ocidex-dev
 spec:
     name: "registry.k8s.io — kube-apiserver (signed)"
-    namespace: registry.k8s.io
+    # The OCIDex namespace this registry already lives in. The operator moves a
+    # registry whose spec.namespace names another existing namespace, and a
+    # move never creates one, so this must match a namespace that exists.
+    namespace: "registry.k8s.io — kube-apiserver (signed)"
     type: generic
     url: registry.k8s.io
     visibility: public
