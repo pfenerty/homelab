@@ -51,8 +51,28 @@ spec:
             enabled: false
         keda:
             enabled: false
+        # PodMonitors for kube-prometheus-stack (it selects every PodMonitor in
+        # every namespace), the Grafana dashboard ConfigMap for its sidecar, and
+        # traces to Alloy's OTLP receiver (homelab-4g4, plan-ieg).
         monitoring:
-            enabled: false
+            enabled: true
+            resourceAttributes: "deployment.environment.name=dev"
+            otel:
+                tracesExporter: otlp
+                endpoint: http://monitoring-alloy-otel.monitoring.svc.cluster.local:4318
+                egress:
+                    - namespaceSelector:
+                          matchLabels:
+                              kubernetes.io/metadata.name: monitoring
+                      podSelector:
+                          matchLabels:
+                              app.kubernetes.io/instance: monitoring-alloy-otel
+            dashboard:
+                enabled: true
+                # Grafana's sidecar only searches the monitoring namespace.
+                namespace: monitoring
+                annotations:
+                    grafana_folder: OCIDex
         api:
             env:
                 environment: development
@@ -101,6 +121,11 @@ spec:
                           matchLabels:
                               pipelinesascode.tekton.dev/event-type: push
                               tekton.dev/pipelineTask: sbom-push
+                # Prometheus scraping /metrics on 9090 (PodMonitors above).
+                metricsFrom:
+                    - namespaceSelector:
+                          matchLabels:
+                              kubernetes.io/metadata.name: monitoring
             egress:
                 database:
                     - podSelector:
