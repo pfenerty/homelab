@@ -114,7 +114,7 @@ spec:
               type: RuntimeDefault
           containers:
             - name: reap
-              image: alpine/kubectl:1.37.1
+              image: alpine/kubectl:1.37.2
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
