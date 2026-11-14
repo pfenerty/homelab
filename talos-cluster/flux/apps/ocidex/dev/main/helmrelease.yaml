@@ -21,6 +21,16 @@ spec:
                           path: /spec/template/spec/nodeSelector
                           value:
                               kubernetes.io/arch: amd64
+                  # The api goes unready whenever ocidex-pg is down (e.g. during the
+                  # x86-01 CNPG maintenance window). The default IfHealthyBudget policy
+                  # then refuses to evict it, deadlocking the node drain (homelab-511).
+                  - target:
+                        kind: PodDisruptionBudget
+                        name: ocidex-dev-api
+                    patch: |
+                        - op: add
+                          path: /spec/unhealthyPodEvictionPolicy
+                          value: AlwaysAllow
     install:
         timeout: 10m
         remediation:

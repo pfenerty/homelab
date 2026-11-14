@@ -173,6 +173,13 @@ upgrade-all: upgrade-103 upgrade-102 upgrade-101 upgrade-x86-01
 # mid-drain, so the window only holds while its kustomization is suspended.
 # This target runs that whole sequence and always unwinds it, failure included.
 #
+# The unwind order matters: uncordon first. The CNPG operator only fits on this
+# node, and its webhook gates the patch that closes the window, so closing it
+# while the node is still cordoned can never succeed (homelab-511). The drain
+# also relies on the ocidex-dev-api PDB allowing unhealthy evictions (set in its
+# HelmRelease): once ocidex-pg stops, the api goes unready, and the default
+# policy would refuse to evict it and stall the drain.
+#
 #   make upgrade-x86-01                    # maintenance window + drain
 #   make upgrade-x86-01 MAINTENANCE=false  # leave CNPG and Flux alone
 #   make upgrade-x86-01 DRAIN=false        # no cordon/drain; reboot stops pods
@@ -182,14 +189,14 @@ upgrade-x86-01:
 	@set -e; \
 	node=$$($(call node_name,$(NODE_IP_x86-01))); rc=0; \
 	unwind() { \
-		if [ "$(MAINTENANCE)" = "true" ]; then $(MAKE) --no-print-directory cnpg-maintenance-off; fi; \
 		kubectl uncordon "$$node" >/dev/null 2>&1 || true; \
+		if [ "$(MAINTENANCE)" = "true" ]; then $(MAKE) --no-print-directory cnpg-maintenance-off || return 1; fi; \
 	}; \
 	trap 'unwind; exit 130' INT TERM; \
 	if [ "$(MAINTENANCE)" = "true" ]; then $(MAKE) --no-print-directory cnpg-maintenance-on; fi; \
 	talosctl upgrade --talosconfig $(TALOSCONFIG) --endpoints $(VIP) --nodes $(NODE_IP_x86-01) \
 		--image $(WORKER_IMAGE_URL) --drain=$(DRAIN) --drain-timeout=$(DRAIN_TIMEOUT) || rc=$$?; \
-	unwind; \
+	unwind || { [ $$rc -ne 0 ] || rc=1; }; \
 	exit $$rc
 
 # ── CloudNativePG node-maintenance window ──────────────────────
@@ -197,6 +204,8 @@ upgrade-x86-01:
 CNPG_CLUSTER := ocidex-pg
 CNPG_NS      := ocidex-dev
 CNPG_FLUX_KS := ocidex-dev-infra
+CNPG_OPERATOR_NS     := cnpg-system
+CNPG_OPERATOR_DEPLOY := cnpg-system-cloudnative-pg
 
 # Suspend Flux, open the window, and confirm the PDB is actually gone — that is
 # the precondition a drain depends on, and it is worth failing early rather than
@@ -224,21 +233,31 @@ cnpg-maintenance-on:
 	$(MAKE) --no-print-directory cnpg-maintenance-off; \
 	exit 1
 
-# The patch can fail right after the worker reboots: CNPG's webhook is served by
-# an operator pod that runs on that very node. Retry it, but resume Flux either
-# way — a resumed reconcile clears the window on its own, since git never
-# declared it.
+# The patch fails while CNPG's webhook is down, and right after the worker
+# reboots it is: the operator pod only fits on that node. Wait for the operator
+# first (the node must already be uncordoned), then retry the patch. Resume Flux
+# either way, but fail loudly if the window stayed open. A Flux reconcile does
+# NOT clear it: server-side apply leaves a field it never owned (the
+# kubectl-patched inProgress) alone, so it stays true until patched.
 cnpg-maintenance-off:
-	@for i in 1 2 3 4 5 6; do \
+	@rc=0; closed=false; \
+	kubectl -n $(CNPG_OPERATOR_NS) rollout status deploy/$(CNPG_OPERATOR_DEPLOY) --timeout=5m >/dev/null 2>&1 \
+		|| echo "  CNPG operator not available after 5m — trying the patch anyway"; \
+	for i in 1 2 3 4 5 6; do \
 		if kubectl patch cluster $(CNPG_CLUSTER) -n $(CNPG_NS) --type=merge \
 			-p '{"spec":{"nodeMaintenanceWindow":{"inProgress":false}}}' >/dev/null 2>&1; then \
-			break; \
+			closed=true; break; \
 		fi; \
-		echo "  CNPG webhook not answering yet ($$i/6) — its operator runs on the node that just rebooted"; \
+		echo "  CNPG webhook not answering yet ($$i/6)"; \
 		sleep 10; \
-	done
-	@flux resume kustomization $(CNPG_FLUX_KS)
-	@echo "✓ maintenance window closed ($(CNPG_FLUX_KS) resumed)"
+	done; \
+	flux resume kustomization $(CNPG_FLUX_KS) || rc=$$?; \
+	if [ "$$closed" != true ]; then \
+		echo "✗ $(CNPG_CLUSTER) nodeMaintenanceWindow.inProgress is still true — rerun 'make cnpg-maintenance-off' once $(CNPG_OPERATOR_DEPLOY) is up"; \
+		exit 1; \
+	fi; \
+	[ $$rc -eq 0 ] || exit $$rc; \
+	echo "✓ maintenance window closed ($(CNPG_FLUX_KS) resumed)"
 
 # ── Kubernetes upgrades ────────────────────────────────────────
 
