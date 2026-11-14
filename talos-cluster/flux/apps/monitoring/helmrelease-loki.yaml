@@ -77,8 +77,8 @@ spec:
       replicas: 0
     indexGateway:
       replicas: 0
-    bloomCompactor:
-      replicas: 0
+    # bloomCompactor was removed in chart 21.x (split into bloomPlanner and
+    # bloomBuilder, both 0 replicas by default); its schema rejects the key.
     bloomGateway:
       replicas: 0
     # Chart default is required pod anti-affinity; with RollingUpdate and the
