@@ -16,3 +16,6 @@
 #   primary: "."
 #   additional:
 #     - ~/code/common  # Cross-repo epics (apko-cicd → tektonic → ocidex)
+
+export:
+    auto: true
