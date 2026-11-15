@@ -4,5 +4,5 @@ resources:
     - registries.yaml
     # Docker Hub registries need the dockerhub-auth secret. Create it from
     # dockerhub-auth.secret.template.yaml, then uncomment both lines.
-    # - dockerhub-auth.secret.enc.yaml
-    # - dockerhub.yaml
+    - dockerhub-auth.secret.enc.yaml
+    - dockerhub.yaml
