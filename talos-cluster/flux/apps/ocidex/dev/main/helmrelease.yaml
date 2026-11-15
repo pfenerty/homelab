@@ -99,6 +99,15 @@ spec:
                 # whatever a visitor prepends. This replaces trustedProxyCidrs
                 # 10.244.0.0/16, the unpinned Talos pod CIDR (homelab-dji, ocidex-w6st).
                 trustedProxyHops: "1"
+                # SBOM retention (ocidex ADR-0056, homelab-at9). registryWindow
+                # prunes registry SBOMs whose tag left the scan window, which is
+                # what trims ghcr-ocidex to its five newest releases. keepLast
+                # bounds CI-pushed SBOMs (the ocidex binaries) per series.
+                # dry-run logs what a sweep would delete; switch to "on" after
+                # reading it.
+                retention:
+                    mode: "dry-run"
+                    keepLast: "5"
         enricherWorkerDefaults:
             replicas: 1
         vulnWorker:

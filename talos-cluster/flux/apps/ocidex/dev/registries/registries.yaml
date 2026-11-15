@@ -142,7 +142,11 @@ spec:
         - pfenerty/ocidex-user-enricher-worker
         - pfenerty/ocidex-vuln-worker
         - pfenerty/ocidex-git-worker
-    tagLimit: 25
+    # Releases only (vX.Y.Z), newest five: the demo should lead with images
+    # people recognise, not hundreds of main-<sha> builds of OCIDex itself.
+    tagPatterns:
+        - semver
+    tagLimit: 5
     scanMode: poll
     pollIntervalMinutes: 360
     verificationMode: public_key
@@ -177,7 +181,7 @@ spec:
         - pfenerty/apko-cicd/maven
         - pfenerty/apko-cicd/gradle
         - pfenerty/apko-cicd/rust
-    tagLimit: 50
+    tagLimit: 5
     scanMode: poll
     pollIntervalMinutes: 360
     verificationMode: public_key

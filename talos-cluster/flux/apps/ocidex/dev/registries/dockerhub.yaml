@@ -1,0 +1,103 @@
+# Docker Hub official images: the names a visitor to the demo already knows.
+# Authenticated (dockerhub-auth, a read-only Docker Hub token) because anonymous
+# pulls are limited to a handful an hour per IP; a free account gets ~100.
+#
+# Tags: the semver keyword also matches variants (1.29.3-alpine parses as a
+# prerelease), which would fill the window with flavours of one release. These
+# globs take bare X.Y.Z only, and tagOrder semver ranks them by name, with no
+# per-tag config fetch.
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: dockerhub-library
+    namespace: ocidex-dev
+spec:
+    name: "Docker Hub — Official Images"
+    type: docker
+    url: registry-1.docker.io
+    visibility: public
+    authSecretRef:
+        name: dockerhub-auth
+    repositories:
+        - library/nginx
+        - library/redis
+        - library/node
+        - library/python
+        - library/golang
+        - library/alpine
+        - library/httpd
+        - library/mysql
+        - library/mariadb
+        - library/mongo
+        - library/rabbitmq
+        - library/memcached
+        - library/haproxy
+        - library/caddy
+        - library/busybox
+    tagPatterns:
+        - "[0-9].[0-9].[0-9]"
+        - "[0-9].[0-9].[0-9][0-9]"
+        - "[0-9].[0-9][0-9].[0-9]"
+        - "[0-9].[0-9][0-9].[0-9][0-9]"
+        - "[0-9][0-9].[0-9].[0-9]"
+        - "[0-9][0-9].[0-9].[0-9][0-9]"
+        - "[0-9][0-9].[0-9][0-9].[0-9]"
+        - "[0-9][0-9].[0-9][0-9].[0-9][0-9]"
+    tagOrder: semver
+    tagLimit: 3
+    scanMode: poll
+    pollIntervalMinutes: 720
+---
+# Official images whose releases are two-part (postgres 18.1, debian 13.2,
+# ubuntu 24.04). semver order cannot parse them, so they rank by name; within
+# one major that is right except at a .9 -> .10 rollover.
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: dockerhub-library-twopart
+    namespace: ocidex-dev
+spec:
+    name: "Docker Hub — Official Images (distros, Postgres)"
+    type: docker
+    url: registry-1.docker.io
+    visibility: public
+    authSecretRef:
+        name: dockerhub-auth
+    repositories:
+        - library/postgres
+        - library/debian
+        - library/ubuntu
+    tagPatterns:
+        - "1[0-9].[0-9]"
+        - "2[0-9].04"
+    tagOrder: lexical
+    tagLimit: 3
+    scanMode: poll
+    pollIntervalMinutes: 720
+---
+apiVersion: ocidex.io/v1alpha1
+kind: OCIRegistry
+metadata:
+    name: dockerhub-vendors
+    namespace: ocidex-dev
+spec:
+    name: "Docker Hub — Grafana & Prometheus"
+    type: docker
+    url: registry-1.docker.io
+    visibility: public
+    authSecretRef:
+        name: dockerhub-auth
+    repositories:
+        - grafana/grafana
+        - prom/prometheus
+    # Bare releases only: grafana also tags 12.3.0-ubuntu, and prometheus tags
+    # are v-prefixed.
+    tagPatterns:
+        - "[0-9][0-9].[0-9].[0-9]"
+        - "[0-9][0-9].[0-9][0-9].[0-9]"
+        - "v[0-9].[0-9].[0-9]"
+        - "v[0-9].[0-9][0-9].[0-9]"
+    tagOrder: semver
+    tagLimit: 3
+    scanMode: poll
+    pollIntervalMinutes: 720
