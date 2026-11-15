@@ -48,6 +48,16 @@ make kubeconfig      # Fetch kubeconfig to ~/.kube/config
 
 `TALOS_VERSION` / `KUBERNETES_VERSION` in `talos-cluster/Makefile` are the source of truth. Patches are multi-document (Talos 1.14 split config into per-component documents). After `make repatch-all`, check `talosctl services` for `cri`. A no-reboot apply that restarts cri can leave containerd waiting on sandboxd, and that needs a rolling reboot to clear.
 
+### Operational gotchas
+
+- **Never force-delete a CNPG instance pod** (k9s kill, `--grace-period=0`), especially `ocidex-pg` on local-path. CNPG stops the primary with a smart shutdown (`stopDelay` 1800s) that waits for app sessions. A force delete lets the replacement start a second postmaster on the same hostPath PGDATA, because PID and IPC namespaces hide the lock. That corrupted ocidex-pg's WAL on 2026-10-14 (homelab-8tp). Also, a Cluster's `status.phase` still reads healthy right after a spec change, before the rollout starts, so wait on the pod instead.
+- **Never `make -n` the talos-cluster upgrade or CNPG targets.** Recipe lines containing `$(MAKE)` run even under `-n`, and `upgrade-x86-01` is one shell line, so a dry run really suspends Flux, opens the CNPG window and drains x86-01 (2026-11-14). Read the recipe instead.
+- **ocidex-dev is a demo deployment.** Data loss is acceptable; don't spend scarce homelab resources on its backups or DR (homelab-v5c, won't fix).
+- **synology-csi** (default StorageClass `synology-csi-iscsi`): the node plugin and iscsi-tools run only on x86-01, so every iSCSI consumer must pin `kubernetes.io/arch: amd64` (trek, the ocidex vuln-worker via HelmRelease postRenderers, ocidex-pg via the Cluster's `spec.affinity.nodeSelector`).
+  - The StorageClass sets `formatOptions: '-E nodiscard'`. Without it, mkfs.ext4 discards the whole LUN, which the NAS UNMAPs at about 4 MB/s. A 60Gi format then runs for hours, starves other LUNs' iSCSI sessions, and once took ocidex-pg's ext4 read-only (homelab-qlv).
+  - StorageClass parameters are immutable and only affect newly provisioned PVs. To change one: `kubectl delete sc`, then `flux reconcile hr synology-csi --force`.
+  - A server-side apply error `rollingUpdate: Forbidden when type is Recreate` clears by deleting the Deployment and reconciling.
+
 ### Flux GitOps Layout
 
 ```
