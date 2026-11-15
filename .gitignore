@@ -5,3 +5,6 @@ age.key
 *.db
 .beads-credential-key
 .ci/
+
+# bd runtime lock
+.beads.gate.lock
