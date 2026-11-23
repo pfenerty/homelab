@@ -1,6 +1,7 @@
 # Schedules are America/Los_Angeles (timeZone), the same zone renovate.json uses,
 # so Renovate `schedule` windows line up with actual runs. Each repo runs every 4h,
-# staggered so they rarely overlap; renovate-homelab's Monday 01:00 and
+# staggered so they rarely overlap (renovate-ocidex runs hourly, see its comment);
+# renovate-homelab's Monday 01:00 and
 # 05:00 runs both fall inside the weekly window in renovate.json, so a missed run
 # does not push the batch back a week. startingDeadlineSeconds is 1h so a busy
 # scheduler or a node drain delays a run instead of skipping it.
@@ -10,7 +11,10 @@ metadata:
     name: renovate-ocidex
     namespace: renovate
 spec:
-    schedule: "0 0-23/4 * * *"
+    # Hourly, not every 4h like the others: Renovate automerges one PR per run and then
+    # stops, so a weekly batch of ~7 green PRs took about a day to land (homelab-7o9).
+    # A run takes about 6 min.
+    schedule: "0 * * * *"
     timeZone: America/Los_Angeles
     concurrencyPolicy: Forbid
     startingDeadlineSeconds: 3600

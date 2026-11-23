@@ -9,4 +9,9 @@ spec:
     # schedulable worker (homelab-79y) their pods wait for capacity while Tekton's pipeline
     # timeout runs. Runs past the limit wait as Pending, and a Pending run's timeout hasn't
     # started (homelab-3p8).
-    concurrency_limit: 2
+    #
+    # 1, not 2: PAC turns off cancel-in-progress under any concurrency_limit, and ocidex's
+    # push image builds share one buildkitd root, so two push runs at once fail (homelab-7o9).
+    # ocidex's check-tip gate makes a queued run for a superseded commit skip its work,
+    # which stands in for the cancel.
+    concurrency_limit: 1
