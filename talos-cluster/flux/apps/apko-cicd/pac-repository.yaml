@@ -5,3 +5,5 @@ metadata:
     namespace: apko-cicd-ci
 spec:
     url: https://github.com/pfenerty/apko-cicd
+    # Queue runs past 2 as Pending; see ocidex-ci/pac-repository.yaml (homelab-3p8).
+    concurrency_limit: 2

@@ -5,3 +5,8 @@ metadata:
     namespace: ocidex-ci
 spec:
     url: https://github.com/pfenerty/ocidex
+    # Queue instead of racing: Renovate's weekly batch opens ~8 PRs at once, and with one
+    # schedulable worker (homelab-79y) their pods wait for capacity while Tekton's pipeline
+    # timeout runs. Runs past the limit wait as Pending, and a Pending run's timeout hasn't
+    # started (homelab-3p8).
+    concurrency_limit: 2

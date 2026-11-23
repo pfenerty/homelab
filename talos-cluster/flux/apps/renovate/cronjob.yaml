@@ -31,11 +31,12 @@ spec:
                                 value: debug
                               - name: RENOVATE_REPOSITORIES
                                 value: '["pfenerty/ocidex"]'
-                              # renovate.json re-synthesizes .tekton/ from .tektonic/ and regenerates
-                              # codegen after Go dev tool bumps in postUpgradeTasks; without this
-                              # allowlist Renovate refuses those commands.
+                              # renovate.json re-synthesizes .tekton/ from .tektonic/, regenerates codegen
+                              # after Go dev tool bumps, and regenerates the docs-site reference after
+                              # chart image bumps, all in postUpgradeTasks; without this allowlist
+                              # Renovate refuses those commands.
                               - name: RENOVATE_ALLOWED_COMMANDS
-                                value: '["^npm ci --ignore-scripts$", "^npm run synth$", "^make generate generate-client generate-operator auth-matrix$"]'
+                                value: '["^npm ci --ignore-scripts$", "^npm run synth$", "^make generate generate-client generate-operator auth-matrix$", "^make docs-generate$"]'
                           envFrom:
                               - secretRef:
                                     name: renovate-env

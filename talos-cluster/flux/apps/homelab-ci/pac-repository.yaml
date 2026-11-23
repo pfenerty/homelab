@@ -8,3 +8,5 @@ metadata:
     namespace: homelab-ci
 spec:
     url: https://github.com/pfenerty/homelab
+    # Queue runs past 2 as Pending; see ocidex-ci/pac-repository.yaml (homelab-3p8).
+    concurrency_limit: 2
