@@ -16,7 +16,7 @@
 # Usage: ./update-manifests.sh
 set -eu
 
-PAC_VERSION=v0.54.0
+PAC_VERSION=v0.54.1
 
 cd "$(dirname "$0")"
 
